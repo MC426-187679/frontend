@@ -1,26 +1,34 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
-  },
-  "include": [
-    "src"
-  ]
+    "compilerOptions": {
+        // codegen and lib checking
+        "target": "es6",
+        "lib": [
+            "dom",
+            "dom.iterable",
+            "esnext"
+        ],
+        "noEmit": true,
+        "skipLibCheck": false,
+        // modules
+        "module": "esnext",
+        "moduleResolution": "node",
+        "esModuleInterop": false,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "jsx": "react-jsx",
+        // strictness
+        "allowJs": false,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "exactOptionalPropertyTypes": true,
+        "alwaysStrict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        // left to the linter
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+    },
+    "include": [
+        "src"
+    ]
 }
