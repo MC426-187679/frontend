@@ -19,6 +19,13 @@ const defaultTheme: ThemeOptions = {
             main: pink['A400'],
         },
     },
+    components: {
+        MuiUseMediaQuery: {
+            defaultProps: {
+                noSsr: true,
+            },
+        },
+    },
 }
 // Color names can be found at
 // https://material.io/design/color/the-color-system.html
