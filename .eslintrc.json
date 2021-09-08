@@ -55,7 +55,11 @@
         }],
         // type and value analysis
         "react/destructuring-assignment": "off",
-        "react/require-default-props": "off"
+        "react/require-default-props": "off",
+        // jest override mocks some DOM globals
+        "@typescript-eslint/no-redeclare": ["error", {
+            "builtinGlobals": false
+        }]
     },
     "overrides": [
         {
@@ -64,13 +68,7 @@
             "extends": [
                 "plugin:jest/recommended",
                 "plugin:jest/style"
-            ],
-            "rules": {
-                // jest override mocks some DOM globals
-                "@typescript-eslint/no-redeclare": ["error", {
-                    "builtinGlobals": false
-                }]
-            }
+            ]
         }
     ]
 }

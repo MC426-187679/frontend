@@ -1,6 +1,7 @@
-import React, { useCallback, useState } from 'react'
+import React, { MouseEvent, ReactNode, useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Box, Button, Menu, MenuItem } from '@mui/material'
+import { Button, IconButton, Menu, MenuItem, useMediaQuery } from '@mui/material'
+import { Theme } from '@mui/material/styles'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 
 /**
@@ -15,9 +16,12 @@ export default function AccountMenu() {
     const isMenuOpen = (anchor !== null)
 
     // open it up by attaching to element that triggered event
-    const openMenu = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchor(event.currentTarget)
-    }
+    const openMenu = useCallback(
+        (event: MouseEvent<HTMLElement>) => {
+            setAnchor(event.currentTarget)
+        },
+        [setAnchor],
+    )
     // close by dettaching
     const closeMenu = useCallback(
         () => setAnchor(null),
@@ -27,18 +31,13 @@ export default function AccountMenu() {
     const menuId = 'primary-account-menu'
     return (
         <>
-            <Button
-                startIcon={<AccountCircle />}
-                size="large"
-                aria-label="conta do usuário atual"
-                aria-controls={menuId}
-                aria-haspopup="true"
+            <ButtonWithHideableText
+                icon={<AccountCircle />}
+                id={menuId}
                 onClick={openMenu}
-                color="inherit"
             >
-                {/* TODO: hide on small screens */}
                 [Usuário]
-            </Button>
+            </ButtonWithHideableText>
             <Menu
                 anchorEl={anchor}
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -48,8 +47,8 @@ export default function AccountMenu() {
                 open={isMenuOpen}
                 onClose={closeMenu}
             >
-                <Item path="/perfil" onClick={closeMenu}>Perfil</Item>
-                <Item path="/config" onClick={closeMenu}>Configurações</Item>
+                <LinkItem to="/perfil" onClick={closeMenu}>Perfil</LinkItem>
+                <LinkItem to="/config" onClick={closeMenu}>Configurações</LinkItem>
             </Menu>
         </>
     )
@@ -57,17 +56,66 @@ export default function AccountMenu() {
 
 interface ItemProps {
     children: string
-    path: string
+    to: string
     onClick?: () => void
 }
 
 /**
  * {@link MenuItem} mixed in with {@link Link}
  */
-function Item({ children, path, onClick }: ItemProps) {
+function LinkItem({ children, to, onClick }: ItemProps) {
     return (
-        <MenuItem onClick={onClick} component={Link} to={path}>
+        <MenuItem component={Link} to={to} onClick={onClick}>
             { children }
         </MenuItem>
     )
+}
+
+interface ButtonWHTProps {
+    children: string
+    id: string
+    icon: ReactNode
+    onClick: (event: MouseEvent<HTMLElement>) => void
+}
+
+/**
+ *  Button that turns into {@link Button} with an
+ * icon for large screens and just an {@link
+ * IconButton} for small ones.
+ */
+function ButtonWithHideableText({ children, id, icon, onClick }: ButtonWHTProps) {
+    const isLarge = useMediaQuery((theme: Theme) => (
+        theme.breakpoints.up('sm')
+    ))
+
+    // computer / large screen
+    if (isLarge) {
+        return (
+            <Button
+                startIcon={icon}
+                size="large"
+                aria-label="conta do usuário atual"
+                aria-controls={id}
+                aria-haspopup="true"
+                onClick={onClick}
+                color="inherit"
+            >
+                { children }
+            </Button>
+        )
+    // phone / small screen
+    } else {
+        return (
+            <IconButton
+                size="large"
+                aria-label="conta do usuário atual"
+                aria-controls={id}
+                aria-haspopup="true"
+                onClick={onClick}
+                color="inherit"
+            >
+                { icon }
+            </IconButton>
+        )
+    }
 }
