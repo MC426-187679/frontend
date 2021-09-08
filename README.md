@@ -1,46 +1,69 @@
-# Getting Started with Create React App
+# Front-End do Planejador de Disciplinas
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Aplicação em Página Única (*Single Page App*) feita em `React`
+(usando [*hooks*](https://reactjs.org/docs/hooks-intro.html]))
+e [`Material-UI`](https://next.material-ui.com/).
 
-## Available Scripts
+## Execução
 
-In the project directory, you can run:
+### Modo de Desenvolvimento
 
-### `npm start`
+Para iniciar o servidor local de desenvolvimento, faça
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```bash
+npm start
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+A aplicação pode ser acessada em [http://localhost:3000](http://localhost:3000).
+A cada edição local, o *browser* recarrega a página automaticamente. Os erros
+de execução podem ser vistos no console (janela de desenvolvimento `F12`).
 
-### `npm test`
+### Testes
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Para iniciar os testes em modo iterativo:
 
-### `npm run build`
+```bash
+npm test
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Mais detalhes em [`create-react-app`](https://facebook.github.io/create-react-app/docs/running-tests).
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Modo de Produção
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Para compilar a aplicação, basta
 
-### `npm run eject`
+```bash
+npm run build
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Os arquivos de [JSX](https://reactjs.org/docs/introducing-jsx.html) e
+[Typescript](https://www.typescriptlang.org/docs/) são transpilados para Javascript,
+otimizados e minificados para uso no cliente final.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Mais detalhes em [`create-react-app`](https://facebook.github.io/create-react-app/docs/deployment).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Guias de Desenvolvimento
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### React
 
-## Learn More
+[`create-react-app`](https://facebook.github.io/create-react-app/docs/getting-started)
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+[React](https://reactjs.org)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+[React API](https://reactjs.org/docs/react-api.html)
+
+[React Hooks API](https://reactjs.org/docs/hooks-reference.html)
+
+### Material
+
+[Material UI](https://next.material-ui.com)
+
+[Material Design](https://material.io)
+
+### TypeScript
+
+[TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-from-scratch.html)
+
+[The TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
+
+[React TypeScript Cheatsheet](https://react-typescript-cheatsheet.netlify.app)
