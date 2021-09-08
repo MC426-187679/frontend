@@ -1,19 +1,49 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useRouteMatch } from 'react-router-dom'
+import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
+import useTheme from '@mui/material/styles/useTheme'
 
 /**
  * Navigation Links
  */
 export default function NavBar() {
+    const theme = useTheme()
+    const boxMargin = theme.spacing('auto', 2)
+    const buttonMargin = theme.spacing('auto', 1)
+
     return (
-        <>
-            <Button component={Link} to="/arvore" color="inherit" size="large">
+        <Box sx={{ margin: boxMargin }}>
+            <NavLink to="/arvore" margin={buttonMargin}>
                 Árvore
-            </Button>
-            <Button component={Link} to="/grade" color="inherit" size="large">
+            </NavLink>
+            <NavLink to="/grade" margin={buttonMargin}>
                 Grade
-            </Button>
-        </>
+            </NavLink>
+        </Box>
+    )
+}
+
+interface NavLinkProps {
+    children: string
+    to: string
+    margin: string
+}
+
+function NavLink({ children, to, margin }: NavLinkProps) {
+    const match = useRouteMatch(to)
+    const current = (match?.path === to)
+
+    return (
+        <Button
+            component={Link}
+            to={to}
+            color="inherit"
+            size="large"
+            variant={current ? 'outlined' : 'text'}
+            sx={{ width: '12ch', margin }}
+        >
+            { children }
+        </Button>
     )
 }
