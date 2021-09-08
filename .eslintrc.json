@@ -20,7 +20,8 @@
     "plugins": [
         "jest",
         "react",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "only-warn"
     ],
     "rules": {
         // indentation rules
@@ -29,12 +30,12 @@
         "react/jsx-indent": ["error", 4],
         "react/jsx-indent-props": ["error", 4],
         // symbols and punctuation
-        "@typescript-eslint/semi": ["warn", "never"],
-        "arrow-parens": ["warn", "as-needed"],
-        "no-trailing-spaces": "warn",
-        "react/self-closing-comp": "warn",
+        "@typescript-eslint/semi": ["error", "never"],
+        "arrow-parens": ["error", "as-needed"],
         // line breaking
-        "object-curly-newline": ["warn", { "multiline": true }],
+        "object-curly-newline": ["error", {
+            "consistent": true
+        }],
         "react/jsx-one-expression-per-line": "off",
         "no-else-return": "off",
         // modules and dependencies
@@ -45,18 +46,16 @@
         "import/no-extraneous-dependencies": ["error", {
             "devDependencies": ["**/*.test.ts", "**/*.test.tsx"]
         }],
-        "react/jsx-filename-extension": ["error", { "extensions": [".tsx"] }],
+        "react/jsx-filename-extension": ["error", {
+            "extensions": [".tsx"]
+        }],
         // variable definition and usage
-        "@typescript-eslint/no-use-before-define": ["warn", {
+        "@typescript-eslint/no-use-before-define": ["error", {
             "classes": false, "functions": false
         }],
-        "@typescript-eslint/no-unused-expressions": "warn",
-        "@typescript-eslint/no-unused-vars": "warn",
-        "react/jsx-no-bind": "warn",
         // type and value analysis
         "react/destructuring-assignment": "off",
-        "react/require-default-props": "off",
-        "react/prop-types": "warn"
+        "react/require-default-props": "off"
     },
     "overrides": [
         {

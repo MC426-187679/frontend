@@ -24,6 +24,8 @@
         "alwaysStrict": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
         // left to the linter
         "noUnusedLocals": false,
         "noUnusedParameters": false,
