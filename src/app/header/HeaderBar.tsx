@@ -21,8 +21,9 @@ export default function HeaderBar() {
                     >
                         Planejador
                     </Typography>
-                    <SearchBar />
-                    <Box sx={{ flexGrow: 1 }} />
+                    <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
+                        <SearchBar />
+                    </Box>
                     <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
                         {/* TODO: change display on 'xs' */}
                         <NavBar />
