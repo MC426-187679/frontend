@@ -1,0 +1,10 @@
+// based on https://next.material-ui.com/components/app-bar
+// used for a simple wrapper around SearchIcon
+.search-icon-button {
+    height: 100%;
+    position: absolute;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

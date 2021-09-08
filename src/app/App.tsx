@@ -5,7 +5,8 @@ import HeaderBar from './header/HeaderBar'
 
 /**
  * Main Component: handles the header bar
- *  and the router switch (TODO)
+ *  and the router switch (TODO) with
+ *  actual page content.
  */
 export default function App() {
     return (

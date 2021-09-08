@@ -28,6 +28,9 @@ interface NavLinkProps {
     margin: string
 }
 
+/**
+ * Single Navigation Link
+ */
 function NavLink({ children, to, margin }: NavLinkProps) {
     const match = useRouteMatch(to)
     const current = (match?.path === to)

@@ -1,7 +1,9 @@
 import React from 'react'
-import { InputBase } from '@mui/material'
-import { styled, alpha } from '@mui/material/styles'
+import { Box, InputBase } from '@mui/material'
+import { alpha, styled, useTheme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
+
+import './SearchBar.scss'
 
 // from https://next.material-ui.com/components/app-bar
 const Search = styled('div')(({ theme }) => ({
@@ -18,17 +20,6 @@ const Search = styled('div')(({ theme }) => ({
         marginLeft: theme.spacing(3),
         width: 'auto',
     },
-}))
-
-// from https://next.material-ui.com/components/app-bar
-const SearchIconButton = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
 }))
 
 // from https://next.material-ui.com/components/app-bar
@@ -55,12 +46,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
  *  autocomplete (TODO).
  */
 export default function SearchBar() {
+    const theme = useTheme()
+    const padding = theme.spacing(0, 2)
+
     return (
         <Search>
-            <SearchIconButton>
+            <Box className="search-icon-button" sx={{ padding }}>
                 {/* TODO: shoulde be clickable */}
                 <SearchIcon />
-            </SearchIconButton>
+            </Box>
             <StyledInputBase
                 placeholder="Pesquisar..."
                 inputProps={{ 'aria-label': 'pesquisar' }}
