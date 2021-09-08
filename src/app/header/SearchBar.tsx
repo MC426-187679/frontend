@@ -1,6 +1,6 @@
 import React, { FormEvent, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
-import { Box, InputBase } from '@mui/material'
+import { IconButton, InputBase } from '@mui/material'
 import { alpha, styled, useTheme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 
@@ -34,7 +34,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         width: '100%',
         [theme.breakpoints.up('sm')]: {
             width: '40ch',
-            '&:focus': {
+            '&:focus, .search-icon-button:focus + &': {
                 width: '70ch',
             },
         },
@@ -75,13 +75,15 @@ export default function SearchBar() {
             autoComplete="off"
             noValidate
         >
-            <Box
+            <IconButton
+                disableRipple
+                type="submit"
                 className="search-icon-button"
                 sx={{ padding }}
             >
-                {/* TODO: should be clickable */}
+                {/* TODO: remove ripple */}
                 <SearchIcon />
-            </Box>
+            </IconButton>
             <StyledInputBase
                 placeholder="Pesquisar..."
                 inputProps={{
