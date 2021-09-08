@@ -1,8 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
-import Button from '@mui/material/Button'
-import MenuItem from '@mui/material/MenuItem'
-import Menu from '@mui/material/Menu'
+import { Box, Button, Menu, MenuItem } from '@mui/material'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 
 /**

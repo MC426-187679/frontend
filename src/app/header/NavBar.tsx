@@ -1,8 +1,6 @@
 import React from 'react'
 import { Link, useRouteMatch } from 'react-router-dom'
-import Box from '@mui/material/Box'
-import Button from '@mui/material/Button'
-import useTheme from '@mui/material/styles/useTheme'
+import { Box, Button, useTheme } from '@mui/material'
 
 /**
  * Navigation Links

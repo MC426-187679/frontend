@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { ThemeOptions } from '@mui/material/styles/createTheme'
+import { ThemeOptions } from '@mui/material/styles'
 import { indigo, pink } from '@mui/material/colors'
 
 declare module '@mui/material/styles/createPalette' {
