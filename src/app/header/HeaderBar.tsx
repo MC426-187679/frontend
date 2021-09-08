@@ -7,8 +7,8 @@ import NavBar from './NavBar'
 import SearchBar from './SearchBar'
 
 /**
- * Header Bar above page content: split in
- *  3 parts: brand name, search bar and
+ * Header Bar above page content: split
+ *  in 3: brand name, search bar and
  *  navigation links
  */
 export default function HeaderBar() {
@@ -16,6 +16,7 @@ export default function HeaderBar() {
         <div className="app-bar-box">
             <AppBar position="static">
                 <Toolbar>
+
                     {/* Brand */}
                     <Box className="header-box-left">
                         <Typography
@@ -27,10 +28,12 @@ export default function HeaderBar() {
                             Planejador
                         </Typography>
                     </Box>
+
                     {/* Search */}
                     <Box className="header-box-center">
                         <SearchBar />
                     </Box>
+
                     {/* Navigation */}
                     <Box className="header-box-right">
                         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
@@ -39,6 +42,7 @@ export default function HeaderBar() {
                         </Box>
                         <AccountMenu />
                     </Box>
+
                 </Toolbar>
             </AppBar>
         </div>

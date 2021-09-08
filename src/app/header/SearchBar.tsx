@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { FormEvent, useRef } from 'react'
+import { useHistory } from 'react-router-dom'
 import { Box, InputBase } from '@mui/material'
 import { alpha, styled, useTheme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
@@ -6,7 +7,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import './SearchBar.scss'
 
 // from https://next.material-ui.com/components/app-bar
-const Search = styled('div')(({ theme }) => ({
+const Search = styled('form')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
     backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -42,22 +43,52 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 /**
  * Main Search Bar: dispatch queries to the
- *  main search page (TODO) and have
- *  autocomplete (TODO).
+ *  main search page and have autocomplete (TODO).
  */
 export default function SearchBar() {
+    // theme dependent padding
     const theme = useTheme()
     const padding = theme.spacing(0, 2)
+    // shared values
+    const inputRef = useRef<HTMLInputElement>(null)
+    const queryPath = '/busca'
+    const queryId = 'q'
+
+    // push URL but don't redirect
+    const history = useHistory()
+
+    const redirectToSearch = (event: FormEvent<HTMLFormElement>) => {
+        const value = inputRef.current?.value
+        // check if value is non-empty strings
+        if (value) {
+            history.push(`${queryPath}?${queryId}=${value}`)
+        } else {
+            history.push(queryPath)
+        }
+        event.preventDefault()
+    }
 
     return (
-        <Search>
-            <Box className="search-icon-button" sx={{ padding }}>
-                {/* TODO: shoulde be clickable */}
+        <Search
+            action={queryPath}
+            onSubmit={redirectToSearch}
+            autoComplete="off"
+            noValidate
+        >
+            <Box
+                className="search-icon-button"
+                sx={{ padding }}
+            >
+                {/* TODO: should be clickable */}
                 <SearchIcon />
             </Box>
             <StyledInputBase
                 placeholder="Pesquisar..."
-                inputProps={{ 'aria-label': 'pesquisar' }}
+                inputProps={{
+                    'aria-label': 'pesquisar',
+                    name: queryId,
+                    ref: inputRef,
+                }}
             />
         </Search>
     )
