@@ -4,6 +4,12 @@ Aplicação em Página Única (*Single Page App*) feita em `React`
 (usando [*hooks*](https://reactjs.org/docs/hooks-intro.html]))
 e [`Material-UI`](https://next.material-ui.com/).
 
+Instalação para desenvolvimento deve ser feito com
+
+```bash
+npm install --include=dev
+```
+
 ## Execução
 
 ### Modo de Desenvolvimento
