@@ -1,9 +1,15 @@
 import React from 'react'
 import './App.scss'
+import HeaderBar from './header/HeaderBar'
 
+/**
+ * Main Component: handles the header bar
+ *  and the router switch (TODO)
+ */
 export default function App() {
     return (
-        <div className="App">
+        <>
+            <HeaderBar />
             <header className="App-header">
                 <p>
                     Edit <code>src/app/App.tsx</code> and save to reload.
@@ -17,6 +23,6 @@ export default function App() {
                     Learn React
                 </a>
             </header>
-        </div>
+        </>
     )
 }
