@@ -1,30 +1,28 @@
 import React from 'react'
+import { Route, Switch } from 'react-router-dom'
 
-import './App.scss'
 import HeaderBar from './header/HeaderBar'
+import Home from './Home'
+
+/** Main app routes */
+const ROUTES = {
+    home: '/',
+}
 
 /**
  * Main Component: handles the header bar
- *  and the router switch (TODO) with
- *  actual page content.
+ *  and the router switch with actual
+ *  page content.
  */
 export default function App() {
     return (
         <>
             <HeaderBar />
-            <header className="App-header">
-                <p>
-                    Edit <code>src/app/App.tsx</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
+            <Switch>
+                <Route exact path={ROUTES.home}>
+                    <Home />
+                </Route>
+            </Switch>
         </>
     )
 }

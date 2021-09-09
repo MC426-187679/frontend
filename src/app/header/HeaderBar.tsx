@@ -1,5 +1,7 @@
 import React from 'react'
-import { AppBar, Box, Toolbar, Typography, Theme, useMediaQuery } from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
+import { AppBar, Box, Link, Toolbar, Typography, useMediaQuery } from '@mui/material'
+import { Theme } from '@mui/material/styles'
 
 import './HeaderBar.scss'
 import AccountMenu from './AccountMenu'
@@ -24,9 +26,7 @@ export default function HeaderBar() {
                     {/* Brand */}
                     {isLarge && (
                         <Box className="header-box-left">
-                            <Typography variant="h6" noWrap component="div">
-                                Planejador
-                            </Typography>
+                            <BrandLink />
                         </Box>
                     )}
 
@@ -46,5 +46,16 @@ export default function HeaderBar() {
                 </Toolbar>
             </AppBar>
         </div>
+    )
+}
+
+/** Brand name with link to home page. */
+function BrandLink() {
+    return (
+        <Link underline="none" color="inherit" component={RouterLink} to="/">
+            <Typography variant="h6" noWrap component="div">
+                Planejador
+            </Typography>
+        </Link>
     )
 }

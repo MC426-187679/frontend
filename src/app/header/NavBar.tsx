@@ -11,7 +11,7 @@ export default function NavBar() {
     const buttonMargin = theme.spacing('auto', 1)
 
     return (
-        <Box sx={{ margin: boxMargin }}>
+        <Box sx={{ margin: boxMargin }} component="nav">
             <NavLink to="/arvore" margin={buttonMargin}>
                 Árvore
             </NavLink>
