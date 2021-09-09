@@ -14,7 +14,7 @@ const Search = styled('form')(({ theme }) => ({
     '&:hover': {
         backgroundColor: alpha(theme.palette.common.white, 0.25),
     },
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(1),
     marginLeft: 0,
     width: '100%',
     [theme.breakpoints.up('sm')]: {
@@ -26,6 +26,7 @@ const Search = styled('form')(({ theme }) => ({
 // from https://next.material-ui.com/components/app-bar
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
+    width: '100%',
     '& .MuiInputBase-input': {
         padding: theme.spacing(1, 1, 1, 0),
         // vertical padding + font size from searchIcon
@@ -48,7 +49,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function SearchBar() {
     // theme dependent padding
     const theme = useTheme()
-    const padding = theme.spacing(0, 2)
+    const padding = theme.spacing(0, 1.5)
     // shared values
     const inputRef = useRef<HTMLInputElement>(null)
     const queryPath = '/busca'

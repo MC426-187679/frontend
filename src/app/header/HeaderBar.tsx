@@ -1,5 +1,5 @@
 import React from 'react'
-import { AppBar, Box, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Toolbar, Typography, Theme, useMediaQuery } from '@mui/material'
 
 import './HeaderBar.scss'
 import AccountMenu from './AccountMenu'
@@ -12,22 +12,23 @@ import SearchBar from './SearchBar'
  *  navigation links
  */
 export default function HeaderBar() {
+    const isLarge = useMediaQuery((theme: Theme) => (
+        theme.breakpoints.up('sm')
+    ))
+
     return (
         <div className="app-bar-box">
             <AppBar position="static">
                 <Toolbar>
 
                     {/* Brand */}
-                    <Box className="header-box-left">
-                        <Typography
-                            variant="h6"
-                            noWrap
-                            component="div"
-                            sx={{ display: { xs: 'none', sm: 'block' } }}
-                        >
-                            Planejador
-                        </Typography>
-                    </Box>
+                    {isLarge && (
+                        <Box className="header-box-left">
+                            <Typography variant="h6" noWrap component="div">
+                                Planejador
+                            </Typography>
+                        </Box>
+                    )}
 
                     {/* Search */}
                     <Box className="header-box-center">
@@ -35,11 +36,10 @@ export default function HeaderBar() {
                     </Box>
 
                     {/* Navigation */}
-                    <Box className="header-box-right">
-                        <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                            {/* TODO: change display on 'xs' */}
+                    <Box className={isLarge ? 'header-box-right' : ''}>
+                        {isLarge && (
                             <NavBar />
-                        </Box>
+                        )}
                         <AccountMenu />
                     </Box>
 
