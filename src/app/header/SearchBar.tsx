@@ -1,5 +1,6 @@
-import React, { FormEvent, useRef } from 'react'
+import React, { FormEvent } from 'react'
 import { useHistory } from 'react-router-dom'
+import type { Location } from 'history'
 import { IconButton, InputBase } from '@mui/material'
 import { alpha, styled, useTheme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
@@ -47,24 +48,19 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
  *  main search page and have autocomplete (TODO).
  */
 export default function SearchBar() {
-    // theme dependent padding
-    const theme = useTheme()
-    const padding = theme.spacing(0, 1.5)
-    // shared values
-    const inputRef = useRef<HTMLInputElement>(null)
+    // URL and query string path
     const queryPath = '/busca'
     const queryId = 'q'
+    const [currentQuery, setQuery] = useURLQuery(queryPath, queryId)
 
-    // push URL but don't redirect
-    const history = useHistory()
-
+    // change route but don't actually redirect
     const redirectToSearch = (event: FormEvent<HTMLFormElement>) => {
-        const value = inputRef.current?.value
-        // check if value is non-empty strings
-        if (value) {
-            history.push(`${queryPath}?${queryId}=${value}`)
+        const value = event.currentTarget[queryId]?.value
+
+        if (typeof value === 'string') {
+            setQuery(value)
         } else {
-            history.push(queryPath)
+            setQuery()
         }
         event.preventDefault()
     }
@@ -76,23 +72,68 @@ export default function SearchBar() {
             autoComplete="off"
             noValidate
         >
-            <IconButton
-                disableRipple
-                type="submit"
-                className="search-icon-button"
-                sx={{ padding }}
-            >
-                {/* TODO: remove ripple */}
-                <SearchIcon />
-            </IconButton>
+            <SearchButton />
             <StyledInputBase
                 placeholder="Pesquisar..."
                 inputProps={{
                     'aria-label': 'pesquisar',
                     name: queryId,
-                    ref: inputRef,
+                    defaultValue: currentQuery,
                 }}
             />
         </Search>
+    )
+}
+
+/**
+ * Extract URL query from {@link Location} object
+ *
+ *  If current URL is '/path?id=something' then
+ * this function returns 'something'.
+ */
+function extractQueryParams(path: string, id: string, { pathname, search }: Location) {
+    if (pathname !== path) {
+        return undefined
+    }
+    const params = new URLSearchParams(search)
+    return params.get(id) ?? undefined
+}
+
+/**
+ *  Hook for extracting current query string on 'path'
+ * and changing as needed.
+ */
+function useURLQuery(path: string, id: string) {
+    const history = useHistory()
+    const current = extractQueryParams(path, id, history.location)
+
+    function setQuery(value?: string) {
+        if (value) {
+            history.push(`${path}?${id}=${value}`)
+        } else {
+            history.push(path)
+        }
+    }
+    return [current, setQuery] as const
+}
+
+/**
+ * {@link IconButton} with {@link SearchIcon}.
+ */
+function SearchButton() {
+    // theme dependent padding
+    const theme = useTheme()
+    const padding = theme.spacing(0, 1.5)
+
+    return (
+        <IconButton
+            disableRipple
+            type="submit"
+            className="search-icon-button"
+            sx={{ padding }}
+        >
+            {/* TODO: remove ripple */}
+            <SearchIcon />
+        </IconButton>
     )
 }
