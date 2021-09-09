@@ -1,11 +1,11 @@
-import React, { FormEvent } from 'react'
+import React, { FormEvent, useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
-import type { Location } from 'history'
 import { IconButton, InputBase } from '@mui/material'
 import { alpha, styled, useTheme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 
 import './SearchBar.scss'
+import { QUERY_PATH, QUERY_PARAM, useSearchQuery } from '../search/searchParams'
 
 // from https://next.material-ui.com/components/app-bar
 const Search = styled('form')(({ theme }) => ({
@@ -49,25 +49,27 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
  */
 export default function SearchBar() {
     // URL and query string path
-    const queryPath = '/busca'
-    const queryId = 'q'
-    const [currentQuery, setQuery] = useURLQuery(queryPath, queryId)
+    const history = useHistory()
+    const currentQuery = useSearchQuery()
 
     // change route but don't actually redirect
-    const redirectToSearch = (event: FormEvent<HTMLFormElement>) => {
-        const value = event.currentTarget[queryId]?.value
+    const redirectToSearch = useCallback(
+        (event: FormEvent<HTMLFormElement>) => {
+            const value = event.currentTarget[QUERY_PARAM]?.value
 
-        if (typeof value === 'string') {
-            setQuery(value)
-        } else {
-            setQuery()
-        }
-        event.preventDefault()
-    }
+            if (typeof value === 'string' && value !== '') {
+                history.push(`${QUERY_PATH}?${QUERY_PARAM}=${value}`)
+            } else {
+                history.push(QUERY_PATH)
+            }
+            event.preventDefault()
+        },
+        [history],
+    )
 
     return (
         <Search
-            action={queryPath}
+            action={QUERY_PATH}
             onSubmit={redirectToSearch}
             autoComplete="off"
             noValidate
@@ -77,44 +79,12 @@ export default function SearchBar() {
                 placeholder="Pesquisar..."
                 inputProps={{
                     'aria-label': 'pesquisar',
-                    name: queryId,
+                    name: QUERY_PARAM,
                     defaultValue: currentQuery,
                 }}
             />
         </Search>
     )
-}
-
-/**
- * Extract URL query from {@link Location} object
- *
- *  If current URL is '/path?id=something' then
- * this function returns 'something'.
- */
-function extractQueryParams(path: string, id: string, { pathname, search }: Location) {
-    if (pathname !== path) {
-        return undefined
-    }
-    const params = new URLSearchParams(search)
-    return params.get(id) ?? undefined
-}
-
-/**
- *  Hook for extracting current query string on 'path'
- * and changing as needed.
- */
-function useURLQuery(path: string, id: string) {
-    const history = useHistory()
-    const current = extractQueryParams(path, id, history.location)
-
-    function setQuery(value?: string) {
-        if (value) {
-            history.push(`${path}?${id}=${value}`)
-        } else {
-            history.push(path)
-        }
-    }
-    return [current, setQuery] as const
 }
 
 /**

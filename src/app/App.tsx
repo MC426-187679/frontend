@@ -3,10 +3,12 @@ import { Route, Switch } from 'react-router-dom'
 
 import HeaderBar from './header/HeaderBar'
 import Home from './Home'
+import Search, { SEARCH_PATH } from './search/Search'
 
 /** Main app routes */
 const ROUTES = {
     home: '/',
+    search: SEARCH_PATH,
 }
 
 /**
@@ -21,6 +23,9 @@ export default function App() {
             <Switch>
                 <Route exact path={ROUTES.home}>
                     <Home />
+                </Route>
+                <Route path={ROUTES.search}>
+                    <Search />
                 </Route>
             </Switch>
         </>
