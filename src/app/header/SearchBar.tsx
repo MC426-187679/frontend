@@ -1,11 +1,11 @@
-import React, { FormEvent, useCallback } from 'react'
+import React, { FormEvent } from 'react'
 import { useHistory } from 'react-router-dom'
 import { IconButton, InputBase } from '@mui/material'
 import { alpha, styled, useTheme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 
 import './SearchBar.scss'
-import { QUERY_PATH, QUERY_PARAM, useSearchQuery } from '../search/searchParams'
+import { QUERY_PATH, QUERY_PARAM, extractSearchParam } from '../search/searchParams'
 
 // from https://next.material-ui.com/components/app-bar
 const Search = styled('form')(({ theme }) => ({
@@ -48,24 +48,21 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
  *  main search page and have autocomplete (TODO).
  */
 export default function SearchBar() {
-    // URL and query string path
+    // URL and inital query string on path
     const history = useHistory()
-    const currentQuery = useSearchQuery()
+    const currentQuery = extractSearchParam(history.location)
 
     // change route but don't actually redirect
-    const redirectToSearch = useCallback(
-        (event: FormEvent<HTMLFormElement>) => {
-            const value = event.currentTarget[QUERY_PARAM]?.value
+    const redirectToSearch = (event: FormEvent<HTMLFormElement>) => {
+        const value = event.currentTarget[QUERY_PARAM]?.value
 
-            if (typeof value === 'string' && value !== '') {
-                history.push(`${QUERY_PATH}?${QUERY_PARAM}=${value}`)
-            } else {
-                history.push(QUERY_PATH)
-            }
-            event.preventDefault()
-        },
-        [history],
-    )
+        if (typeof value === 'string' && value !== '') {
+            history.push(`${QUERY_PATH}?${QUERY_PARAM}=${value}`)
+        } else {
+            history.push(QUERY_PATH)
+        }
+        event.preventDefault()
+    }
 
     return (
         <Search
