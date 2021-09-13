@@ -2,6 +2,10 @@ import React from 'react'
 
 import './Home.scss'
 
+/** URL para a página principal. */
+export const HOME_PATH = '/'
+
+/** Página Principal. */
 export default function Home() {
     return (
         <header className="App-Home">

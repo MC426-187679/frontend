@@ -2,33 +2,30 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import HeaderBar from './header/HeaderBar'
-import Home from './Home'
+import Home, { HOME_PATH } from './Home'
 import Search, { SEARCH_PATH } from './search/Search'
-import Disciplina from './disciplinas/Disciplina'
-/** Main app routes */
-const ROUTES = {
-    home: '/',
-    search: SEARCH_PATH,
-    disciplina: '/disciplina/:id',
-}
+import Disciplina, { DISCIPLINAS_PATH } from './disciplinas/Disciplina'
 
 /**
- * Main Component: handles the header bar
- *  and the router switch with actual
- *  page content.
+ * Componente Principal: cuida do cabeçalho
+ *  e do switch de roteamento com o conteúdo
+ *  real da página.
  */
 export default function App() {
     return (
         <>
             <HeaderBar />
             <Switch>
-                <Route exact path={ROUTES.home}>
+                {/* Página Principal */}
+                <Route exact path={HOME_PATH}>
                     <Home />
                 </Route>
-                <Route path={ROUTES.search}>
+                {/* Página de Busca */}
+                <Route path={SEARCH_PATH}>
                     <Search />
                 </Route>
-                <Route path={ROUTES.disciplina}>
+                {/* Páginas de cada Disciplina */}
+                <Route path={DISCIPLINAS_PATH}>
                     <Disciplina />
                 </Route>
             </Switch>

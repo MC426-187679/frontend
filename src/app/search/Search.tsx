@@ -1,11 +1,11 @@
 import React from 'react'
 
-import { QUERY_PATH, useSearchQuery } from './searchParams'
+import { QUERY_PATH, useSearchQuery } from './params'
 import './Search.scss'
-// reexport for main app
+// reexporta pro App principal
 export { QUERY_PATH as SEARCH_PATH }
 
-/** Search Page. */
+/** Página de Busca. */
 export default function Search() {
     const query = useSearchQuery()
 

@@ -8,7 +8,7 @@ declare module '@mui/material/styles/createPalette' {
     }
 }
 
-// See https://bareynol.github.io/mui-theme-creator/
+// Veja https://bareynol.github.io/mui-theme-creator/
 const defaultTheme: ThemeOptions = {
     palette: {
         type: 'light',
@@ -27,7 +27,7 @@ const defaultTheme: ThemeOptions = {
         },
     },
 }
-// Color names can be found at
+// Nomes para as cores podem ser encontrados em
 // https://material.io/design/color/the-color-system.html
 
 export default defaultTheme

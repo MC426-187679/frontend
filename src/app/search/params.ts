@@ -1,16 +1,17 @@
 import { useLocation } from 'react-router-dom'
 import type { Location } from 'history'
 
-/** Path for Search Page. */
+/** Cominho para a Página de Busca. */
 export const QUERY_PATH = '/busca'
-/** URL Param for searching. */
+/** Parâmetro de busca na URL. */
 export const QUERY_PARAM = 'q'
 
 /**
- * Extract search query from a URL Location.
+ * Extrai string de busca do valor da URL.
  *
- *  Returns `undefined` if URL does not match
- * the search page or if no query is given.
+ *  Returna `undefined` se a URL não bate com
+ * a página de busca ou se nenhuma string de
+ * busca é dada.
  */
 export function extractSearchParam<S>({ pathname, search }: Location<S>) {
     if (pathname !== QUERY_PATH) {
@@ -22,8 +23,8 @@ export function extractSearchParam<S>({ pathname, search }: Location<S>) {
 }
 
 /**
- *  Hook for extracting current query
- * string on search page.
+ *  Hook que extrai a string de busca da
+ * URL atual (apenas na página de busca).
  *
  * {@see extractSearchParam}
  */

@@ -5,9 +5,9 @@ import { alpha, styled, useTheme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 
 import './SearchBar.scss'
-import { QUERY_PATH, QUERY_PARAM, extractSearchParam } from '../search/searchParams'
+import { QUERY_PATH, QUERY_PARAM, extractSearchParam } from '../search/params'
 
-// from https://next.material-ui.com/components/app-bar
+// fonte: https://next.material-ui.com/components/app-bar
 const Search = styled('form')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -24,7 +24,7 @@ const Search = styled('form')(({ theme }) => ({
     },
 }))
 
-// from https://next.material-ui.com/components/app-bar
+// fonte: https://next.material-ui.com/components/app-bar
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     width: '100%',
@@ -44,15 +44,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }))
 
 /**
- * Main Search Bar: dispatch queries to the
- *  main search page and have autocomplete (TODO).
+ * Barra de Busca Principal: redireciona buscas
+ *  para a página de busca e tem um sistema de
+ *  autocomplete (TODO).
  */
 export default function SearchBar() {
-    // URL and inital query string on path
+    // caminho e texto de busca recuperados da URL
     const history = useHistory()
     const currentQuery = extractSearchParam(history.location)
 
-    // change route but don't actually redirect
+    // muda a rota (URL) mas não redireciona de verdade
     const redirectToSearch = (event: FormEvent<HTMLFormElement>) => {
         const value = event.currentTarget[QUERY_PARAM]?.value
 
@@ -85,7 +86,7 @@ export default function SearchBar() {
 }
 
 /**
- * {@link IconButton} with {@link SearchIcon}.
+ * {@link IconButton} com {@link SearchIcon}.
  */
 function SearchButton() {
     // theme dependent padding
@@ -99,7 +100,7 @@ function SearchButton() {
             className="search-icon-button"
             sx={{ padding }}
         >
-            {/* TODO: remove ripple */}
+            {/* TODO: remover efeitos de ripple */}
             <SearchIcon />
         </IconButton>
     )

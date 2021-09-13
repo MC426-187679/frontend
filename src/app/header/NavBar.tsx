@@ -3,7 +3,7 @@ import { Link, useRouteMatch } from 'react-router-dom'
 import { Box, Button, useTheme } from '@mui/material'
 
 /**
- * Navigation Links
+ * Links de Navegação.
  */
 export default function NavBar() {
     const theme = useTheme()
@@ -29,7 +29,7 @@ interface NavLinkProps {
 }
 
 /**
- * Single Navigation Link
+ * Um único link de navegação.
  */
 function NavLink({ children, to, margin }: NavLinkProps) {
     const match = useRouteMatch(to)

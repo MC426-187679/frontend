@@ -24,21 +24,21 @@
         "only-warn"
     ],
     "rules": {
-        // indentation rules
-        "indent": ["error", 4],
+        // regras de indentação
+        "indent": "off",
         "@typescript-eslint/indent": ["error", 4],
         "react/jsx-indent": ["error", 4],
         "react/jsx-indent-props": ["error", 4],
-        // symbols and punctuation
+        // símbolos e pontuações
         "@typescript-eslint/semi": ["error", "never"],
         "arrow-parens": ["error", "as-needed"],
-        // line breaking
+        // quebras de linha
         "object-curly-newline": ["error", {
             "consistent": true
         }],
         "react/jsx-one-expression-per-line": "off",
         "no-else-return": "off",
-        // modules and dependencies
+        // dependências e módulos
         "import/extensions": ["error", "always", {
             "js": "never", "jsx": "never",
             "ts": "never", "tsx": "never"
@@ -49,14 +49,14 @@
         "react/jsx-filename-extension": ["error", {
             "extensions": [".tsx"]
         }],
-        // variable definition and usage
+        // definição e uso de variáveis
         "@typescript-eslint/no-use-before-define": ["error", {
             "classes": false, "functions": false
         }],
-        // type and value analysis
+        // análise de tipos e valores
         "react/destructuring-assignment": "off",
         "react/require-default-props": "off",
-        // jest override mocks some DOM globals
+        // jest usa mocks que ocultam globais da DOM
         "@typescript-eslint/no-redeclare": ["error", {
             "builtinGlobals": false
         }]

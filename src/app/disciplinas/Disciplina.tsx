@@ -5,6 +5,8 @@ import { Card, CardActions, CardContent, Button, Typography } from '@mui/materia
 
 import DISCIPLINAS from './MC.json'
 
+export const DISCIPLINAS_PATH = '/disciplina/:id'
+
 interface DisciplinaParam {
     id: string
 }

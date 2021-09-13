@@ -14,6 +14,7 @@ import themeOptions from './theme'
 
 const theme = responsiveFontSizes(createTheme(themeOptions))
 
+/** Página completa. */
 ReactDOM.render(
     <StrictMode>
         <StyledEngineProvider injectFirst>

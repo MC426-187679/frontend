@@ -5,24 +5,24 @@ import { Theme } from '@mui/material/styles'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 
 /**
- * Account Options and Links: change
- *  according to currently logged user
+ * Links e Opções da Conta: muda de
+ *  acordo com o usuário logado (TODO)
  */
 export default function AccountMenu() {
-    // NOTE: to avoid redrawing things, the open menu is
-    // always loaded on the background, but only shows up
-    // when anchored to a foreground element
+    // NOTA: para evitar redesenhar as coisas, o menu
+    // sempre fica aberto em background, mas só aparece
+    // quando ancorado no botão que abre o menu (foreground)
     const [anchor, setAnchor] = useState<HTMLElement | null>(null)
     const isMenuOpen = (anchor !== null)
 
-    // open it up by attaching to element that triggered event
+    // anexa o menu to elemento que ativou ele, abrindo ele na tela
     const openMenu = useCallback(
         (event: MouseEvent<HTMLElement>) => {
             setAnchor(event.currentTarget)
         },
         [setAnchor],
     )
-    // close by dettaching
+    // fecha o menu (desanexa ele)
     const closeMenu = useCallback(
         () => setAnchor(null),
         [setAnchor],
@@ -61,7 +61,7 @@ interface ItemProps {
 }
 
 /**
- * {@link MenuItem} mixed in with {@link Link}
+ * {@link MenuItem} misturado com {@link Link}
  */
 function LinkItem({ children, to, onClick }: ItemProps) {
     return (
@@ -79,16 +79,16 @@ interface ButtonWHTProps {
 }
 
 /**
- *  Button that turns into {@link Button} with an
- * icon for large screens and just an {@link
- * IconButton} for small ones.
+ *  Botão que vira um {@link Button} com um
+ * ícone para telas grandes, e só um {@link
+ * IconButton} em telas pequenas.
  */
 function ButtonWithHideableText({ children, id, icon, onClick }: ButtonWHTProps) {
     const isLarge = useMediaQuery((theme: Theme) => (
         theme.breakpoints.up('sm')
     ))
 
-    // computer / large screen
+    // desktop / tela grande
     if (isLarge) {
         return (
             <Button
@@ -103,7 +103,7 @@ function ButtonWithHideableText({ children, id, icon, onClick }: ButtonWHTProps)
                 { children }
             </Button>
         )
-    // phone / small screen
+    // fone / tela pequena
     } else {
         return (
             <IconButton

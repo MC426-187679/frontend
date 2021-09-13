@@ -9,9 +9,10 @@ import NavBar from './NavBar'
 import SearchBar from './SearchBar'
 
 /**
- * Header Bar above page content: split
- *  in 3: brand name, search bar and
- *  navigation links
+ * Barra de Cabeçalho em 3 partes:
+ *  - logotipo
+ *  - barra de busca
+ *  - links de navegação
  */
 export default function HeaderBar() {
     const isLarge = useMediaQuery((theme: Theme) => (
@@ -23,19 +24,19 @@ export default function HeaderBar() {
             <AppBar position="static">
                 <Toolbar>
 
-                    {/* Brand */}
+                    {/* Logotipo */}
                     {isLarge && (
                         <Box className="header-box-left">
                             <BrandLink />
                         </Box>
                     )}
 
-                    {/* Search */}
+                    {/* Busca */}
                     <Box className="header-box-center">
                         <SearchBar />
                     </Box>
 
-                    {/* Navigation */}
+                    {/* Navegação */}
                     <Box className={isLarge ? 'header-box-right' : ''}>
                         {isLarge && (
                             <NavBar />
@@ -49,7 +50,10 @@ export default function HeaderBar() {
     )
 }
 
-/** Brand name with link to home page. */
+/**
+ * Logotipo em texto com um link
+ *  para a página principal.
+ */
 function BrandLink() {
     return (
         <Link underline="none" color="inherit" component={RouterLink} to="/">
