@@ -4,7 +4,7 @@ import { Route, Switch } from 'react-router-dom'
 import HeaderBar from './header/HeaderBar'
 import Home, { HOME_PATH } from './Home'
 import Search, { SEARCH_PATH } from './search/Search'
-import Disciplina, { DISCIPLINAS_PATH } from './disciplinas/Disciplina'
+import Disciplinas, { DISCIPLINAS_PATH } from './disciplinas/Disciplinas'
 
 /**
  * Componente Principal: cuida do cabeçalho
@@ -26,7 +26,7 @@ export default function App() {
                 </Route>
                 {/* Páginas de cada Disciplina */}
                 <Route path={DISCIPLINAS_PATH}>
-                    <Disciplina />
+                    <Disciplinas />
                 </Route>
             </Switch>
         </>
