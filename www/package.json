@@ -1,0 +1,17 @@
+{
+    "name": "server-mock",
+    "version": "1.0.0",
+    "description": "Mock for Backend serving",
+    "scripts": {
+        "download": "sh webscraping.sh",
+        "build": "npx tsc",
+        "serve": "npm run build && node dist/index.js"
+    },
+    "dependencies": {
+        "@types/express": "latest",
+        "@types/node": "latest",
+        "express": "latest",
+        "fuse.js": "latest",
+        "typescript": "latest"
+    }
+}
