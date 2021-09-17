@@ -1,12 +1,11 @@
 import React from 'react'
 
-import { QUERY_PATH, useSearchQuery } from './params'
 import './Search.scss'
-// reexporta pro App principal
-export { QUERY_PATH as SEARCH_PATH }
+import { withPath } from '../routes'
+import { QUERY_PATH, useSearchQuery } from './params'
 
 /** Página de Busca. */
-export default function Search() {
+const Search = withPath(QUERY_PATH, () => {
     const query = useSearchQuery()
 
     if (query) {
@@ -22,4 +21,5 @@ export default function Search() {
             </div>
         )
     }
-}
+})
+export default Search

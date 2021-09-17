@@ -10,17 +10,16 @@ import {
     Typography,
 } from '@mui/material'
 
+import { withPath } from '../routes'
 import { Disciplina, GrupoDeRequisitos } from './disciplinas'
 import { DISCIPLINAS_PATH, disciplinaURL, useDisciplina } from './params'
-// reexporta pro App principal
-export { DISCIPLINAS_PATH }
 
 /**
  * Página das Disciplinas: mostra dados
  *  da disciplina atual (recuperada da URL)
  *  ou uma mensagem de erro
  */
-export default function Disciplinas() {
+const Disciplinas = withPath(DISCIPLINAS_PATH, () => {
     const data = useDisciplina()
 
     switch (data?.kind) {
@@ -31,7 +30,8 @@ export default function Disciplinas() {
         default:
             return <CircularProgress />
     }
-}
+})
+export default Disciplinas
 
 interface DisciplinaCardProps {
     disciplina: Disciplina

@@ -1,12 +1,13 @@
 import React from 'react'
 
 import './Home.scss'
+import { withPath } from './routes'
 
 /** URL para a página principal. */
 export const HOME_PATH = '/'
 
 /** Página Principal. */
-export default function Home() {
+const Home = withPath(HOME_PATH, () => {
     return (
         <header className="App-Home">
             <p>
@@ -21,4 +22,5 @@ export default function Home() {
             </a>
         </header>
     )
-}
+})
+export default Home

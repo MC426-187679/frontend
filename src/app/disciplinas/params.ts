@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
+import { Params } from '../routes'
 import { Disciplina, parseDisciplina } from './disciplinas'
 
-/** Parâmetro na URL da Página de Cursos. */
-const DISCIPLINAS_PARAM = 'code'
 /** Diretório na URL da Página de Cursos. */
 const DISCIPLINAS_DIR = 'disciplina'
 /** Caminho completo pra Página de Cursos. */
-export const DISCIPLINAS_PATH = `/${DISCIPLINAS_DIR}/:${DISCIPLINAS_PARAM}` as const
+export const DISCIPLINAS_PATH = `/${DISCIPLINAS_DIR}/:code` as const
 
 /**
  *  URL da página da disciplina com o código dado.
@@ -54,7 +53,7 @@ async function loadData(code: string): Promise<Data> {
 }
 
 /** Parâmetro na URL para uso com 'react-router-dom'. */
-type CourseParam = Record<typeof DISCIPLINAS_PARAM, string>
+export type CourseParam = Params<typeof DISCIPLINAS_PATH>
 
 /**
  *  Hook que recupera o código da disciplina
