@@ -42,10 +42,7 @@
         "react/jsx-one-expression-per-line": "off",
         "no-else-return": "off",
         // dependências e módulos
-        "import/extensions": ["error", "always", {
-            "js": "never", "jsx": "never",
-            "ts": "never", "tsx": "never"
-        }],
+        "import/extensions": "off",
         "import/no-extraneous-dependencies": ["error", {
             "devDependencies": ["**/*.test.ts", "**/*.test.tsx"]
         }],

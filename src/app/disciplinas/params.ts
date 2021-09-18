@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Params } from '../routes'
+import { Params } from 'modules/routes'
 import { Disciplina, parseDisciplina } from './disciplinas'
 
 /** Diretório na URL da Página de Cursos. */

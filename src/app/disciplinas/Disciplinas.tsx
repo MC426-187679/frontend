@@ -10,7 +10,8 @@ import {
     Typography,
 } from '@mui/material'
 
-import { withPath } from '../routes'
+import { withPath } from 'modules/routes'
+import AppPage from 'components/AppPage'
 import { Disciplina, GrupoDeRequisitos } from './disciplinas'
 import { DISCIPLINAS_PATH, disciplinaURL, useDisciplina } from './params'
 
@@ -24,11 +25,15 @@ const Disciplinas = withPath(DISCIPLINAS_PATH, () => {
 
     switch (data?.kind) {
         case 'course':
-            return <DisciplinaCard disciplina={data.disc} />
+            return (
+                <AppPage>
+                    <DisciplinaCard disciplina={data.disc} />
+                </AppPage>
+            )
         case 'error':
-            return <>{ `${data.error}` }</>
+            return <AppPage>{ `${data.error}` }</AppPage>
         default:
-            return <CircularProgress />
+            return <AppPage><CircularProgress /></AppPage>
     }
 })
 export default Disciplinas

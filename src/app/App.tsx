@@ -1,6 +1,5 @@
 import React from 'react'
 import { Switch, Route } from 'react-router-dom'
-import { Container } from '@mui/material'
 
 import HeaderBar from './header/HeaderBar'
 import Home from './Home'
@@ -19,40 +18,17 @@ export default function App() {
             <Switch>
                 {/* Página Principal */}
                 <Route path={Home.path} exact>
-                    <AppPage>
-                        <Home />
-                    </AppPage>
+                    <Home />
                 </Route>
                 {/* Página de Busca */}
                 <Route path={Search.path} exact>
-                    <AppPage>
-                        <Search />
-                    </AppPage>
+                    <Search />
                 </Route>
                 {/* Páginas de cada Disciplina */}
                 <Route path={Disciplinas.path} exact>
-                    <AppPage>
-                        <Disciplinas />
-                    </AppPage>
+                    <Disciplinas />
                 </Route>
             </Switch>
         </>
-    )
-}
-
-interface AppPageProps {
-    children: JSX.Element
-}
-
-/**
- *  Desenha uma página do App dentro de
- * um {@link Container} que centraliza o
- * conteúdo horizontalmente.
- */
-function AppPage({ children }: AppPageProps) {
-    return (
-        <Container maxWidth="sm">
-            { children }
-        </Container>
     )
 }

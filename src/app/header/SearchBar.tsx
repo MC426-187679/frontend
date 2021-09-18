@@ -5,7 +5,7 @@ import { alpha, styled, useTheme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 
 import './SearchBar.scss'
-import { QUERY_PATH, QUERY_PARAM, extractSearchParam } from '../search/params'
+import { QUERY_PATH, QUERY_PARAM, extractSearchParam } from 'app/search/params'
 
 // fonte: https://next.material-ui.com/components/app-bar
 const Search = styled('form')(({ theme }) => ({

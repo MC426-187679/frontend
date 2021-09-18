@@ -9,6 +9,7 @@
         ],
         "noEmit": true,
         "skipLibCheck": false,
+        "baseUrl": "./src",
         // modules
         "module": "esnext",
         "moduleResolution": "node",
