@@ -1,6 +1,8 @@
 import React from 'react'
 import { Container } from '@mui/material'
 
+import './AppPage.scss'
+
 interface AppPageProps {
     children: React.ReactNode
 }
@@ -12,7 +14,7 @@ interface AppPageProps {
  */
 export default function AppPage({ children }: AppPageProps) {
     return (
-        <Container maxWidth="sm">
+        <Container maxWidth="lg" className="AppPage">
             { children }
         </Container>
     )

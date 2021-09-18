@@ -6,13 +6,13 @@ import {
     CardContent,
     CircularProgress,
     Button,
-    Link,
     Typography,
 } from '@mui/material'
 
+import './Disciplinas.scss'
 import { withPath } from 'modules/routes'
 import AppPage from 'components/AppPage'
-import { Disciplina, GrupoDeRequisitos } from './disciplinas'
+import { Disciplina, GrupoDeRequisitos, Requisito } from './disciplinas'
 import { DISCIPLINAS_PATH, disciplinaURL, useDisciplina } from './params'
 
 /**
@@ -48,17 +48,15 @@ interface DisciplinaCardProps {
  */
 function DisciplinaCard({ disciplina }: DisciplinaCardProps) {
     return (
-        <Card sx={{ minWidth: 275 }}>
+        <Card className="DisciplinaCard" color="inherit" raised>
             <CardContent>
-                <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+                <Typography className="Code" color="text.secondary" gutterBottom>
                     { disciplina.code }
                 </Typography>
                 <Typography variant="h5" component="div">
                     { disciplina.name }
                 </Typography>
-                <Typography variant="body2">
-                    <Requisitos groups={disciplina.req} />
-                </Typography>
+                <Requisitos groups={disciplina.req} />
             </CardContent>
             <CardActions>
                 <Button size="small">Learn More</Button>
@@ -77,25 +75,50 @@ interface RequisitosProps{
  */
 function Requisitos({ groups }: RequisitosProps) {
     if (groups.length === 0) {
-        return <>Sem pré-requisitos.</>
+        return (
+            <Typography variant="body2" className="Requisitos">
+                Sem pré-requisitos.
+            </Typography>
+        )
     }
+    const header = (
+        <Typography variant="body2" className="Requisitos">
+            Pré-requisitos:
+        </Typography>
+    )
 
     const lists = groups.map((group, idx) => {
-        const items = group.map(({ code, partial, special }) => {
-            // requisitos especiais: AA200, AA480, ...
-            if (special) {
-                return <div key={code}>{code}</div>
-            // requisitos gerais podem ser linkados
-            } else {
-                return (
-                    <Link component={RouterLink} to={disciplinaURL(code)} key={code}>
-                        { partial ? '(*)' : '' } { code }
-                    </Link>
-                )
-            }
-        })
+        const items = group.map(req => (
+            <RequisitoBtn req={req} key={req.code} />
+        ))
 
         return <p key={idx.toString(16)}>{ items }</p>
     })
-    return <>{ lists }</>
+    return <>{ header }{ lists }</>
+}
+
+interface RequisitoBtnProps {
+    req: Requisito
+}
+
+function RequisitoBtn({ req: { code, partial, special } }: RequisitoBtnProps) {
+    const classes = partial ? 'RequisitoBtn Partial' : 'RequisitoBtn'
+
+    const props: { component?: typeof RouterLink, to?: string } = {}
+    if (!special) {
+        props.component = RouterLink
+        props.to = disciplinaURL(code)
+    }
+    return (
+        <Button
+            color="primary"
+            variant="contained"
+            className={classes}
+            disabled={special}
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            {...props}
+        >
+            { code }
+        </Button>
+    )
 }
