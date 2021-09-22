@@ -14,7 +14,7 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaFeatures": { "jsx": true },
-        "ecmaVersion": "latest",
+        "ecmaVersion": 12,
         "project": "./tsconfig.json",
         "sourceType": "module"
     },
@@ -33,7 +33,7 @@
         "react/jsx-indent-props": ["error", 4],
         // símbolos e pontuações
         "@typescript-eslint/semi": ["error", "never"],
-        "arrow-parens": ["error", "as-needed"],
+        "arrow-parens": ["error", "always"],
         "arrow-body-style": "off",
         // quebras de linha
         "object-curly-newline": ["error", {
