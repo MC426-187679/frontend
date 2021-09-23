@@ -1,7 +1,7 @@
 import React from 'react'
 
 import './Home.scss'
-import { withPath } from 'modules/routes'
+import { withPath } from 'utils/helpers/routes'
 
 /** URL para a página principal. */
 export const HOME_PATH = '/'

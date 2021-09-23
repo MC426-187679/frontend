@@ -10,7 +10,7 @@ import {
 } from '@mui/material'
 
 import './Disciplinas.scss'
-import { withPath } from 'modules/routes'
+import { withPath } from 'utils/helpers/routes'
 import AppPage from 'components/AppPage'
 import { Disciplina, GrupoDeRequisitos, Requisito } from './disciplinas'
 import { DISCIPLINAS_PATH, disciplinaURL, useDisciplina } from './params'
@@ -88,7 +88,7 @@ function Requisitos({ groups }: RequisitosProps) {
     )
 
     const lists = groups.map((group, idx) => {
-        const items = group.map(req => (
+        const items = group.map((req) => (
             <RequisitoBtn req={req} key={req.code} />
         ))
 

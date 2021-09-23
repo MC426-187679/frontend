@@ -94,11 +94,11 @@ export function parseDisciplina(course: Disciplina | any) {
     }
     // requisitos são tidos como um lista vazia
     // se não existir
-    const req = asArray(course.req).map(group => (
+    const req = asArray(course.req).map((group) => (
         asArray(group).map(parseRequisito)
     ))
     const reqBy = asArray(course.reqBy)
-        .filter(item => typeof item === 'string')
+        .filter((item) => typeof item === 'string')
 
     return { code, name, req, reqBy } as Disciplina
 }

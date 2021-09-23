@@ -1,8 +1,8 @@
 import React from 'react'
 
 import './Search.scss'
-import { withPath } from 'modules/routes'
-import { QUERY_PATH, useSearchQuery } from './params'
+import { withPath } from 'utils/helpers/routes'
+import { QUERY_PATH, useSearchQuery } from 'utils/helpers/search'
 
 /** Página de Busca. */
 const Search = withPath(QUERY_PATH, () => {

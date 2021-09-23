@@ -1,10 +1,11 @@
 import React from 'react'
 import { Switch, Route } from 'react-router-dom'
 
-import HeaderBar from './header/HeaderBar'
-import Home from './Home'
-import Search from './search/Search'
-import Disciplinas from './disciplinas/Disciplinas'
+import HeaderBar from 'components/header/HeaderBar'
+
+import Home from 'pages/Home'
+import Search from 'pages/Search/Search'
+import Disciplinas from 'pages/Disciplinas/Disciplinas'
 
 /**
  * Componente Principal: cuida do cabeçalho

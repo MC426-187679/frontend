@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { Params } from 'modules/routes'
+import { Params } from 'utils/helpers/routes'
 import { Disciplina, parseDisciplina } from './disciplinas'
 
 /** Diretório na URL da Página de Cursos. */
@@ -14,8 +14,8 @@ export const DISCIPLINAS_PATH = `/${DISCIPLINAS_DIR}/:code` as const
  *
  * Exemplo: `courseURL('MC102') === '/disciplina/MC102'`.
  */
-export function disciplinaURL(code: string) {
-    return `/${DISCIPLINAS_DIR}/${code}`
+export function disciplinaURL<Code extends string>(code: Code) {
+    return `/${DISCIPLINAS_DIR}/${code}` as const
 }
 
 /**
