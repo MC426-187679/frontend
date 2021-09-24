@@ -11,8 +11,9 @@ import {
 
 import './Disciplinas.scss'
 import AppPage from 'components/layout/AppPage'
-import { Disciplina, GrupoDeRequisitos, Requisito } from './disciplinas'
-import { PATH, CourseParam, disciplinaURL, useDisciplina } from './params'
+import ApiLoader from 'components/loader/ApiLoader'
+import { Disciplina, GrupoDeRequisitos, Requisito, parseDisciplina } from './disciplinas'
+import { PATH, DIRECTORY, CourseParam, disciplinaURL } from './params'
 
 // Reexporta para o `Router`
 export { PATH as DISCIPLINAS_PATH }
@@ -26,21 +27,20 @@ interface DisciplinasProps {
  *  da disciplina atual (recuperada da URL)
  *  ou uma mensagem de erro
  */
-export default function Disciplinas({ match: { params } }: DisciplinasProps) {
-    return <AppPage><DisciplinasPage code={params.code} /></AppPage>
-}
-
-function DisciplinasPage({ code }: { code: string }) {
-    const data = useDisciplina(code)
-
-    switch (data.kind) {
-        case 'course':
-            return <DisciplinaCard disciplina={data.disc} />
-        case 'error':
-            return <>{ `${data.error}` }</>
-        default:
-            return <CircularProgress />
-    }
+export default function Disciplinas({ match }: DisciplinasProps) {
+    return (
+        <AppPage>
+            <ApiLoader
+                dir={DIRECTORY}
+                item={match.params.code}
+                parser={parseDisciplina}
+                redirect404
+                render={(data) => <DisciplinaCard disciplina={data} />}
+                onLoading={() => <CircularProgress />}
+                onError={(error) => <>{ `${error}` }</>}
+            />
+        </AppPage>
+    )
 }
 
 interface DisciplinaCardProps {
