@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Redirect } from 'react-router-dom'
 
-import { Parser } from 'utils/helpers/parsing'
+import type { Parser } from 'utils/helpers/parsing'
+import { InvalidResponseError, loadJson } from 'utils/helpers/json'
 
 /** Opções do carregador de dados da API. */
 export interface ApiLoaderProps<T> {
@@ -51,7 +52,7 @@ export default function ApiLoader<T>(props: ApiLoaderProps<T>) {
             setElement(onLoading())
         }
         // dai faz a requisição
-        loadJson(`/api/${dir}/${item}`, parser).then(
+        loadJson(dir, item, parser).then(
             // se tudo for OK, renderiza o componente
             (data) => {
                 setElement(render(data))
@@ -85,35 +86,4 @@ export default function ApiLoader<T>(props: ApiLoaderProps<T>) {
 function is404(item: any) {
     return (item instanceof InvalidResponseError || item instanceof Response)
         && (item.status === 404)
-}
-
-/** Resposta de servidor com status diferente de `200 OK`. */
-export class InvalidResponseError extends Error {
-    /** Conteúdo da resposta. */
-    readonly response: Response
-
-    constructor(response: Response) {
-        super(`Resposta inesperada do servidor: ${response.status}`)
-
-        this.response = response
-    }
-
-    /**
-     * Código de statis da resposta.
-     *
-     * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-     */
-    get status() {
-        return this.response.status
-    }
-}
-
-/** Faz requisição na URL, parseia pra JSON e depois para `T` */
-async function loadJson<T>(url: string, parse: Parser<T | Promise<T>>) {
-    const response = await fetch(url)
-    // apenas 200 é OK
-    if (response.status !== 200) {
-        throw new InvalidResponseError(response)
-    }
-    return parse(await response.json())
 }

@@ -2,9 +2,9 @@ import React from 'react'
 import type { Location } from 'history'
 
 import './Search.scss'
-import { PATH, extractSearchParam } from 'utils/helpers/search'
 import AppPage from 'components/layout/AppPage'
 
+import { PATH, extractSearchParam } from './params'
 // Reexporta para o `Router`
 export { PATH as SEARCH_PATH }
 

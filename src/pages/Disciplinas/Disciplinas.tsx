@@ -12,9 +12,9 @@ import {
 import './Disciplinas.scss'
 import AppPage from 'components/layout/AppPage'
 import ApiLoader from 'components/loader/ApiLoader'
-import { Disciplina, GrupoDeRequisitos, Requisito, parseDisciplina } from './disciplinas'
-import { PATH, DIRECTORY, CourseParam, disciplinaURL } from './params'
+import { Disciplina, GrupoDeRequisitos, Requisito, parseDisciplina } from 'utils/types/disciplinas'
 
+import { PATH, DIRECTORY, CourseParam, disciplinaURL } from './params'
 // Reexporta para o `Router`
 export { PATH as DISCIPLINAS_PATH }
 

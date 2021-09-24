@@ -14,7 +14,7 @@ interface Query {
 /**
  * Extrai parâmtetros de busca da URL.
  */
-export function extractSearchParam<S>({ pathname, search }: Location<S>): Query {
+export function extractSearchParam({ pathname, search }: Location): Query {
     if (pathname !== PATH) {
         return {}
     }
@@ -27,7 +27,7 @@ export function extractSearchParam<S>({ pathname, search }: Location<S>): Query 
 /**
  * Constrói URL com parâmetros de busca.
  */
-export function buildSearchURL({ q }: Query) {
+export function searchURL({ q }: Query) {
     if (q) {
         return `${PATH}?${QUERY_PARAM}=${q}` as const
     } else {
