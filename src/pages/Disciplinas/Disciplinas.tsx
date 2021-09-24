@@ -10,10 +10,11 @@ import {
 } from '@mui/material'
 
 import './Disciplinas.scss'
-import AppPage from 'components/AppPage'
+import AppPage from 'components/layout/AppPage'
 import { Disciplina, GrupoDeRequisitos, Requisito } from './disciplinas'
 import { PATH, CourseParam, disciplinaURL, useDisciplina } from './params'
 
+// Reexporta para o `Router`
 export { PATH as DISCIPLINAS_PATH }
 
 interface DisciplinasProps {

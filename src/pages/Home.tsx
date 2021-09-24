@@ -1,7 +1,7 @@
 import React from 'react'
 
 import './Home.scss'
-import AppPage from 'components/AppPage'
+import AppPage from 'components/layout/AppPage'
 
 /** Página Principal. */
 export default function Home() {

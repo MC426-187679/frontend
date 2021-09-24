@@ -3,8 +3,9 @@ import type { Location } from 'history'
 
 import './Search.scss'
 import { PATH, extractSearchParam } from 'utils/helpers/search'
-import AppPage from 'components/AppPage'
+import AppPage from 'components/layout/AppPage'
 
+// Reexporta para o `Router`
 export { PATH as SEARCH_PATH }
 
 interface SearchProps {
