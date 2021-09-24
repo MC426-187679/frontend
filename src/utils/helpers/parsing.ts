@@ -58,7 +58,9 @@ function extract(options?: ParserOptions): Required<ParserOptions> {
  * @param options Opções adicionais de parsing.
  * @returns Vetor com os elementos parseados.
  *
- * @throws {ParsingError} Se `options.required = true` e `item` não for um array.
+ * @throws {@link ParsingError} - Se `options.required = true`
+ * e `item` não for um array.
+ *
  * @throws Se `options.required = true` e `parser` dá algum erro.
  */
 export function parseArray<T>(item: any, parser: Parser<T>, options?: ParserOptions) {
@@ -87,7 +89,8 @@ export function parseArray<T>(item: any, parser: Parser<T>, options?: ParserOpti
  * @param options Opções adicionais de parsing.
  * @returns `item` como string.
  *
- * @throws {ParsingError} Se `options.required = true` e `item` não for string.
+ * @throws {@link ParsingError} Se `options.required = true`
+ * e `item` não for string.
  */
 export function parseString(item: any, options?: ParserOptions) {
     const { required } = extract(options)

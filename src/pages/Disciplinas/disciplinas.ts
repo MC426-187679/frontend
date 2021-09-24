@@ -68,9 +68,10 @@ function parseRequisito(item: any) {
  * Tenta parsear um objeto como uma disciplina.
  *
  * @param course objeto qualquer
- * @returns uma disciplina se o objeto tem pelo
- *  menos os campos `code` e `name`, ou
- * `undefined` caso contrário
+ * @returns dados de uma disciplina
+ *
+ * @throws {@link ParsingError} se o objeto não
+ *  tem os campos `code` e `name`
  */
 export function parseDisciplina(course: any) {
     // precisa de pelo menos código e nome
