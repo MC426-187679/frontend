@@ -10,6 +10,10 @@ Instalação para desenvolvimento deve ser feito com
 npm install --include=dev
 ```
 
+## Estrutura do Diretório
+
+Seguindo esse [guia](https://www.taniarascia.com/react-architecture-directory-structure/).
+
 ## Execução
 
 ### Modo de Desenvolvimento

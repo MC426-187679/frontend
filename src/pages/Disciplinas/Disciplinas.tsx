@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, match as Match } from 'react-router-dom'
 import {
     Card,
     CardActions,
@@ -10,33 +10,38 @@ import {
 } from '@mui/material'
 
 import './Disciplinas.scss'
-import { withPath } from 'modules/routes'
-import AppPage from 'components/AppPage'
-import { Disciplina, GrupoDeRequisitos, Requisito } from './disciplinas'
-import { DISCIPLINAS_PATH, disciplinaURL, useDisciplina } from './params'
+import AppPage from 'components/layout/AppPage'
+import ApiLoader from 'components/loader/ApiLoader'
+import { Disciplina, GrupoDeRequisitos, Requisito, parseDisciplina } from 'utils/types/disciplinas'
+
+import { PATH, DIRECTORY, CourseParam, disciplinaURL } from './params'
+// Reexporta para o `Router`
+export { PATH as DISCIPLINAS_PATH }
+
+interface DisciplinasProps {
+    match: Match<CourseParam>
+}
 
 /**
  * Página das Disciplinas: mostra dados
  *  da disciplina atual (recuperada da URL)
  *  ou uma mensagem de erro
  */
-const Disciplinas = withPath(DISCIPLINAS_PATH, () => {
-    const data = useDisciplina()
-
-    switch (data?.kind) {
-        case 'course':
-            return (
-                <AppPage>
-                    <DisciplinaCard disciplina={data.disc} />
-                </AppPage>
-            )
-        case 'error':
-            return <AppPage>{ `${data.error}` }</AppPage>
-        default:
-            return <AppPage><CircularProgress /></AppPage>
-    }
-})
-export default Disciplinas
+export default function Disciplinas({ match }: DisciplinasProps) {
+    return (
+        <AppPage>
+            <ApiLoader
+                dir={DIRECTORY}
+                item={match.params.code}
+                parser={parseDisciplina}
+                redirect404
+                render={(data) => <DisciplinaCard disciplina={data} />}
+                onLoading={() => <CircularProgress />}
+                onError={(error) => <>{ `${error}` }</>}
+            />
+        </AppPage>
+    )
+}
 
 interface DisciplinaCardProps {
     disciplina: Disciplina
@@ -88,7 +93,7 @@ function Requisitos({ groups }: RequisitosProps) {
     )
 
     const lists = groups.map((group, idx) => {
-        const items = group.map(req => (
+        const items = group.map((req) => (
             <RequisitoBtn req={req} key={req.code} />
         ))
 
