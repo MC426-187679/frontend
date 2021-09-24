@@ -2,10 +2,10 @@ import React from 'react'
 import type { Location } from 'history'
 
 import './Search.scss'
-import { QUERY_PATH, extractSearchParam } from 'utils/helpers/search'
+import { PATH, extractSearchParam } from 'utils/helpers/search'
 import AppPage from 'components/AppPage'
 
-export { QUERY_PATH as SEARCH_PATH }
+export { PATH as SEARCH_PATH }
 
 interface SearchProps {
     location: Location
@@ -13,7 +13,7 @@ interface SearchProps {
 
 /** Página de Busca. */
 export default function Search({ location }: SearchProps) {
-    const query = extractSearchParam(location)
+    const { q: query } = extractSearchParam(location)
 
     return (
         <AppPage>

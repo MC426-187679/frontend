@@ -5,7 +5,7 @@ import { alpha, styled, useTheme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 
 import './SearchBar.scss'
-import { QUERY_PATH, QUERY_PARAM, extractSearchParam } from 'utils/helpers/search'
+import { PATH, extractSearchParam, buildSearchURL } from 'utils/helpers/search'
 
 // fonte: https://next.material-ui.com/components/app-bar
 const Search = styled('form')(({ theme }) => ({
@@ -43,6 +43,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }))
 
+/** Nome do parâmetro na caixa de busca. */
+const INPUT_NAME = 'texto'
+
 /**
  * Barra de Busca Principal: redireciona buscas
  *  para a página de busca e tem um sistema de
@@ -51,23 +54,23 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function SearchBar() {
     // caminho e texto de busca recuperados da URL
     const history = useHistory()
-    const currentQuery = extractSearchParam(history.location)
+    const { q: currentQuery } = extractSearchParam(history.location)
 
     // muda a rota (URL) mas não redireciona de verdade
     const redirectToSearch = (event: FormEvent<HTMLFormElement>) => {
-        const value = event.currentTarget[QUERY_PARAM]?.value
-
-        if (typeof value === 'string' && value !== '') {
-            history.push(`${QUERY_PATH}?${QUERY_PARAM}=${value}`)
-        } else {
-            history.push(QUERY_PATH)
-        }
         event.preventDefault()
+
+        const value = event.currentTarget[INPUT_NAME]?.value
+        if (typeof value === 'string') {
+            history.push(buildSearchURL({ q: value }))
+        } else {
+            history.push(PATH)
+        }
     }
 
     return (
         <Search
-            action={QUERY_PATH}
+            action={PATH}
             onSubmit={redirectToSearch}
             autoComplete="off"
             noValidate
@@ -77,7 +80,7 @@ export default function SearchBar() {
                 placeholder="Pesquisar..."
                 inputProps={{
                     'aria-label': 'pesquisar',
-                    name: QUERY_PARAM,
+                    name: INPUT_NAME,
                     defaultValue: currentQuery,
                 }}
             />

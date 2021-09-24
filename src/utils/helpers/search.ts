@@ -1,23 +1,36 @@
-import { useLocation } from 'react-router-dom'
 import type { Location } from 'history'
 
 /** Cominho para a Página de Busca. */
-export const QUERY_PATH = '/busca'
+export const PATH = '/busca'
 /** Parâmetro de busca na URL. */
-export const QUERY_PARAM = 'q'
+const QUERY_PARAM = 'q'
+
+/** Dados passados na URL para um consulta. */
+interface Query {
+    /** Texto da consulta. */
+    [QUERY_PARAM]?: string | undefined
+}
 
 /**
- * Extrai string de busca do valor da URL.
- *
- *  Returna `undefined` se a URL não bate com
- * a página de busca ou se nenhuma string de
- * busca é dada.
+ * Extrai parâmtetros de busca da URL.
  */
-export function extractSearchParam<S>({ pathname, search }: Location<S>) {
-    if (pathname !== QUERY_PATH) {
-        return undefined
+export function extractSearchParam<S>({ pathname, search }: Location<S>): Query {
+    if (pathname !== PATH) {
+        return {}
     }
-
     const params = new URLSearchParams(search)
-    return params.get(QUERY_PARAM) ?? undefined
+    return {
+        [QUERY_PARAM]: params.get(QUERY_PARAM) ?? undefined,
+    }
+}
+
+/**
+ * Constrói URL com parâmetros de busca.
+ */
+export function buildSearchURL({ q }: Query) {
+    if (q) {
+        return `${PATH}?${QUERY_PARAM}=${q}` as const
+    } else {
+        return PATH
+    }
 }
