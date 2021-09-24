@@ -9,8 +9,8 @@ import {
     responsiveFontSizes,
 } from '@mui/material/styles'
 
-import App from 'app/App'
-import themeOptions from 'modules/theme'
+import themeOptions from 'utils/theme'
+import App from './App'
 
 const theme = responsiveFontSizes(createTheme(themeOptions))
 

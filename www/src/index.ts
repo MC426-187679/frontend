@@ -26,29 +26,44 @@ app.post('/api/busca', (req, res) => {
 
 const OPTIONS = {
     simplify: false,
-    wait: false
+    wait: -1_000
 }
 
-function setOption(name: keyof typeof OPTIONS) {
+type OPTIONS = typeof OPTIONS
+
+function setOption<K extends keyof OPTIONS>(name: K, update: (value: OPTIONS[K], input?: string) => OPTIONS[K]) {
+
     app.get(`/${name}`, (_, res) => {
-        res.send(OPTIONS[name])
+        res.send(`current: '${OPTIONS[name]}'`)
     })
-    app.post(`/${name}`, (_, res) => {
-        const old = OPTIONS[name]
-        OPTIONS[name] = !old
 
-        res.send(`'${old}' to '${OPTIONS[name]}'`)
+    app.post([`/${name}`, `/${name}/:value`], (req, res) => {
+        const oldValue = OPTIONS[name]
+        const newValue = update(oldValue, req.params.value)
+        OPTIONS[name] = newValue
+
+        res.send(`'${oldValue}' to '${newValue}'`)
     })
 }
 
-setOption('simplify')
-setOption('wait')
+setOption('simplify', (value, input) => {
+    if (input) {
+        return input !== 'false'
+    } else {
+        return !value
+    }
+})
+setOption('wait', (value, input) => {
+    const inputTime = Number(input)
+    if (Number.isFinite(inputTime)) {
+        return inputTime
+    } else {
+        return -value
+    }
+})
 
 app.get('/api/disciplina/:code', async (req, res) => {
-    if (OPTIONS.wait) {
-        const pause = promisify((ms: number, cb: () => void) => setTimeout(cb, ms))
-        await pause(1_000)
-    }
+    await new Promise(resolve => setTimeout(resolve, OPTIONS.wait))
 
     const code = req.params.code
     const result = courses.find(code)
