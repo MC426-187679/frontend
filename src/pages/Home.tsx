@@ -1,26 +1,24 @@
 import React from 'react'
 
 import './Home.scss'
-import { withPath } from 'utils/helpers/routes'
-
-/** URL para a página principal. */
-export const HOME_PATH = '/'
+import AppPage from 'components/AppPage'
 
 /** Página Principal. */
-const Home = withPath(HOME_PATH, () => {
+export default function Home() {
     return (
-        <header className="App-Home">
-            <p>
-                Edit <code>src/app/App.tsx</code> and save to reload.
-            </p>
-            <a
-                href="https://reactjs.org"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Learn React
-            </a>
-        </header>
+        <AppPage>
+            <header className="App-Home">
+                <p>
+                    Edit <code>src/app/App.tsx</code> and save to reload.
+                </p>
+                <a
+                    href="https://reactjs.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Learn React
+                </a>
+            </header>
+        </AppPage>
     )
-})
-export default Home
+}

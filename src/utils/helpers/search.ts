@@ -21,14 +21,3 @@ export function extractSearchParam<S>({ pathname, search }: Location<S>) {
     const params = new URLSearchParams(search)
     return params.get(QUERY_PARAM) ?? undefined
 }
-
-/**
- *  Hook que extrai a string de busca da
- * URL atual (apenas na página de busca).
- *
- * {@see extractSearchParam}
- */
-export function useSearchQuery() {
-    const location = useLocation()
-    return extractSearchParam(location)
-}

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link as RouterLink } from 'react-router-dom'
+import { Link as RouterLink, match as Match } from 'react-router-dom'
 import {
     Card,
     CardActions,
@@ -10,33 +10,37 @@ import {
 } from '@mui/material'
 
 import './Disciplinas.scss'
-import { withPath } from 'utils/helpers/routes'
 import AppPage from 'components/AppPage'
 import { Disciplina, GrupoDeRequisitos, Requisito } from './disciplinas'
-import { DISCIPLINAS_PATH, disciplinaURL, useDisciplina } from './params'
+import { PATH, CourseParam, disciplinaURL, useDisciplina } from './params'
+
+export { PATH as DISCIPLINAS_PATH }
+
+interface DisciplinasProps {
+    match: Match<CourseParam>
+}
 
 /**
  * Página das Disciplinas: mostra dados
  *  da disciplina atual (recuperada da URL)
  *  ou uma mensagem de erro
  */
-const Disciplinas = withPath(DISCIPLINAS_PATH, () => {
-    const data = useDisciplina()
+export default function Disciplinas({ match: { params } }: DisciplinasProps) {
+    return <AppPage><DisciplinasPage code={params.code} /></AppPage>
+}
 
-    switch (data?.kind) {
+function DisciplinasPage({ code }: { code: string }) {
+    const data = useDisciplina(code)
+
+    switch (data.kind) {
         case 'course':
-            return (
-                <AppPage>
-                    <DisciplinaCard disciplina={data.disc} />
-                </AppPage>
-            )
+            return <DisciplinaCard disciplina={data.disc} />
         case 'error':
-            return <AppPage>{ `${data.error}` }</AppPage>
+            return <>{ `${data.error}` }</>
         default:
-            return <AppPage><CircularProgress /></AppPage>
+            return <CircularProgress />
     }
-})
-export default Disciplinas
+}
 
 interface DisciplinaCardProps {
     disciplina: Disciplina

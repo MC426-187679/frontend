@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import type { ExtractRouteParams } from 'react-router'
 
-import { Params } from 'utils/helpers/routes'
 import { Disciplina, parseDisciplina } from './disciplinas'
 
 /** Diretório na URL da Página de Cursos. */
-const DISCIPLINAS_DIR = 'disciplina'
+const DIRECTORY = 'disciplina'
 /** Caminho completo pra Página de Cursos. */
-export const DISCIPLINAS_PATH = `/${DISCIPLINAS_DIR}/:code` as const
+export const PATH = `/${DIRECTORY}/:code` as const
+
+/** Parâmetro na URL para uso com 'react-router-dom'. */
+export type CourseParam = ExtractRouteParams<typeof PATH, string>
 
 /**
  *  URL da página da disciplina com o código dado.
@@ -15,7 +17,7 @@ export const DISCIPLINAS_PATH = `/${DISCIPLINAS_DIR}/:code` as const
  * Exemplo: `courseURL('MC102') === '/disciplina/MC102'`.
  */
 export function disciplinaURL<Code extends string>(code: Code) {
-    return `/${DISCIPLINAS_DIR}/${code}` as const
+    return `/${DIRECTORY}/${code}` as const
 }
 
 /**
@@ -28,6 +30,8 @@ type Data = {
 } | {
     kind: 'error'
     error: any
+} | {
+    kind?: 'loading'
 }
 
 /**
@@ -37,7 +41,7 @@ type Data = {
  */
 async function loadData(code: string): Promise<Data> {
     try {
-        const response = await fetch(`/api/${DISCIPLINAS_DIR}/${code}`)
+        const response = await fetch(`/api/${DIRECTORY}/${code}`)
         const disc = parseDisciplina(await response.json())
 
         // acusa erro de parsing
@@ -52,9 +56,6 @@ async function loadData(code: string): Promise<Data> {
     }
 }
 
-/** Parâmetro na URL para uso com 'react-router-dom'. */
-export type CourseParam = Params<typeof DISCIPLINAS_PATH>
-
 /**
  *  Hook que recupera o código da disciplina
  * pela URL, recupera os dados do backend
@@ -64,14 +65,13 @@ export type CourseParam = Params<typeof DISCIPLINAS_PATH>
  * responde, mas depois retorna a resposta,
  * que pode ser a disciplina ou um erro.
  */
-export function useDisciplina() {
-    // recupara parâmetro da URL: /disciplina/:code
-    const { code } = useParams<CourseParam>()
+export function useDisciplina(code: string) {
     // dados da API
-    const [data, setData] = useState<Data>()
+    const [data, setData] = useState<Data>({ })
 
     // carrega da API e atualiza o 'data'
     useEffect(() => {
+        setData({ })
         loadData(code).then(setData)
     }, [code])
 

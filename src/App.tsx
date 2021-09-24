@@ -1,11 +1,12 @@
+/* eslint-disable react/jsx-max-props-per-line, react/jsx-first-prop-new-line */
 import React from 'react'
-import { Switch, Route } from 'react-router-dom'
+import { Route, Switch } from 'react-router-dom'
 
 import HeaderBar from 'components/header/HeaderBar'
 
 import Home from 'pages/Home'
-import Search from 'pages/Search/Search'
-import Disciplinas from 'pages/Disciplinas/Disciplinas'
+import Search, { SEARCH_PATH } from 'pages/Search/Search'
+import Disciplinas, { DISCIPLINAS_PATH } from 'pages/Disciplinas/Disciplinas'
 
 /**
  * Componente Principal: cuida do cabeçalho
@@ -18,17 +19,17 @@ export default function App() {
             <HeaderBar />
             <Switch>
                 {/* Página Principal */}
-                <Route path={Home.path} exact>
+                <Route path="/" exact>
                     <Home />
                 </Route>
                 {/* Página de Busca */}
-                <Route path={Search.path} exact>
-                    <Search />
-                </Route>
+                <Route path={SEARCH_PATH}
+                    render={({ location }) => <Search location={location} />}
+                />
                 {/* Páginas de cada Disciplina */}
-                <Route path={Disciplinas.path} exact>
-                    <Disciplinas />
-                </Route>
+                <Route path={DISCIPLINAS_PATH}
+                    render={({ match }) => <Disciplinas match={match} />}
+                />
             </Switch>
         </>
     )
