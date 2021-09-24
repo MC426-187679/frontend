@@ -43,6 +43,7 @@ function NavLink({ children, to, margin }: NavLinkProps) {
             size="large"
             variant={current ? 'outlined' : 'text'}
             sx={{ width: '12ch', margin }}
+            aria-current="page"
         >
             { children }
         </Button>
