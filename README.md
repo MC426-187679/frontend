@@ -43,7 +43,7 @@ npm run download
 E para executar é (também na pasta `www/`):
 
 ```bash
-npm run serve
+npm run start
 ```
 
 ### Testes

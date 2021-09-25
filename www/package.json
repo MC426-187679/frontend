@@ -5,7 +5,7 @@
     "scripts": {
         "download": "sh webscraping.sh",
         "build": "npx tsc",
-        "serve": "npm run build && node dist/index.js"
+        "start": "npm run build && node dist/index.js"
     },
     "dependencies": {
         "@types/express": "latest",
