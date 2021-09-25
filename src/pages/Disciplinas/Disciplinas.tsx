@@ -1,11 +1,11 @@
 import React from 'react'
 import { Link as RouterLink, match as Match } from 'react-router-dom'
 import {
+    Button,
     Card,
     CardActions,
     CardContent,
-    CircularProgress,
-    Button,
+    Skeleton,
     Typography,
 } from '@mui/material'
 
@@ -36,7 +36,6 @@ export default function Disciplinas({ match }: DisciplinasProps) {
                 parser={parseDisciplina}
                 redirect404
                 render={(data) => <DisciplinaCard disciplina={data} />}
-                onLoading={() => <CircularProgress />}
                 onError={(error) => <>{ `${error}` }</>}
             />
         </AppPage>
@@ -44,7 +43,7 @@ export default function Disciplinas({ match }: DisciplinasProps) {
 }
 
 interface DisciplinaCardProps {
-    disciplina: Disciplina
+    disciplina?: Disciplina | undefined
 }
 
 /**
@@ -56,12 +55,12 @@ function DisciplinaCard({ disciplina }: DisciplinaCardProps) {
         <Card className="DisciplinaCard" color="inherit" raised>
             <CardContent>
                 <Typography className="Code" color="text.secondary" gutterBottom>
-                    { disciplina.code }
+                    { disciplina?.code ?? <Skeleton width="5em" /> }
                 </Typography>
                 <Typography variant="h5" component="div">
-                    { disciplina.name }
+                    { disciplina?.name ?? <Skeleton /> }
                 </Typography>
-                <Requisitos groups={disciplina.req} />
+                <Requisitos groups={disciplina?.req} />
             </CardContent>
             <CardActions>
                 <Button size="small">Learn More</Button>
@@ -71,7 +70,7 @@ function DisciplinaCard({ disciplina }: DisciplinaCardProps) {
 }
 
 interface RequisitosProps{
-    groups: ReadonlyArray<GrupoDeRequisitos>
+    groups?: ReadonlyArray<GrupoDeRequisitos> | undefined
 }
 
 /**
@@ -79,25 +78,30 @@ interface RequisitosProps{
  * um aviso que não há pré-requisitos.
  */
 function Requisitos({ groups }: RequisitosProps) {
-    if (groups.length === 0) {
-        return (
-            <Typography variant="body2" className="Requisitos">
-                Sem pré-requisitos.
-            </Typography>
-        )
+    let headerContent: string | JSX.Element
+    if (groups === undefined) {
+        headerContent = <Skeleton />
+    } else if (groups.length === 0) {
+        headerContent = 'Sem pré-requisitos.'
+    } else {
+        headerContent = 'Pré-requisitos:'
     }
     const header = (
         <Typography variant="body2" className="Requisitos">
-            Pré-requisitos:
+            { headerContent }
         </Typography>
     )
+    if (!groups?.length) {
+        return header
+    }
 
     const lists = groups.map((group, idx) => {
         const items = group.map((req) => (
             <RequisitoBtn req={req} key={req.code} />
         ))
 
-        return <p key={idx.toString(16)}>{ items }</p>
+        const conjunction = (idx > 0) && 'Ou:'
+        return <p key={idx.toString(16)}>{ conjunction }{ items }</p>
     })
     return <>{ header }{ lists }</>
 }

@@ -14,12 +14,14 @@ export interface ApiLoaderProps<T> {
     item: string
     /** Diretório da URL */
     dir: string
-    /** Desenha um componente com o dado já processado. */
-    render: (data: T) => JSX.Element
+    /**
+     * Desenha um componente com ou sem o dado já processado.
+     *
+     * `undefined` representa estado de loading.
+     */
+    render: (data?: T) => JSX.Element
     /** Parser de JSON para o objeto esperado. */
     parser: Parser<T | Promise<T>>
-    /** Componente desenhado enquanto espera a resposta do servidor. */
-    onLoading?: () => JSX.Element
     /** Redireciona para "/404" em caso de dado não achado. */
     redirect404?: boolean
     /** Desenha um elemento ou executa uma ação em caso de erro. */
@@ -40,7 +42,7 @@ export interface ApiLoaderProps<T> {
  * {@link InvalidResponseError}).
  */
 export default function ApiLoader<T>(props: ApiLoaderProps<T>) {
-    const { dir, item, render, parser, onError, onLoading, redirect404 } = props
+    const { dir, item, render, parser, onError, redirect404 } = props
     // o ApiLoader sempre resolve para um outro elemento, e é
     // basicamente esse valor que é alterado ao longo da requisição
     const [element, setElement] = useState<JSX.Element | null>(null)
@@ -48,9 +50,8 @@ export default function ApiLoader<T>(props: ApiLoaderProps<T>) {
     // recarrega apenas quando `item` muda
     useEffect(() => {
         // inicializa em estado de loading
-        if (onLoading) {
-            setElement(onLoading())
-        }
+        setElement(render())
+
         // dai faz a requisição
         loadJson(dir, item, parser).then(
             // se tudo for OK, renderiza o componente
