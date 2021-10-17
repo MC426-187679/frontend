@@ -31,19 +31,19 @@ de execução podem ser vistos no console (janela de desenvolvimento `F12`).
 #### Mock do Servidor
 
 Algumas páginas dependem de comunicação com o servidor. Para ajudar no
-desenvolvimento desses componentes, pdoe-se usar o *mock* do servidor em
-`www/`. Para instalar ele, faça:
+desenvolvimento desses componentes, deve-se usar o servidor em Swift,
+com:
 
 ```bash
-cd www
-npm install
-npm run download
+git clone git@gitlab.com:disciplinas1/mc426/backend.git
+cd backend
+swift build -c release
 ```
 
-E para executar é (também na pasta `www/`):
+E para executar é (também na pasta `backend/`):
 
 ```bash
-npm run start
+vapor run -c release -e prod
 ```
 
 ### Testes
