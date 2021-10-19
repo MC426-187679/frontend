@@ -60,7 +60,7 @@ function DisciplineCard({ discipline }: DisciplineCardProps) {
                 <Typography variant="h5" component="div">
                     { discipline?.name ?? <Skeleton /> }
                 </Typography>
-                <Requirements groups={discipline?.req} />
+                <Requirements groups={discipline?.reqs} />
             </CardContent>
             <CardActions>
                 <Button size="small">Learn More</Button>
@@ -70,7 +70,7 @@ function DisciplineCard({ discipline }: DisciplineCardProps) {
 }
 
 interface RequirementsProps {
-    groups?: Discipline['req'] | undefined
+    groups?: Discipline['reqs'] | undefined
 }
 
 /**

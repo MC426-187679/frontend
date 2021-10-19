@@ -27,20 +27,27 @@ export namespace Parser {
      *
      * Os valores padrões podem ser vistos em {@link defaultOptions}.
      */
-    export interface Options {
-        /** Se erros de parsing devem ser ignorados. */
-        readonly required?: boolean
+    export type Options<T> = {
+        /** Ignora erros de parsing. */
+        readonly required?: false
+        /** Usa esse valor em vez de acusar erro. */
+        readonly defaultsTo?: T
+    } | {
+        /** Acusa erro quando parsing não é completo. */
+        readonly required: true
     }
 
-    export namespace Options {
-        /** Opções padrões para {@link Options}. */
-        export const defaultOptions = {
-            required: false,
-        } as const
+    /** Opções padrões para {@link Options}. */
+    export const defaultOptions = {
+        required: false,
+    } as const
 
-        /** Extrai os valores de opção, considerando os padrões. */
-        export function extract(options?: Options): Required<Options> {
-            return { ...defaultOptions, ...options }
+    /** Extrai os valores de opção, considerando os padrões. */
+    function extract<T>(options: Options<T> | undefined, defaultsTo: T) {
+        const opt = options as { required?: boolean, defaultsTo?: T } | undefined
+        return {
+            required: opt?.required ?? defaultOptions.required,
+            defaultValue: opt?.defaultsTo ?? defaultsTo,
         }
     }
 
@@ -57,8 +64,8 @@ export namespace Parser {
      *
      * @throws Se `options.required = true` e `parser` dá algum erro.
      */
-    export function array<T>(item: any, parser: Parser<T>, options?: Parser.Options) {
-        const { required } = Parser.Options.extract(options)
+    export function array<T>(item: any, parser: Parser<T>, options?: Options<T[]>) {
+        const { required, defaultValue } = extract(options, [])
 
         if (Array.isArray(item)) {
             if (!required) {
@@ -74,34 +81,69 @@ export namespace Parser {
                 // parseia todos e deixa os erros passarem
                 return item.map(parser)
             }
-        // se não for vetor, retorna vazio ou dá erro
+        // se não for vetor, retorna padrão ou dá erro
         } else if (!required) {
-            return []
+            return defaultValue
         } else {
             throw new ParsingError(item, 'array')
         }
     }
 
     /**
-     * Parseia um objeto como `string` não-vazia.
+     * Parseia um objeto como `string`.
      *
      * @param item Objeto qualquer.
      * @param options Opções adicionais de parsing.
      * @returns `item` como string.
      *
      * @throws {@link ParsingError} Se `options.required = true`
-     * e `item` não for string.
+     * e `item` não for string não-vazia.
      */
-    export function string(item: any, options?: Parser.Options) {
-        const { required } = Parser.Options.extract(options)
+    export function string(item: any, options?: Options<string>) {
+        const { required, defaultValue } = extract(options, '')
 
         if (typeof item === 'string' && item !== '') {
             return item
-        // se não for string, retorna vazia ou dá erro
+        // se não for string, retorna padrão ou dá erro
         } else if (!required) {
-            return ''
+            return defaultValue
         } else {
             throw new ParsingError(item, 'string')
+        }
+    }
+
+    /**
+     * Parseia um objeto como inteiro.
+     *
+     * @param item Objeto qualquer.
+     * @param options Opções adicionais de parsing.
+     * @returns `item` como inteiro.
+     *
+     * @throws {@link ParsingError} Se `options.required = true`
+     * e `item` não for numérico.
+     */
+    export function int(item: any, options?: Options<number>) {
+        const { required, defaultValue } = extract(options, 0)
+
+        // arredonda inteiros
+        if (typeof item === 'number') {
+            if (!required || Number.isInteger(item)) {
+                return Math.round(item)
+            } // else fallthrough
+
+        // ou parseia string
+        } else if (typeof item === 'string') {
+            const parsed = Number.parseInt(item, 10)
+            if (!Number.isNaN(parsed)) {
+                return parsed
+            } // else fallthrough
+        }
+
+        // se não for numérico, retorna padrão ou dá erro
+        if (!required) {
+            return defaultValue
+        } else {
+            throw new ParsingError(item, 'number')
         }
     }
 }

@@ -56,12 +56,16 @@ export interface Discipline {
     readonly code: string
     /** Nome da matéria / disciplina. */
     readonly name: string
+    /** Ementa da discplina. */
+    readonly syllabus: string
+    /** Carga horária semanal. */
+    readonly credits: number
     /**
      *  Um lista de grupos de requisitos onde cada
      * grupo libera o acesso à disciplina quando
      * completo.
      */
-    readonly req: ReadonlyArray<Requirement.Group>
+    readonly reqs: ReadonlyArray<Requirement.Group>
     /** Lista de disciplina que têm esta como requisito. */
     readonly reqBy: ReadonlyArray<string>
 }
@@ -77,12 +81,14 @@ export namespace Discipline {
      *  tem os campos `code` e `name`
      */
     export function parser(course: any): Discipline {
-        // precisa de pelo menos código e nome
+        // precisa de código, nome, ementa e créditos
         const code = Parser.string(course.code, { required: true })
         const name = Parser.string(course.name, { required: true })
+        const syllabus = Parser.string(course.syllabus, { required: true })
+        const credits = Parser.int(course.credits, { required: true })
 
         // parseia requisitos ou retorna lista vazia
-        const req = Parser.array(course.req, (group) => (
+        const reqs = Parser.array(course.reqs, (group) => (
             Parser.array(group, Requirement.parser)
         ))
         // parseia reqBy, removendo strings inválidas
@@ -90,6 +96,6 @@ export namespace Discipline {
             Parser.string(group, { required: true })
         ))
 
-        return { code, name, req, reqBy }
+        return { code, name, syllabus, credits, reqs, reqBy }
     }
 }

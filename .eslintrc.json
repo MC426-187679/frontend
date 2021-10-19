@@ -53,6 +53,7 @@
         "@typescript-eslint/no-use-before-define": ["error", {
             "classes": false, "functions": false
         }],
+        "no-inner-declarations": "off",
         // análise de tipos e valores
         "react/destructuring-assignment": "off",
         "react/require-default-props": "off",
