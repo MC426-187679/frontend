@@ -5,7 +5,7 @@ import { alpha, styled, useTheme } from '@mui/material/styles'
 import SearchIcon from '@mui/icons-material/Search'
 
 import './SearchBar.scss'
-import { PATH, extractSearchParam, searchURL } from 'pages/Search/params'
+import { PAGE_PATH, extractSearchParam, searchURL } from 'pages/Search/params'
 
 // fonte: https://next.material-ui.com/components/app-bar
 const Search = styled('form')(({ theme }) => ({
@@ -63,13 +63,13 @@ export default function SearchBar() {
         if (typeof value === 'string') {
             history.push(searchURL({ q: value }))
         } else {
-            history.push(PATH)
+            history.push(PAGE_PATH)
         }
     }
 
     return (
         <Search
-            action={PATH}
+            action={PAGE_PATH}
             onSubmit={redirectToSearch}
             autoComplete="off"
             noValidate

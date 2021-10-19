@@ -4,7 +4,7 @@ import './Home.scss'
 import AppPage from 'components/layout/AppPage'
 
 /** Página Principal. */
-export default function Home() {
+function HomePage() {
     return (
         <AppPage>
             <header className="app-home">
@@ -22,3 +22,9 @@ export default function Home() {
         </AppPage>
     )
 }
+
+namespace HomePage {
+    /** Caminho para a página principal. */
+    export const PATH = '/'
+}
+export default HomePage

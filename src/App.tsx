@@ -5,8 +5,8 @@ import { Route, Switch } from 'react-router-dom'
 import HeaderBar from 'components/header/HeaderBar'
 
 import Home from 'pages/Home'
-import Search, { SEARCH_PATH } from 'pages/Search/Search'
-import DisciplinePage, { DISCIPLINE_PATH } from 'pages/Discipline/Page'
+import Search from 'pages/Search/Page'
+import Discipline from 'pages/Discipline/Page'
 
 /**
  * Componente Principal: cuida do cabeçalho e do switch de roteamento com o conteúdo real da
@@ -18,16 +18,16 @@ export default function App() {
             <HeaderBar />
             <Switch>
                 {/* Página Principal */}
-                <Route path="/" exact>
+                <Route path={Home.PATH} exact>
                     <Home />
                 </Route>
                 {/* Página de Busca */}
-                <Route path={SEARCH_PATH}
+                <Route path={Search.PATH}
                     render={({ location }) => <Search location={location} />}
                 />
                 {/* Páginas de cada Disciplina */}
-                <Route path={DISCIPLINE_PATH}
-                    render={({ match }) => <DisciplinePage match={match} />}
+                <Route path={Discipline.PATH}
+                    render={({ match }) => <Discipline match={match} />}
                 />
             </Switch>
         </>

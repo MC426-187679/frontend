@@ -1,19 +1,17 @@
 import React from 'react'
 import type { Location } from 'history'
 
-import './Search.scss'
+import './Page.scss'
 import AppPage from 'components/layout/AppPage'
 
-import { PATH, extractSearchParam } from './params'
-// Reexporta para o `Router`
-export { PATH as SEARCH_PATH }
+import { PAGE_PATH, extractSearchParam } from './params'
 
 interface SearchProps {
     location: Location
 }
 
 /** Página de Busca. */
-export default function Search({ location }: SearchProps) {
+function SearchPage({ location }: SearchProps) {
     const { q: query } = extractSearchParam(location)
 
     return (
@@ -28,3 +26,9 @@ export default function Search({ location }: SearchProps) {
         </AppPage>
     )
 }
+
+namespace SearchPage {
+    // Reexporta para o `Router`
+    export const PATH = PAGE_PATH
+}
+export default SearchPage

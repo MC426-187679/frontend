@@ -1,21 +1,3 @@
-/**
- * Erros de durante parsing dos dados.
- */
-export class ParsingError<T = unknown> extends TypeError {
-    /** Valor que gerou o erro. */
-    readonly value: T
-
-    /** Tipo que estava sendo parseado. */
-    readonly type: string
-
-    constructor(value: T, type: string) {
-        super(`Problema de parsing do objeto '${value}' como tipo '${type}'`)
-
-        this.value = value
-        this.type = type
-    }
-}
-
 /** Função que parseia um objeto qualquer como tipo `T`. */
 export interface Parser<T> {
     (item: any): T
@@ -84,7 +66,7 @@ export namespace Parser {
         } else if (!required) {
             return defaultValue
         } else {
-            throw new ParsingError(item, 'array')
+            throw new Error(item, 'array')
         }
     }
 
@@ -106,7 +88,7 @@ export namespace Parser {
         } else if (!required) {
             return defaultValue
         } else {
-            throw new ParsingError(item, 'string')
+            throw new Error(item, 'string')
         }
     }
 
@@ -117,7 +99,7 @@ export namespace Parser {
      * @param options Opções adicionais de parsing.
      * @returns `item` como inteiro.
      *
-     * @throws {@link ParsingError} Se `options.required = true` e `item` não for numérico.
+     * @throws {@link Error} Se `options.required = true` e `item` não for numérico.
      */
     export function int(item: any, options?: Options<number>) {
         const { required, defaultValue } = extract(options, 0)
@@ -140,7 +122,25 @@ export namespace Parser {
         if (!required) {
             return defaultValue
         } else {
-            throw new ParsingError(item, 'number')
+            throw new Error(item, 'number')
+        }
+    }
+
+    /**
+     * Erros de durante parsing dos dados.
+     */
+    export class Error<T = unknown> extends TypeError {
+        /** Valor que gerou o erro. */
+        readonly value: T
+
+        /** Tipo que estava sendo parseado. */
+        readonly type: string
+
+        constructor(value: T, type: string) {
+            super(`Problema de parsing do objeto '${value}' como tipo '${type}'`)
+
+            this.value = value
+            this.type = type
         }
     }
 }

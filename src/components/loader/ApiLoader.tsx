@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Redirect } from 'react-router-dom'
 
-import type { Parser } from 'utils/parsing'
+import { InvalidResponseError } from 'utils/fetching'
 
 /** Opções do carregador de dados da API. */
 export interface ApiLoaderProps<T> {
@@ -10,16 +10,14 @@ export interface ApiLoaderProps<T> {
      * Qualquer mudança nos outros atributos é ignorada.
      */
     item: string
-    /** Formata item como URL. */
-    formatURL?: (item: string) => string
+    /** Recupera e parseia o item da API. */
+    fetch: (item: string) => Promise<T>
     /**
      * Desenha um componente com ou sem o dado já processado.
      *
      * `undefined` representa estado de loading.
      */
     render: (data?: T) => JSX.Element
-    /** Parser de JSON para o objeto esperado. */
-    parser: Parser<T | Promise<T>>
     /** Redireciona para "/404" em caso de dado não achado. */
     redirect404?: boolean
     /** Desenha um elemento ou executa uma ação em caso de erro. */
@@ -36,7 +34,7 @@ export interface ApiLoaderProps<T> {
  * como erro (veja {@link InvalidResponseError}).
  */
 export default function ApiLoader<T>(props: ApiLoaderProps<T>) {
-    const { item, formatURL, render, parser, onError, redirect404 } = props
+    const { item, fetch, render, onError, redirect404 } = props
     // o ApiLoader sempre resolve para um outro elemento, e é
     // basicamente esse valor que é alterado ao longo da requisição
     const [element, setElement] = useState<JSX.Element | null>(null)
@@ -47,9 +45,8 @@ export default function ApiLoader<T>(props: ApiLoaderProps<T>) {
         setElement(render())
 
         // dai monta a URL
-        const url = formatURL ? formatURL(item) : item
         // e faz a requisição
-        fetchJson(url, parser).then(
+        fetch(item).then(
             // se tudo for OK, renderiza o componente
             (data) => {
                 setElement(render(data))
@@ -76,53 +73,9 @@ export default function ApiLoader<T>(props: ApiLoaderProps<T>) {
 }
 
 /**
- * Requisita dado da API, parseia como JSON e depois parseia para o tipo `T`.
- *
- * @param url URL da requisição.
- * @param parser Parser para tipo `T`
- * @returns Promessa com um dado do tipo `T`.
- *
- * @throws {@link InvalidResponseError} - Se a {@link Response} resultar em status diferente
- *  de `200 OK`.
- *
- * @throws Erros de parsing ou erros do {@link fetch} ou do {@link Response.json}.
- */
-async function fetchJson<T>(url: string, parser: Parser<T | Promise<T>>) {
-    const response = await fetch(url)
-    // apenas 200 é OK
-    if (response.status !== 200) {
-        throw new InvalidResponseError(response)
-    }
-    const json = await response.json()
-    return parser(json)
-}
-
-/**
- *  Teste se `item` representa uma {@link Response} (ou {@link InvalidResponseError}) com
- * status `404`.
+ *  Teste se `item` representa uma {@link InvalidResponseError} com status `404`.
  */
 function is404(item: any) {
-    return (item instanceof InvalidResponseError || item instanceof Response)
+    return (item instanceof InvalidResponseError)
         && (item.status === 404)
-}
-
-/** Resposta de servidor com status diferente de `200 OK`. */
-class InvalidResponseError extends Error {
-    /** Conteúdo da resposta. */
-    readonly response: Response
-
-    constructor(response: Response) {
-        super(`Resposta inesperada do servidor: ${response.status}`)
-
-        this.response = response
-    }
-
-    /**
-     * Código de status da resposta.
-     *
-     * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-     */
-    get status() {
-        return this.response.status
-    }
 }

@@ -1,4 +1,5 @@
 import { Parser } from 'utils/parsing'
+import { fetchJson } from 'utils/fetching'
 
 /**
  *  Outra disciplina que deve ser completo antes de uma dada discipliana que requer ele.
@@ -69,7 +70,7 @@ export namespace Discipline {
      * @param course objeto qualquer
      * @returns dados de uma disciplina
      *
-     * @throws {@link ParsingError} se o objeto não tem os campos `code` e `name`
+     * @throws {@link Parser.Error} se o objeto não tem os campos `code` e `name`
      */
     export function parser(course: any): Discipline {
         // precisa de código, nome, ementa e créditos
@@ -87,5 +88,27 @@ export namespace Discipline {
             Parser.string(group, { required: true })
         ))
         return { code, name, syllabus, credits, reqs, reqBy }
+    }
+
+    /**
+     * Constrói URL da API para recuperar dados da disciplina.
+     *
+     * @param code códido da disciplina a ser recuperada
+     * @returns URL da API RESTful
+     */
+    export function urlFor<Code extends string>(code: Code) {
+        return `/api/disciplina/${code}` as const
+    }
+
+    /**
+     * Requisita e parseia disciplina da API.
+     *
+     * @param code URL da requisição.
+     * @returns Promessa com a disciplina.
+     *
+     * @throws Erros do {@link fetchJson} ou do {@link Discipline.parser}.
+     */
+    export async function fetch(code: string) {
+        return parser(await fetchJson(urlFor(code)))
     }
 }
