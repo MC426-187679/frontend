@@ -47,8 +47,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 const INPUT_NAME = 'texto'
 
 /**
- * Barra de Busca Principal: redireciona buscas
- *  para a página de busca e tem um sistema de
+ * Barra de Busca Principal: redireciona buscas para a página de busca e tem um sistema de
  *  autocomplete (TODO).
  */
 export default function SearchBar() {

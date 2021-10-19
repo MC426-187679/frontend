@@ -7,7 +7,7 @@ import AppPage from 'components/layout/AppPage'
 export default function Home() {
     return (
         <AppPage>
-            <header className="App-Home">
+            <header className="app-home">
                 <p>
                     Edit <code>src/app/App.tsx</code> and save to reload.
                 </p>

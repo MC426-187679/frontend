@@ -5,13 +5,11 @@ import { Theme } from '@mui/material/styles'
 import AccountCircle from '@mui/icons-material/AccountCircle'
 
 /**
- * Links e Opções da Conta: muda de
- *  acordo com o usuário logado (TODO)
+ * Links e Opções da Conta: muda de acordo com o usuário logado (TODO)
  */
 export default function AccountMenu() {
-    // NOTA: para evitar redesenhar as coisas, o menu
-    // sempre fica aberto em background, mas só aparece
-    // quando ancorado no botão que abre o menu (foreground)
+    // NOTA: para evitar redesenhar as coisas, o menu sempre fica aberto em background,
+    // mas só aparece quando ancorado no botão que abre o menu (foreground)
     const [anchor, setAnchor] = useState<HTMLElement | null>(null)
     const isMenuOpen = (anchor !== null)
 
@@ -79,9 +77,8 @@ interface ButtonWHTProps {
 }
 
 /**
- *  Botão que vira um {@link Button} com um
- * ícone para telas grandes, e só um {@link
- * IconButton} em telas pequenas.
+ *  Botão que vira um {@link Button} com um ícone para telas grandes, e só um {@link IconButton}
+ * em telas pequenas.
  */
 function ButtonWithHideableText({ children, id, icon, onClick }: ButtonWHTProps) {
     const isLarge = useMediaQuery((theme: Theme) => (

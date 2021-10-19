@@ -51,8 +51,7 @@ export default function HeaderBar() {
 }
 
 /**
- * Logotipo em texto com um link
- *  para a página principal.
+ * Logotipo em texto com um link para a página principal.
  */
 function BrandLink() {
     return (

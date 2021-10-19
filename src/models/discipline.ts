@@ -1,18 +1,12 @@
 import { Parser } from 'utils/parsing'
 
 /**
- *  Outra disciplina que deve ser completo
- * antes de uma dada discipliana que requer
- * ele.
+ *  Outra disciplina que deve ser completo antes de uma dada discipliana que requer ele.
  */
 export interface Requirement {
     /** Código do curso ou requisito. */
     readonly code: string
-    /**
-     *  Sé o código representa um requerimento
-     * especial em vez de uma disciplina
-     * propriamente.
-     */
+    /** Sé o código representa um requerimento especial em vez de uma disciplina propriamente. */
     readonly special: boolean
     /** Deve ser feita, mas não necessariamente concluída. */
     readonly partial: boolean
@@ -20,8 +14,7 @@ export interface Requirement {
 
 export namespace Requirement {
     /**
-     *  Um grupo de requisitos que devem ser
-     * atendidos juntos (conjunção lógica).
+     *  Um grupo de requisitos que devem ser atendidos juntos (conjunção lógica).
      */
     export type Group = ReadonlyArray<Requirement>
 
@@ -61,9 +54,8 @@ export interface Discipline {
     /** Carga horária semanal. */
     readonly credits: number
     /**
-     *  Um lista de grupos de requisitos onde cada
-     * grupo libera o acesso à disciplina quando
-     * completo.
+     *  Um lista de grupos de requisitos onde cada grupo libera o acesso à disciplina
+     * quando completo.
      */
     readonly reqs: ReadonlyArray<Requirement.Group>
     /** Lista de disciplina que têm esta como requisito. */
@@ -77,8 +69,7 @@ export namespace Discipline {
      * @param course objeto qualquer
      * @returns dados de uma disciplina
      *
-     * @throws {@link ParsingError} se o objeto não
-     *  tem os campos `code` e `name`
+     * @throws {@link ParsingError} se o objeto não tem os campos `code` e `name`
      */
     export function parser(course: any): Discipline {
         // precisa de código, nome, ementa e créditos
@@ -95,7 +86,6 @@ export namespace Discipline {
         const reqBy = Parser.array(course.reqBy, (group) => (
             Parser.string(group, { required: true })
         ))
-
         return { code, name, syllabus, credits, reqs, reqBy }
     }
 }

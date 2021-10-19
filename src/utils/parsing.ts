@@ -59,8 +59,7 @@ export namespace Parser {
      * @param options Opções adicionais de parsing.
      * @returns Vetor com os elementos parseados.
      *
-     * @throws {@link ParsingError} - Se `options.required = true`
-     * e `item` não for um array.
+     * @throws {@link ParsingError} - Se `options.required = true` e `item` não for um array.
      *
      * @throws Se `options.required = true` e `parser` dá algum erro.
      */
@@ -96,8 +95,7 @@ export namespace Parser {
      * @param options Opções adicionais de parsing.
      * @returns `item` como string.
      *
-     * @throws {@link ParsingError} Se `options.required = true`
-     * e `item` não for string não-vazia.
+     * @throws {@link ParsingError} Se `options.required = true` e `item` não for string não-vazia.
      */
     export function string(item: any, options?: Options<string>) {
         const { required, defaultValue } = extract(options, '')
@@ -119,8 +117,7 @@ export namespace Parser {
      * @param options Opções adicionais de parsing.
      * @returns `item` como inteiro.
      *
-     * @throws {@link ParsingError} Se `options.required = true`
-     * e `item` não for numérico.
+     * @throws {@link ParsingError} Se `options.required = true` e `item` não for numérico.
      */
     export function int(item: any, options?: Options<number>) {
         const { required, defaultValue } = extract(options, 0)

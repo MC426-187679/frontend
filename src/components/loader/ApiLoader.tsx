@@ -6,9 +6,8 @@ import type { Parser } from 'utils/parsing'
 /** Opções do carregador de dados da API. */
 export interface ApiLoaderProps<T> {
     /**
-     * Item a ser acessado na API, a requisição só é refeita
-     * quando esse valor é atualizado. Qualquer mudança nos
-     * outros atributos é ignorada.
+     * Item a ser acessado na API, a requisição só é refeita quando esse valor é atualizado.
+     * Qualquer mudança nos outros atributos é ignorada.
      */
     item: string
     /** Formata item como URL. */
@@ -28,17 +27,13 @@ export interface ApiLoaderProps<T> {
 }
 
 /**
- *  Componente que faz uma requisição da API, parseia o JSON
- * resultante em um dado objeto e monta um componente com
- * o resultado. A requisição é refeita toda vez que
- * {@linkcode ApiLoaderProps.item props.item} é atualizado,
- * mas ignora mudança em outros atributos.
+ *  Componente que faz uma requisição da API, parseia o JSON resultante em um dado objeto e monta
+ * um componente com o resultado. A requisição é refeita toda vez que
+ * {@linkcode ApiLoaderProps.item props.item} é atualizado, mas ignora mudança em outros atributos.
  *
- * Existem opções para desenhar um componente enquanto o
- * dado é carregado, para redirecionar em caso de 404,
- * e para tratar erros. Respostas com status diferente
- * de `200 OK` são consideradas como erro (veja
- * {@link InvalidResponseError}).
+ * Existem opções para desenhar um componente enquanto o dado é carregado, para redirecionar em
+ * caso de 404, e para tratar erros. Respostas com status diferente de `200 OK` são consideradas
+ * como erro (veja {@link InvalidResponseError}).
  */
 export default function ApiLoader<T>(props: ApiLoaderProps<T>) {
     const { item, formatURL, render, parser, onError, redirect404 } = props
@@ -81,18 +76,16 @@ export default function ApiLoader<T>(props: ApiLoaderProps<T>) {
 }
 
 /**
- * Requisita dado da API, parseia como JSON e depois
- * parseia para o tipo `T`.
+ * Requisita dado da API, parseia como JSON e depois parseia para o tipo `T`.
  *
  * @param url URL da requisição.
  * @param parser Parser para tipo `T`
  * @returns Promessa com um dado do tipo `T`.
  *
- * @throws {@link InvalidResponseError} - Se a {@link Response}
- *  resultar em status diferente de `200 OK`.
+ * @throws {@link InvalidResponseError} - Se a {@link Response} resultar em status diferente
+ *  de `200 OK`.
  *
- * @throws Erros de parsing ou erros do {@link fetch}
- *  ou do {@link Response.json}.
+ * @throws Erros de parsing ou erros do {@link fetch} ou do {@link Response.json}.
  */
 async function fetchJson<T>(url: string, parser: Parser<T | Promise<T>>) {
     const response = await fetch(url)
@@ -105,9 +98,8 @@ async function fetchJson<T>(url: string, parser: Parser<T | Promise<T>>) {
 }
 
 /**
- * Teste se `item` representa uma {@link Response}
- * (ou {@link InvalidResponseError}) com status
- * `404`.
+ *  Teste se `item` representa uma {@link Response} (ou {@link InvalidResponseError}) com
+ * status `404`.
  */
 function is404(item: any) {
     return (item instanceof InvalidResponseError || item instanceof Response)

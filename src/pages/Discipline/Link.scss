@@ -1,9 +1,8 @@
-.Discipline-Link {
+.discipline-link {
     width: 12ex;
     margin-inline-end: 5pt;
 
-
-    &.Partial::before {
+    &.partial::before {
         content: '*';
         position: relative;
         left: -1ex;

@@ -23,9 +23,8 @@ interface DisciplinePageProps {
 }
 
 /**
- * Página das Disciplinas: mostra dados
- *  da disciplina atual (recuperada da URL)
- *  ou uma mensagem de erro
+ * Página das Disciplinas: mostra dados da disciplina atual (recuperada da URL) ou uma mensagem
+ *  de erro.
  */
 export default function DisciplinePage({ match }: DisciplinePageProps) {
     return (
@@ -47,14 +46,13 @@ interface DisciplineCardProps {
 }
 
 /**
- * Cartão com os dados da disciplina atual
- * e links para as disciplinas relacionadas (TODO).
+ * Cartão com os dados da disciplina atual e links para as disciplinas relacionadas (TODO).
  */
 function DisciplineCard({ discipline }: DisciplineCardProps) {
     return (
-        <Card className="Discipline-Card" color="inherit" raised>
+        <Card className="discipline-card" color="inherit" raised>
             <CardContent>
-                <Typography className="Code" color="text.secondary" gutterBottom>
+                <Typography className="code" color="text.secondary" gutterBottom>
                     { discipline?.code ?? <Skeleton width="5em" /> }
                 </Typography>
                 <Typography variant="h5" component="div">
@@ -74,8 +72,7 @@ interface RequirementsProps {
 }
 
 /**
- * Lista de requisitos da disciplina ou
- * um aviso que não há pré-requisitos.
+ * Lista de requisitos da disciplina ou um aviso que não há pré-requisitos.
  */
 function Requirements({ groups }: RequirementsProps) {
     let headerContent: string | JSX.Element
@@ -87,7 +84,7 @@ function Requirements({ groups }: RequirementsProps) {
         headerContent = 'Pré-requisitos:'
     }
     const header = (
-        <Typography variant="body2" className="Requirements">
+        <Typography variant="body2" className="requirements">
             { headerContent }
         </Typography>
     )

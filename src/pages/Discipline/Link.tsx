@@ -12,7 +12,7 @@ interface DisciplineLinkProps {
 }
 
 export default function DisciplineLink({ code, partial, special = false }: DisciplineLinkProps) {
-    const classes = partial ? 'Discipline-Link Partial' : 'Discipline-Link'
+    const classes = partial ? 'discipline-link partial' : 'discipline-link'
 
     const props: { component?: typeof RouterLink, to?: string } = {}
     if (!special) {

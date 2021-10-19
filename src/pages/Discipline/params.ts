@@ -10,6 +10,7 @@ export type Params = ExtractRouteParams<typeof PAGE_PATH, string>
 /** Match do 'react-router-dom' para a página de disciplinas. */
 export type Match = match<Params>
 
+/** URL da API para recuperar dados da disciplina. */
 export function fetchDisciplineFrom<Code extends string>(code: Code) {
     return `/api/${PAGE_DIR}/${code}` as const
 }

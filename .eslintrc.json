@@ -41,6 +41,11 @@
         }],
         "react/jsx-one-expression-per-line": "off",
         "no-else-return": "off",
+        "max-len": ["error", {
+            "code": 99,
+            "ignoreUrls": true,
+            "ignoreComments": false
+        }],
         // dependências e módulos
         "import/extensions": "off",
         "import/no-extraneous-dependencies": ["error", {

@@ -8,13 +8,12 @@ interface AppPageProps {
 }
 
 /**
- *  Desenha uma página do App dentro de
- * um {@link Container} que centraliza o
+ *  Desenha uma página do App dentro de um {@link Container} que centraliza o
  * conteúdo horizontalmente.
  */
 export default function AppPage({ children }: AppPageProps) {
     return (
-        <Container maxWidth="lg" className="AppPage">
+        <Container maxWidth="lg" className="app-page">
             { children }
         </Container>
     )

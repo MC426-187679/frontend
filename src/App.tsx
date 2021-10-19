@@ -9,9 +9,8 @@ import Search, { SEARCH_PATH } from 'pages/Search/Search'
 import DisciplinePage, { DISCIPLINE_PATH } from 'pages/Discipline/Page'
 
 /**
- * Componente Principal: cuida do cabeçalho
- *  e do switch de roteamento com o conteúdo
- *  real da página.
+ * Componente Principal: cuida do cabeçalho e do switch de roteamento com o conteúdo real da
+ *  página.
  */
 export default function App() {
     return (
