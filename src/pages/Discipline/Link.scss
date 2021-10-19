@@ -1,0 +1,15 @@
+.Discipline-Link {
+    width: 12ex;
+    margin-inline-end: 5pt;
+
+
+    &.Partial::before {
+        content: '*';
+        position: relative;
+        left: -1ex;
+    }
+
+    &.MuiButtonBase-root:disabled {
+        color: 'blue';
+    }
+}

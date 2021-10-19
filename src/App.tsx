@@ -6,7 +6,7 @@ import HeaderBar from 'components/header/HeaderBar'
 
 import Home from 'pages/Home'
 import Search, { SEARCH_PATH } from 'pages/Search/Search'
-import Disciplinas, { DISCIPLINAS_PATH } from 'pages/Disciplinas/Disciplinas'
+import DisciplinePage, { DISCIPLINE_PATH } from 'pages/Discipline/Page'
 
 /**
  * Componente Principal: cuida do cabeçalho
@@ -27,8 +27,8 @@ export default function App() {
                     render={({ location }) => <Search location={location} />}
                 />
                 {/* Páginas de cada Disciplina */}
-                <Route path={DISCIPLINAS_PATH}
-                    render={({ match }) => <Disciplinas match={match} />}
+                <Route path={DISCIPLINE_PATH}
+                    render={({ match }) => <DisciplinePage match={match} />}
                 />
             </Switch>
         </>
