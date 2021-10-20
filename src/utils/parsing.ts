@@ -132,7 +132,6 @@ export namespace Parser {
     export class Error<T = unknown> extends TypeError {
         /** Valor que gerou o erro. */
         readonly value: T
-
         /** Tipo que estava sendo parseado. */
         readonly type: string
 

@@ -46,6 +46,7 @@
             "ignoreUrls": true,
             "ignoreComments": false
         }],
+        "@typescript-eslint/lines-between-class-members": "off",
         // dependências e módulos
         "import/extensions": "off",
         "import/no-extraneous-dependencies": ["error", {

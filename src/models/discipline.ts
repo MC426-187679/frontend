@@ -70,7 +70,7 @@ export namespace Discipline {
      * @param course objeto qualquer
      * @returns dados de uma disciplina
      *
-     * @throws {@link Parser.Error} se o objeto não tem os campos `code` e `name`
+     * @throws {@link Parser.Error} se o objeto não tem os campos obrigatórios.
      */
     export function parser(course: any): Discipline {
         // precisa de código, nome, ementa e créditos

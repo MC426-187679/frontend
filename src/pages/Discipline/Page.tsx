@@ -2,7 +2,7 @@ import React from 'react'
 
 import AppPage from 'components/layout/AppPage'
 import ApiLoader from 'components/loader/ApiLoader'
-import { Discipline } from 'models/Discipline'
+import { Discipline } from 'models/discipline'
 
 import DisciplineCard from './Card'
 import { PAGE_PATH, Match } from './params'

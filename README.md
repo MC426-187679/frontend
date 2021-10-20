@@ -43,7 +43,7 @@ swift build -c release
 E para executar é (também na pasta `backend/`):
 
 ```bash
-vapor run -c release -e prod
+swift run -c release Run -e prod
 ```
 
 ### Testes

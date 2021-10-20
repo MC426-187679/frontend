@@ -4,20 +4,20 @@ import { Redirect } from 'react-router-dom'
 import { InvalidResponseError } from 'utils/fetching'
 
 /** Opções do carregador de dados da API. */
-export interface ApiLoaderProps<T> {
+export interface ApiLoaderProps<Identifier, Content> {
     /**
      * Item a ser acessado na API, a requisição só é refeita quando esse valor é atualizado.
      * Qualquer mudança nos outros atributos é ignorada.
      */
-    item: string
+    item: Identifier,
     /** Recupera e parseia o item da API. */
-    fetch: (item: string) => Promise<T>
+    fetch: (item: Identifier) => Promise<Content>
     /**
      * Desenha um componente com ou sem o dado já processado.
      *
      * `undefined` representa estado de loading.
      */
-    render: (data?: T) => JSX.Element
+    render: (data?: Content) => JSX.Element
     /** Redireciona para "/404" em caso de dado não achado. */
     redirect404?: boolean
     /** Desenha um elemento ou executa uma ação em caso de erro. */
@@ -33,7 +33,7 @@ export interface ApiLoaderProps<T> {
  * caso de 404, e para tratar erros. Respostas com status diferente de `200 OK` são consideradas
  * como erro (veja {@link InvalidResponseError}).
  */
-export default function ApiLoader<T>(props: ApiLoaderProps<T>) {
+export default function ApiLoader<Ident, Content>(props: ApiLoaderProps<Ident, Content>) {
     const { item, fetch, render, onError, redirect404 } = props
     // o ApiLoader sempre resolve para um outro elemento, e é
     // basicamente esse valor que é alterado ao longo da requisição
