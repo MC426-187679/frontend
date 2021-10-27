@@ -1,7 +1,7 @@
 import { Parser } from 'utils/parsing'
 import { fetchJson } from 'utils/fetching'
 
-/** Uma resultado da busca retornada pela API. */
+/** Um resultado da busca retornado pela API. */
 export type Match = Matched.Discipline | Matched.Course
 
 export namespace Matched {
