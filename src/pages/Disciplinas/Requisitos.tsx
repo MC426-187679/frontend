@@ -6,7 +6,7 @@ import { GrupoDeRequisitos, Requisito } from 'utils/types/disciplinas'
 
 import { disciplinaURL } from './params'
 
-interface RequisitosProps{
+interface RequisitosProps {
     groups?: ReadonlyArray<GrupoDeRequisitos> | undefined
 }
 
@@ -36,23 +36,21 @@ function Header({ groups }: RequisitosProps) {
     }
 }
 
-interface BodyProps{
+interface BodyProps {
     groups: ReadonlyArray<GrupoDeRequisitos>
 }
 
 function Body({ groups }: BodyProps) {
     return (
         <>
-            {
-                groups.map((group, idx) => {
-                    const items = group.map((req) => (
-                        <RequisitoBtn req={req} key={req.code} />
-                    ))
+            {groups.map((group, idx) => {
+                const items = group.map((req) => (
+                    <RequisitoBtn req={req} key={req.code} />
+                ))
 
-                    const conjunction = (idx > 0) && 'Ou:'
-                    return <p key={idx.toString(16)}>{ conjunction }{ items }</p>
-                })
-            }
+                const conjunction = (idx > 0) && 'Ou:'
+                return <p key={idx.toString(16)}>{ conjunction }{ items }</p>
+            })}
         </>
     )
 }
