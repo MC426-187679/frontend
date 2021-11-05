@@ -35,7 +35,7 @@ export interface Disciplina {
      * grupo libera o acesso à disciplina quando
      * completo.
      */
-    readonly req: ReadonlyArray<GrupoDeRequisitos>
+    readonly reqs: ReadonlyArray<GrupoDeRequisitos>
     /** Lista de disciplina que têm esta como requisito. */
     readonly reqBy: ReadonlyArray<string>
 }
@@ -79,7 +79,7 @@ export function parseDisciplina(course: any) {
     const name = parseString(course.name, { required: true })
 
     // parseia requisitos ou retorna lista vazia
-    const req = parseArray(course.req, (group) => (
+    const reqs = parseArray(course.reqs, (group) => (
         parseArray(group, parseRequisito)
     ))
     // parseia reqBy, removendo strings inválidas
@@ -87,5 +87,5 @@ export function parseDisciplina(course: any) {
         parseString(group, { required: true })
     ))
 
-    return { code, name, req, reqBy } as Disciplina
+    return { code, name, reqs, reqBy } as Disciplina
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link as RouterLink, match as Match } from 'react-router-dom'
+import { match as Match } from 'react-router-dom'
 import {
     Button,
     Card,
@@ -12,9 +12,10 @@ import {
 import './Disciplinas.scss'
 import AppPage from 'components/layout/AppPage'
 import ApiLoader from 'components/loader/ApiLoader'
-import { Disciplina, GrupoDeRequisitos, Requisito, parseDisciplina } from 'utils/types/disciplinas'
+import { Disciplina, parseDisciplina } from 'utils/types/disciplinas'
+import Requisitos from './Requisitos'
 
-import { PATH, DIRECTORY, CourseParam, disciplinaURL } from './params'
+import { PATH, DIRECTORY, CourseParam } from './params'
 // Reexporta para o `Router`
 export { PATH as DISCIPLINAS_PATH }
 
@@ -60,74 +61,11 @@ function DisciplinaCard({ disciplina }: DisciplinaCardProps) {
                 <Typography variant="h5" component="div">
                     { disciplina?.name ?? <Skeleton /> }
                 </Typography>
-                <Requisitos groups={disciplina?.req} />
+                <Requisitos groups={disciplina?.reqs} />
             </CardContent>
             <CardActions>
                 <Button size="small">Learn More</Button>
             </CardActions>
         </Card>
-    )
-}
-
-interface RequisitosProps{
-    groups?: ReadonlyArray<GrupoDeRequisitos> | undefined
-}
-
-/**
- * Lista de requisitos da disciplina ou
- * um aviso que não há pré-requisitos.
- */
-function Requisitos({ groups }: RequisitosProps) {
-    let headerContent: string | JSX.Element
-    if (groups === undefined) {
-        headerContent = <Skeleton />
-    } else if (groups.length === 0) {
-        headerContent = 'Sem pré-requisitos.'
-    } else {
-        headerContent = 'Pré-requisitos:'
-    }
-    const header = (
-        <Typography variant="body2" className="Requisitos">
-            { headerContent }
-        </Typography>
-    )
-    if (!groups?.length) {
-        return header
-    }
-
-    const lists = groups.map((group, idx) => {
-        const items = group.map((req) => (
-            <RequisitoBtn req={req} key={req.code} />
-        ))
-
-        const conjunction = (idx > 0) && 'Ou:'
-        return <p key={idx.toString(16)}>{ conjunction }{ items }</p>
-    })
-    return <>{ header }{ lists }</>
-}
-
-interface RequisitoBtnProps {
-    req: Requisito
-}
-
-function RequisitoBtn({ req: { code, partial, special } }: RequisitoBtnProps) {
-    const classes = partial ? 'RequisitoBtn Partial' : 'RequisitoBtn'
-
-    const props: { component?: typeof RouterLink, to?: string } = {}
-    if (!special) {
-        props.component = RouterLink
-        props.to = disciplinaURL(code)
-    }
-    return (
-        <Button
-            color="primary"
-            variant="contained"
-            className={classes}
-            disabled={special}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...props}
-        >
-            { code }
-        </Button>
     )
 }
