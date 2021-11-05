@@ -5,7 +5,9 @@ export class InvalidResponseError extends Error {
 
     constructor(response: Response) {
         super(`Resposta inesperada do servidor: ${response.status}`)
+        Error.captureStackTrace(this, InvalidResponseError)
 
+        this.name = 'InvalidResponseError'
         this.response = response
     }
 
@@ -23,6 +25,7 @@ export class InvalidResponseError extends Error {
  * Requisita dado da API e parseia como JSON.
  *
  * @param url URL da requisição.
+ * @param init Configurações da requisição.
  * @returns Promessa com o JSON.
  *
  * @throws {@link InvalidResponseError} - Se a {@link Response} resultar em status diferente

@@ -1,6 +1,6 @@
 /** Função que parseia um objeto qualquer como tipo `T`. */
 export interface Parser<T> {
-    (item: any): T
+    (item: any, options?: Parser.Options<T>): T
 }
 
 export namespace Parser {
@@ -20,12 +20,12 @@ export namespace Parser {
     }
 
     /** Opções padrões para {@link Options}. */
-    export const defaultOptions = {
+    const defaultOptions = {
         required: false,
     } as const
 
     /** Extrai os valores de opção, considerando os padrões. */
-    function extract<T>(options: Options<T> | undefined, defaultsTo: T) {
+    export function extract<T>(options: Options<T> | undefined, defaultsTo: T) {
         const opt = options as { required?: boolean, defaultsTo?: T } | undefined
         return {
             required: opt?.required ?? defaultOptions.required,
@@ -37,15 +37,15 @@ export namespace Parser {
      * Parseia um objeto como um vetor de `T`s.
      *
      * @param item Objeto qualquer.
-     * @param parser Parser do tipo `T`.
+     * @param parse Parser do tipo `T`.
      * @param options Opções adicionais de parsing.
      * @returns Vetor com os elementos parseados.
      *
-     * @throws {@link ParsingError} - Se `options.required = true` e `item` não for um array.
+     * @throws {@link Error} - Se `options.required = true` e `item` não for um array.
      *
      * @throws Se `options.required = true` e `parser` dá algum erro.
      */
-    export function array<T>(item: any, parser: Parser<T>, options?: Options<T[]>) {
+    export function array<T>(item: any, parse: Parser<T>, options?: Options<T[]>) {
         const { required, defaultValue } = extract(options, [])
 
         if (Array.isArray(item)) {
@@ -53,14 +53,16 @@ export namespace Parser {
                 // retornas apenas os elementos que dão certo
                 return item.flatMap((element) => {
                     try {
-                        return [parser(element)] as const
+                        return [parse(element)]
                     } catch {
-                        return [] as const
+                        return []
                     }
                 })
             } else {
                 // parseia todos e deixa os erros passarem
-                return item.map(parser)
+                return item.map((element) => {
+                    return parse(element, { required: true })
+                })
             }
         // se não for vetor, retorna padrão ou dá erro
         } else if (!required) {
@@ -77,7 +79,7 @@ export namespace Parser {
      * @param options Opções adicionais de parsing.
      * @returns `item` como string.
      *
-     * @throws {@link ParsingError} Se `options.required = true` e `item` não for string não-vazia.
+     * @throws {@link Error} Se `options.required = true` e `item` não for string não-vazia.
      */
     export function string(item: any, options?: Options<string>) {
         const { required, defaultValue } = extract(options, '')
@@ -137,7 +139,9 @@ export namespace Parser {
 
         constructor(value: T, type: string) {
             super(`Problema de parsing do objeto '${value}' como tipo '${type}'`)
+            TypeError.captureStackTrace(this, Error)
 
+            this.name = 'Parser.Error'
             this.value = value
             this.type = type
         }

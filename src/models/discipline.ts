@@ -72,7 +72,7 @@ export namespace Discipline {
      *
      * @throws {@link Parser.Error} se o objeto não tem os campos obrigatórios.
      */
-    export function parser(course: any): Discipline {
+    export function parse(course: any): Discipline {
         // precisa de código, nome, ementa e créditos
         const code = Parser.string(course.code, { required: true })
         const name = Parser.string(course.name, { required: true })
@@ -109,6 +109,6 @@ export namespace Discipline {
      * @throws Erros do {@link fetchJson} ou do {@link Discipline.parser}.
      */
     export async function fetch(code: string) {
-        return parser(await fetchJson(urlFor(code)))
+        return parse(await fetchJson(urlFor(code)))
     }
 }

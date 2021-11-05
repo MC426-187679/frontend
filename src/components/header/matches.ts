@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { distance as levenshtein } from 'fastest-levenshtein'
 
-import { Match, Matched } from 'models/match'
+import { Match } from 'models/match'
 
 /** Conjunto de resultados retornados pela API de busca. */
 export interface Matches {
@@ -192,7 +192,7 @@ class RequestQueue {
         this.openRequests += 1
         try {
             this.onRequestStart(input)
-            const output = await Matched.search(input)
+            const output = await Match.fetch(input)
             this.onOutput(output, input)
         } catch (error) {
             this.onError(error)

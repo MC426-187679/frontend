@@ -2,54 +2,91 @@ import { Parser } from 'utils/parsing'
 import { fetchJson } from 'utils/fetching'
 
 /** Um resultado da busca retornado pela API. */
-export type Match = Matched.Discipline | Matched.Course
+abstract class Match {
+    /** Identificador único da match, como chave da lista. */
+    abstract uniqueMatchIdentifier(): string
 
-export namespace Matched {
-    /** Descrição do conteúdo do resultado. */
-    export const enum Content {
-        Discipline = 'discipline',
-        Course = 'course',
+    /** Descrição textual da match, única entre qualquer resultado possível. */
+    abstract uniqueMatchDescription(): string
+
+    /** URL da página relacionada a aquele resultado. */
+    abstract asUrl(): string | undefined
+
+    /** Se essa match é idêntica a outra. */
+    equals(other: Match) {
+        const thisID = this.uniqueMatchIdentifier()
+        const otherID = other.uniqueMatchIdentifier()
+        return thisID === otherID
+    }
+}
+
+namespace Match {
+    /** Parser para cada tipo de conteúdo retornado pela API. */
+    const parsers = new Map<string, Parser<Match>>()
+
+    /**
+     * Registra parser para um tipo de resultado. Só deve ser chamada uma vez por tipo de conteúdo.
+     *
+     * @param content Nome do tipo de conteúdo esperado pelo parser.
+     * @param parser Função que faz o parsing.
+     *
+     * @throws Erro genérico, caso o tipo de conteúdo já tenha um parser registrado.
+     */
+    export function registerParser(content: string, parser: Parser<Match>) {
+        if (parsers.has(content)) {
+            // não deveria chegar nesse caso nunca
+            throw new Error(`${content} já tem um parser associado.`)
+        }
+
+        parsers.set(content, parser)
     }
 
-    /** Um resultado de disciplina para a busca. */
-    export interface Discipline {
-        content: Content.Discipline
-        /** Código da disciplina. */
-        code: string
-        /** Nome da disciplina. */
-        name: string
-    }
+    /** Lista de tipos de conteúdos com parser associado. */
+    export function availableParsers() {
+        const parserNames = [] as string[]
 
-    /** Um resultado de curso para a busca. */
-    export interface Course {
-        content: Content.Course
-        /** Código do curso. */
-        code: string
-        /** Nome do curso. */
-        name: string
+        parsers.forEach((_, contentName) => {
+            parserNames.push(contentName)
+        })
+        return parserNames
     }
 
     /**
      * Parseia um resultado da API.
      *
-     * @throws {@link Parser.Error} se o resultado não tem os campos esperados.
+     * @param match Objeto qualquer.
+     * @returns Resultado transformado a partir de `match`.
+     *
+     * @throws {@link MissingParser} se o conteúdo especificado não tem nenhum parser associado.
+     * @throws {@link Parser.Error} se o objeto não tem os campos esperados.
      */
-    function parse(match: any): Match {
-        switch (match.content) {
-            case Content.Discipline:
-            case Content.Course:
-                return {
-                    content: match.content,
-                    code: Parser.string(match.code, { required: true }),
-                    name: Parser.string(match.name, { required: true }),
-                }
-            default:
-                throw new Parser.Error(match, 'Match')
+    export function parse(match: any) {
+        const content = Parser.string(match.content, { required: true })
+
+        const parser = parsers.get(content)
+        if (!parser) {
+            throw new MissingParser(content, match)
+        }
+        return parser(match)
+    }
+
+    /** Erros durante parsing dos resultados de busca pela API. */
+    export class MissingParser extends Parser.Error<Match | any> {
+        /** Descrição do conteúdo retornado. */
+        readonly contentName: string
+
+        constructor(content: string, match: any) {
+            super(match, 'Match')
+            Parser.Error.captureStackTrace(this, MissingParser)
+            this.contentName = content
+
+            this.message = `Nenhum parser encontrado para ${this.value}.`
+                + ` Os conteúdos esperados são ${availableParsers()}.`
         }
     }
 
     /** Constrói URL para busca na API. */
-    function searchURL(query: string, limit = 25) {
+    export function searchURL(query: string, limit = 25) {
         const params = new URLSearchParams({
             query,
             limit: `${limit}`,
@@ -61,12 +98,15 @@ export namespace Matched {
      * Faz busca pela API REST.
      *
      * @param text texto a ser buscado.
+     * @param init Configurações da requisição.
      * @return lista dos resultados para o texto, ordenados de maior para menor relevância.
      *
-     * @throws Erros do {@link fetchJson}.
+     * @throws Erros do {@link fetchJson} ou do {@link parse}.
      */
-    export async function search(text: string, init?: RequestInit) {
+    export async function fetch(text: string, init?: RequestInit) {
         const matches = await fetchJson(searchURL(text), init)
-        return Parser.array(matches, parse, { required: false })
+        return Parser.array(matches, Match.parse, { required: false })
     }
 }
+
+export { Match }
