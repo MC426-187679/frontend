@@ -47,30 +47,51 @@ interface RequirementsProps {
  * Lista de requisitos da disciplina ou um aviso que não há pré-requisitos.
  */
 function Requirements({ groups }: RequirementsProps) {
-    let headerContent: string | JSX.Element
-    if (groups === undefined) {
-        headerContent = <Skeleton />
-    } else if (groups.length === 0) {
-        headerContent = 'Sem pré-requisitos.'
-    } else {
-        headerContent = 'Pré-requisitos:'
-    }
-    const header = (
-        <Typography variant="body2" className="requirements">
-            { headerContent }
-        </Typography>
+    return (
+        <>
+            <Typography variant="body2" className="requirements">
+                <RequirementsHeader groups={groups} />
+            </Typography>
+            <RequirementsBody groups={groups ?? []} />
+        </>
     )
-    if (!groups?.length) {
-        return header
+}
+
+function RequirementsHeader({ groups }: RequirementsProps) {
+    switch (groups?.length) {
+        case undefined:
+            return <Skeleton />
+        case 0:
+            return <>Sem pré-requisitos.</>
+        default:
+            return <>Pré-requisitos:</>
     }
+}
 
-    const lists = groups.map((group, idx) => {
-        const items = group.map(({ code, special, partial }) => (
-            <DisciplineLink key={code} code={code} special={special} partial={partial} />
-        ))
+interface RequirementsBodyProps {
+    groups: Discipline['reqs']
+}
 
-        const conjunction = (idx > 0) && 'Ou:'
-        return <p key={idx.toString(16)}>{ conjunction }{ items }</p>
-    })
-    return <>{ header }{ lists }</>
+function RequirementsBody({ groups }: RequirementsBodyProps) {
+    return (
+        <>
+            {groups.map((group, idx) => {
+                const items = group.map(({ code, special, partial }) => (
+                    <DisciplineLink
+                        key={code}
+                        code={code}
+                        special={special}
+                        partial={partial}
+                    />
+                ))
+
+                return (
+                    <p key={idx.toString(16)}>
+                        { (idx > 0) && 'Ou:' }
+                        { items }
+                    </p>
+                )
+            })}
+        </>
+    )
 }
