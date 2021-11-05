@@ -5,10 +5,10 @@ import ApiLoader from 'components/loader/ApiLoader'
 import { Discipline } from 'models/discipline'
 
 import DisciplineCard from './Card'
-import { PAGE_PATH, Match } from './params'
+import { PAGE_PATH, MatchParams } from './params'
 
 interface DisciplinePageProps {
-    match: Match
+    match: MatchParams
 }
 
 /**

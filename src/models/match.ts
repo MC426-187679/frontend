@@ -20,37 +20,74 @@ abstract class Match {
     }
 }
 
-namespace Match {
+/** Parser para um tipo de resultado específico. */
+export interface Matcher {
+    /** Nome do tipo de conteúdo esperado pelo parser. */
+    readonly content: string
+    /** Função que faz o parsing do resultado. */
+    readonly parse: Parser<Match>
+}
+
+export namespace Matcher {
     /** Parser para cada tipo de conteúdo retornado pela API. */
-    const parsers = new Map<string, Parser<Match>>()
+    const matchers = new Map<string, Matcher>()
 
     /**
      * Registra parser para um tipo de resultado. Só deve ser chamada uma vez por tipo de conteúdo.
      *
-     * @param content Nome do tipo de conteúdo esperado pelo parser.
-     * @param parser Função que faz o parsing.
+     * @param matcher Parser do conteúdo especificado.
      *
      * @throws Erro genérico, caso o tipo de conteúdo já tenha um parser registrado.
      */
-    export function registerParser(content: string, parser: Parser<Match>) {
-        if (parsers.has(content)) {
+    export function register(matcher: Matcher) {
+        if (matchers.has(matcher.content)) {
             // não deveria chegar nesse caso nunca
-            throw new Error(`${content} já tem um parser associado.`)
+            throw new Error(`${matcher.content} já tem um parser associado.`)
         }
 
-        parsers.set(content, parser)
+        matchers.set(matcher.content, matcher)
     }
 
     /** Lista de tipos de conteúdos com parser associado. */
-    export function availableParsers() {
-        const parserNames = [] as string[]
+    export function available() {
+        const parsers = [] as Matcher[]
 
-        parsers.forEach((_, contentName) => {
-            parserNames.push(contentName)
+        matchers.forEach((matcher) => {
+            parsers.push(matcher)
         })
-        return parserNames
+        return parsers
     }
 
+    /**
+     * Recupera parser para um conteúdo retorna na busca pela API.
+     *
+     * @param content Conteúdo que será parseado.
+     *
+     * @throws {@link MissingParser} se o conteúdo especificado não tem nenhum parser associado.
+     */
+    export function parserFor(content: string) {
+        const parser = matchers.get(content)?.parse
+        if (!parser) {
+            throw new MissingParser(content)
+        }
+
+        return parser
+    }
+
+    /** Erros durante parsing dos resultados de busca pela API. */
+    export class MissingParser extends Parser.Error<string> {
+        constructor(content: string) {
+            super(content, 'Match')
+            Parser.Error.captureStackTrace(this, MissingParser)
+
+            const parsers = available().map((matcher) => matcher.content)
+            this.message = `Nenhum parser encontrado para ${content}.`
+                + ` Os conteúdos esperados são ${parsers}.`
+        }
+    }
+}
+
+namespace Match {
     /**
      * Parseia um resultado da API.
      *
@@ -63,26 +100,8 @@ namespace Match {
     export function parse(match: any) {
         const content = Parser.string(match.content, { required: true })
 
-        const parser = parsers.get(content)
-        if (!parser) {
-            throw new MissingParser(content, match)
-        }
+        const parser = Matcher.parserFor(content)
         return parser(match)
-    }
-
-    /** Erros durante parsing dos resultados de busca pela API. */
-    export class MissingParser extends Parser.Error<Match | any> {
-        /** Descrição do conteúdo retornado. */
-        readonly contentName: string
-
-        constructor(content: string, match: any) {
-            super(match, 'Match')
-            Parser.Error.captureStackTrace(this, MissingParser)
-            this.contentName = content
-
-            this.message = `Nenhum parser encontrado para ${this.value}.`
-                + ` Os conteúdos esperados são ${availableParsers()}.`
-        }
     }
 
     /** Constrói URL para busca na API. */
