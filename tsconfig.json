@@ -21,7 +21,7 @@
         "allowJs": false,
         "allowSyntheticDefaultImports": true,
         "strict": true,
-        "exactOptionalPropertyTypes": true,
+        "exactOptionalPropertyTypes": false,
         "alwaysStrict": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,

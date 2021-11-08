@@ -1,29 +1,22 @@
 import React, { StrictMode } from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
-import CssBaseline from '@mui/material/CssBaseline'
-import {
-    ThemeProvider,
-    StyledEngineProvider,
-    createTheme,
-    responsiveFontSizes,
-} from '@mui/material/styles'
+import { CssBaseline } from '@mui/material'
+import { StyledEngineProvider } from '@mui/material/styles'
 
-import themeOptions from 'utils/theme'
+import ThemeModeProvider from 'components/loader/ThemeModeProvider'
 import App from './App'
-
-const theme = responsiveFontSizes(createTheme(themeOptions))
 
 /** Página completa. */
 ReactDOM.render(
     <StrictMode>
         <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={theme}>
+            <ThemeModeProvider defaultMode="light">
                 <BrowserRouter>
                     <CssBaseline />
                     <App />
                 </BrowserRouter>
-            </ThemeProvider>
+            </ThemeModeProvider>
         </StyledEngineProvider>
     </StrictMode>,
     document.getElementById('root'),
