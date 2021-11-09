@@ -6,7 +6,7 @@ import { Theme } from '@mui/material/styles'
 import './HeaderBar.scss'
 import AccountMenu from './AccountMenu'
 import NavBar from './NavBar'
-import SearchBar from './SearchBar'
+import SearchBar from './search/SearchBar'
 
 /**
  * Barra de Cabeçalho em 3 partes:
@@ -32,9 +32,7 @@ export default function HeaderBar() {
                     )}
 
                     {/* Busca */}
-                    <Box className="header-box-center">
-                        <SearchBar />
-                    </Box>
+                    <SearchBar />
 
                     {/* Navegação */}
                     <Box className={isLarge ? 'header-box-right' : ''}>
