@@ -59,7 +59,7 @@ export default function MatchAutocomplete(props: MatchAutocompleteProps) {
         (inputParams: AutocompleteRenderInputParams) => {
             return renderInput({ ...inputParams, loading })
         },
-        [renderInput],
+        [renderInput, loading],
     )
 
     return (

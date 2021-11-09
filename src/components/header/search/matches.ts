@@ -113,25 +113,12 @@ class RequestThrottler {
     private readonly barrier: StreamBarrier
     /** Fila para evitar muitas requisições em aberto. */
     private readonly queue: RequestQueue
-    /** Callaback para quando o servidor responder alguma requisição. */
-    onMatches: (matches: Matches) => void = doNothing
-    /** Callback para atualização do estado de loading. */
-    setLoading: (isLoading: boolean) => void = doNothing
-    /** Callback para situações de erro. */
-    onError: (error: any) => void = doNothing
 
     constructor(config: Required<Config>) {
         this.interval = new ControlledInterval(config.waitMillis)
         this.barrier = new StreamBarrier(config.maxDistinctChars)
         this.queue = new RequestQueue(config.maxOpenRequests)
 
-        this.setup()
-        // inicia com a barreira aberta
-        this.barrier.open()
-    }
-
-    /** Monta a lógica com as streams de dados. */
-    private setup() {
         // quando a barreira envia um valor
         this.barrier.onSend = (query) => {
             // inicia novo intervalo (tempo que a barreira deveria ficar fechada)
@@ -144,23 +131,13 @@ class RequestThrottler {
             // abre a barreira
             this.barrier.open()
         }
-        // quando uma requisição iniciar
-        this.queue.onRequestStart = () => {
-            // marca o loading
-            this.setLoading(true)
-        }
-        // quando uma requisição for concluída
-        this.queue.onOutput = (results, query) => {
-            // encerra o loading e passa a diante
-            this.setLoading(false)
-            this.onMatches({ results, query })
-        }
-        // em caso de erro
-        this.queue.onError = (error) => {
-            // encerra o loading e acusa o erro
-            this.setLoading(false)
-            this.onError(error)
-        }
+        // inicia com a barreira aberta
+        this.barrier.open()
+    }
+
+    /** Entrada de valores para a stream. */
+    next(query: string) {
+        this.barrier.next(query)
     }
 
     /** Callback para fila de requisições cheia. */
@@ -168,9 +145,26 @@ class RequestThrottler {
         this.queue.onFull = callback
     }
 
-    /** Entrada de valores para a stream. */
-    next(query: string) {
-        this.barrier.next(query)
+    /** Callback para situações de erro. */
+    set onError(callback: (error: any) => void) {
+        this.queue.onError = callback
+    }
+
+    /** Callback para atualização do estado de loading. */
+    set setLoading(sendStatus: (isLoading: boolean) => void) {
+        this.queue.onRequestStart = () => {
+            sendStatus(true)
+        }
+        this.queue.onEmpty = () => {
+            sendStatus(false)
+        }
+    }
+
+    /** Callaback para quando o servidor responder alguma requisição. */
+    set onMatches(sendValue: (matches: Matches) => void) {
+        this.queue.onOutput = (results, query) => {
+            sendValue({ results, query })
+        }
     }
 }
 
@@ -193,6 +187,8 @@ class RequestQueue {
     onError: (error: any) => void = doNothing
     /** Callback para quando a fila está cheia. */
     onFull: () => void = doNothing
+    /** Callback para quando a fila se torna vazia. */
+    onEmpty: () => void = doNothing
     /** Callback chamada antes da requisição de busca. */
     onRequestStart: (input: string) => void = doNothing
 
@@ -214,6 +210,9 @@ class RequestQueue {
         } finally {
             // e fecha após concluída
             this.openRequests -= 1
+            if (this.openRequests <= 0) {
+                this.onEmpty()
+            }
         }
     }
 
