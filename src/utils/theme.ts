@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/dot-notation, import/prefer-default-export */
 import { ThemeOptions, createTheme, responsiveFontSizes } from '@mui/material/styles'
 import { indigo, pink } from '@mui/material/colors'
+import { deepmerge } from '@mui/utils'
 
 /**
  * Configurações base para os dois temas.
@@ -8,7 +9,7 @@ import { indigo, pink } from '@mui/material/colors'
  * @see https://bareynol.github.io/mui-theme-creator/
  * @see https://material.io/design/color/the-color-system.html Nomes para as cores.
  */
-const baseTheme = createTheme({
+const baseTheme: ThemeOptions = {
     palette: {
         primary: {
             main: indigo['500'],
@@ -24,21 +25,22 @@ const baseTheme = createTheme({
             },
         },
     },
-})
+}
 
 /** Constrói tema a partir do tema base. */
-function buildTheme(...options: ThemeOptions[]) {
-    return responsiveFontSizes(createTheme(...options))
+function buildTheme(options?: ThemeOptions) {
+    const merged = deepmerge(baseTheme, options)
+    return responsiveFontSizes(createTheme(merged))
 }
 
 /** Opções de tema. */
 export const THEMES = {
-    light: buildTheme(baseTheme, {
+    light: buildTheme({
         palette: {
             mode: 'light',
         },
     }),
-    dark: buildTheme(baseTheme, {
+    dark: buildTheme({
         palette: {
             mode: 'dark',
         },

@@ -15,6 +15,7 @@
         "@emotion/styled": "^11.3",
         "@mui/icons-material": "^5.0",
         "@mui/material": "^5.0",
+        "@mui/utils": "^5.1.0",
         "@rehooks/local-storage": "^2.4.0",
         "@types/node": "^12.20",
         "@types/react": "^17.0",
