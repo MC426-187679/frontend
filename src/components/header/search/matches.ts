@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { distance as levenshtein } from 'fastest-levenshtein'
 
 import { Match } from 'models/match'
@@ -77,7 +77,7 @@ export function useMatches({
         }),
     }))
 
-    // de forma memoizada
+    // de forma memoizada (muda apenas com 'setMatches')
     const search = useMemo(() => {
         // passa os resultados para o atualizador de estados
         throttler.onMatches = (matches) => {
@@ -87,6 +87,13 @@ export function useMatches({
         // e monta função de busca
         return (query: string) => throttler.next(query)
     }, [setMatches])
+
+    // atualiza todas as callbacks quando uma delas mudar
+    useEffect(() => {
+        throttler.setLoading = setLoading
+        throttler.onFull = onFull
+        throttler.onError = onError
+    }, [onError, onFull, setLoading])
 
     return [current, search]
 }
@@ -108,20 +115,23 @@ class RequestThrottler {
     private readonly queue: RequestQueue
     /** Callaback para quando o servidor responder alguma requisição. */
     onMatches: (matches: Matches) => void = doNothing
+    /** Callback para atualização do estado de loading. */
+    setLoading: (isLoading: boolean) => void = doNothing
+    /** Callback para situações de erro. */
+    onError: (error: any) => void = doNothing
 
     constructor(config: Required<Config>) {
         this.interval = new ControlledInterval(config.waitMillis)
         this.barrier = new StreamBarrier(config.maxDistinctChars)
         this.queue = new RequestQueue(config.maxOpenRequests)
-        this.queue.onFull = config.onFull
 
-        this.setup(config)
+        this.setup()
         // inicia com a barreira aberta
         this.barrier.open()
     }
 
     /** Monta a lógica com as streams de dados. */
-    private setup({ setLoading, onError }: Required<Config>) {
+    private setup() {
         // quando a barreira envia um valor
         this.barrier.onSend = (query) => {
             // inicia novo intervalo (tempo que a barreira deveria ficar fechada)
@@ -137,20 +147,25 @@ class RequestThrottler {
         // quando uma requisição iniciar
         this.queue.onRequestStart = () => {
             // marca o loading
-            setLoading(true)
+            this.setLoading(true)
         }
         // quando uma requisição for concluída
         this.queue.onOutput = (results, query) => {
             // encerra o loading e passa a diante
-            setLoading(false)
+            this.setLoading(false)
             this.onMatches({ results, query })
         }
         // em caso de erro
         this.queue.onError = (error) => {
             // encerra o loading e acusa o erro
-            setLoading(false)
-            onError(error)
+            this.setLoading(false)
+            this.onError(error)
         }
+    }
+
+    /** Callback para fila de requisições cheia. */
+    set onFull(callback: () => void) {
+        this.queue.onFull = callback
     }
 
     /** Entrada de valores para a stream. */

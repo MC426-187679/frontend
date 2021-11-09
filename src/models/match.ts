@@ -12,11 +12,11 @@ abstract class Match {
     /** URL da página relacionada a aquele resultado. */
     abstract asUrl(): string | undefined
 
-    /** Se essa match é idêntica a outra. */
-    equals(other: Match) {
-        const thisID = this.uniqueMatchIdentifier()
+    /** Se duas matchs são idênticas. */
+    static equals(first: Match, other: Match) {
+        const firstID = first.uniqueMatchIdentifier()
         const otherID = other.uniqueMatchIdentifier()
-        return thisID === otherID
+        return firstID === otherID
     }
 }
 
