@@ -35,7 +35,7 @@ interface MatchAutocompleteProps extends Omit<MatchAutocompleteBaseProps, Overri
  * e sistema de busca controlado por {@link useMatches}.
  */
 export default function MatchAutocomplete(props: MatchAutocompleteProps) {
-    const { params, onError, renderInput } = splitProps(props)
+    const { onError, renderInput, ...params } = props
 
     // estado de loading dos resultados da busca
     const [loading, setLoading] = useState(false)
@@ -77,19 +77,6 @@ export default function MatchAutocomplete(props: MatchAutocompleteProps) {
             getOptionLabel={getDescription}
         />
     )
-}
-
-/** Remove as propriedades específicas de {@link MatchAutocomplete}. */
-function splitProps(props: MatchAutocompleteProps) {
-    return {
-        params: {
-            ...props,
-            onError: undefined,
-            renderInput: undefined,
-        },
-        onError: props.onError,
-        renderInput: props.renderInput,
-    }
 }
 
 /**

@@ -1,8 +1,8 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { HTMLAttributes, useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
-import { InputBase } from '@mui/material'
-import SearchIcon from '@mui/icons-material/Search'
+import { InputBase, styled } from '@mui/material'
+import { Search } from '@mui/icons-material'
 
 import { Match } from 'models/match'
 import MatchAutocomplete, { InputParams } from './MatchAutocomplete'
@@ -36,7 +36,6 @@ export default function SearchBar() {
             filterSelectedOptions
             includeInputInList
             disablePortal
-            open
         />
     )
 }
@@ -50,28 +49,21 @@ function renderOption(props: HTMLAttributes<HTMLLIElement>, option: Match) {
     )
 }
 
+/** Ícone de busca, com margem lateral. */
+const SearchIcon = styled(Search)(({ theme }) => ({
+    height: '100%',
+    margin: theme.spacing(0, 1),
+}))
+
 /** Caixa de texto para entrada do usuário. */
 function renderInput(props: InputParams) {
-    const { id, disabled, inputProps, InputProps } = props
+    const { InputProps, InputLabelProps, loading, ...params } = props
 
     return (
         <InputBase
-            id={id}
-            disabled={disabled}
-            fullWidth
-            inputProps={inputProps}
-            ref={InputProps.ref}
-            // size={size ?? 'medium'}
-            // className={InputProps.className}
-            startAdornment={(
-                <SearchIcon
-                    sx={{
-                        height: '100%',
-                        margin: '0 10px',
-                    }}
-                />
-            )}
-            endAdornment={InputProps.endAdornment}
+            {...params}
+            {...InputProps}
+            startAdornment={<SearchIcon />}
             placeholder="Pesquisar..."
         />
     )
