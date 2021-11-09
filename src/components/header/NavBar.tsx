@@ -2,6 +2,8 @@ import React from 'react'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { Box, Button, useTheme } from '@mui/material'
 
+import ThemeSwitch from './ThemeSwitch'
+
 /**
  * Links de Navegação.
  */
@@ -18,6 +20,7 @@ export default function NavBar() {
             <NavLink to="/grade" margin={buttonMargin}>
                 Grade
             </NavLink>
+            <ThemeSwitch />
         </Box>
     )
 }
