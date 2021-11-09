@@ -139,7 +139,6 @@ export namespace Parser {
 
         constructor(value: T, type: string) {
             super(`Problema de parsing do objeto '${value}' como tipo '${type}'`)
-            TypeError.captureStackTrace(this, Error)
 
             this.name = 'Parser.Error'
             this.value = value

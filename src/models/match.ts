@@ -78,7 +78,6 @@ export namespace Matcher {
     export class MissingParser extends Parser.Error<string> {
         constructor(content: string) {
             super(content, 'Match')
-            Parser.Error.captureStackTrace(this, MissingParser)
 
             const parsers = available().map((matcher) => matcher.content)
             this.message = `Nenhum parser encontrado para ${content}.`
