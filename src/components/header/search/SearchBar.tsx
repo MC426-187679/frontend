@@ -1,10 +1,10 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { HTMLAttributes, useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
-import { CircularProgress, InputBase, styled } from '@mui/material'
-import { Search } from '@mui/icons-material'
 
+import './SearchBar.scss'
 import { Match } from 'models/match'
+import SearchInput from './SearchInput'
 import MatchAutocomplete, { InputParams } from './MatchAutocomplete'
 
 /**
@@ -29,6 +29,7 @@ export default function SearchBar() {
     return (
         <MatchAutocomplete
             fullWidth
+            className="search-bar-input"
             onChange={redirectToChoice}
             renderInput={renderInput}
             renderOption={renderOption}
@@ -49,45 +50,7 @@ function renderOption(props: HTMLAttributes<HTMLLIElement>, option: Match) {
     )
 }
 
-/** Caixa de texto com cor do background. */
-const Input = styled(InputBase)(({ theme }) => ({
-    backgroundColor: theme.palette.background.default,
-    borderRadius: theme.shape.borderRadius,
-}))
-
-/** Ícone de busca, com margem lateral. */
-const SearchIcon = styled(Search)(({ theme }) => ({
-    height: '100%',
-    margin: theme.spacing(0, 1),
-}))
-
-/** Ícone circular com efeito de loading. */
-const Loading = styled(CircularProgress)(({ theme }) => ({
-    height: '100%',
-    padding: theme.spacing(1),
-}))
-
 /** Caixa de texto para entrada do usuário. */
 function renderInput(props: InputParams) {
-    const { InputProps, InputLabelProps, loading, ...params } = props
-
-    return (
-        <Input
-            placeholder="Pesquisar..."
-            {...params}
-            {...InputProps}
-            startAdornment={(
-                <>
-                    <SearchIcon />
-                    {InputProps.startAdornment}
-                </>
-            )}
-            endAdornment={(
-                <>
-                    {loading && <Loading />}
-                    {InputProps.endAdornment}
-                </>
-            )}
-        />
-    )
+    return <SearchInput {...props} />
 }

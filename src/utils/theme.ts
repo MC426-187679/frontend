@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation, import/prefer-default-export */
-import { ThemeOptions, createTheme, responsiveFontSizes } from '@mui/material/styles'
+import { ThemeOptions, createTheme, lighten, responsiveFontSizes } from '@mui/material/styles'
 import { indigo, pink } from '@mui/material/colors'
 import { deepmerge } from '@mui/utils'
 
@@ -38,6 +38,9 @@ export const THEMES = {
     light: buildTheme({
         palette: {
             mode: 'light',
+            background: {
+                default: lighten(indigo['500'], 0.9),
+            },
         },
     }),
     dark: buildTheme({
