@@ -14,20 +14,14 @@ interface DisciplineLinkProps {
 export default function DisciplineLink({ code, partial, special = false }: DisciplineLinkProps) {
     const classes = partial ? 'discipline-link partial' : 'discipline-link'
 
-    const props: { component?: typeof RouterLink, to?: string } = {}
-    if (!special) {
-        props.component = RouterLink
-        props.to = disciplineURL(code)
-    }
-
     return (
         <Button
             color="primary"
             variant="contained"
             className={classes}
             disabled={special}
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            {...props}
+            component={RouterLink}
+            to={disciplineURL(code)}
         >
             { code }
         </Button>

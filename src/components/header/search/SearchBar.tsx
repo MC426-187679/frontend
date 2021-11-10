@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { HTMLAttributes, useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
 

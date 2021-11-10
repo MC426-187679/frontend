@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { ReactNode, useCallback, useState } from 'react'
 import {
     Autocomplete,

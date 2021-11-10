@@ -64,6 +64,7 @@
         // análise de tipos e valores
         "react/destructuring-assignment": "off",
         "react/require-default-props": "off",
+        "react/jsx-props-no-spreading": "off",
         // jest usa mocks que ocultam globais da DOM
         "@typescript-eslint/no-redeclare": ["error", {
             "builtinGlobals": false

@@ -1,5 +1,5 @@
 import React, { MouseEvent, ReactNode, useCallback, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
 import { Button, IconButton, Menu, MenuItem, useMediaQuery } from '@mui/material'
 import { Theme } from '@mui/material/styles'
 import AccountCircle from '@mui/icons-material/AccountCircle'
@@ -63,7 +63,7 @@ interface ItemProps {
  */
 function LinkItem({ children, to, onClick }: ItemProps) {
     return (
-        <MenuItem component={Link} to={to} onClick={onClick}>
+        <MenuItem component={RouterLink} to={to} onClick={onClick}>
             { children }
         </MenuItem>
     )

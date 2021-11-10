@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react'
 import { CircularProgress, Fade, InputBase, styled } from '@mui/material'
 import { Search } from '@mui/icons-material'

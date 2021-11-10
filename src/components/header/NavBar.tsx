@@ -1,54 +1,71 @@
-import React from 'react'
-import { Link, useRouteMatch } from 'react-router-dom'
-import { Box, Button, useTheme } from '@mui/material'
+import React, { ReactNode } from 'react'
+import { Link as RouterLink, useRouteMatch } from 'react-router-dom'
+import { Button, styled } from '@mui/material'
 
 import ThemeSwitch from './ThemeSwitch'
+
+/** Elevemnto de navegação com margens laterais. */
+const Nav = styled('nav')(({ theme }) => ({
+    margin: theme.spacing('auto', 2),
+}))
 
 /**
  * Links de Navegação.
  */
 export default function NavBar() {
-    const theme = useTheme()
-    const boxMargin = theme.spacing('auto', 2)
-    const buttonMargin = theme.spacing('auto', 1)
-
     return (
-        <Box sx={{ margin: boxMargin }} component="nav">
-            <NavLink to="/arvore" margin={buttonMargin}>
+        <Nav>
+            <NavLink to="/arvore">
                 Árvore
             </NavLink>
-            <NavLink to="/grade" margin={buttonMargin}>
+            <NavLink to="/grade">
                 Grade
             </NavLink>
             <ThemeSwitch />
-        </Box>
+        </Nav>
     )
 }
 
 interface NavLinkProps {
-    children: string
     to: string
-    margin: string
+    children?: ReactNode
+    startIcon?: ReactNode
+    endIcon?: ReactNode
 }
+
+/** Instnaciação de {@link Button} com `component` {@link RouterLink}. */
+type ButtonWithLink = (props: NavLinkProps & {
+    component: typeof RouterLink
+    color: 'inherit'
+    size: 'large'
+    variant: 'outlined' | 'text'
+    'aria-current': 'page'
+}) => JSX.Element
+
+/** Botão de navegação, com largura fixada e margem lateral. */
+const NavButton = styled(Button as ButtonWithLink)(({ theme }) => ({
+    width: '12ch',
+    margin: theme.spacing('auto', 1),
+}))
 
 /**
  * Um único link de navegação.
  */
-function NavLink({ children, to, margin }: NavLinkProps) {
+function NavLink({ children, to, startIcon, endIcon }: NavLinkProps) {
     const match = useRouteMatch(to)
-    const current = (match?.path === to)
 
     return (
-        <Button
-            component={Link}
+        <NavButton
+            component={RouterLink}
             to={to}
             color="inherit"
             size="large"
-            variant={current ? 'outlined' : 'text'}
-            sx={{ width: '12ch', margin }}
+            variant={match ? 'outlined' : 'text'}
             aria-current="page"
+            startIcon={startIcon}
+            endIcon={endIcon}
         >
             { children }
-        </Button>
+        </NavButton>
     )
 }
