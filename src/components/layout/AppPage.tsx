@@ -1,7 +1,10 @@
 import React from 'react'
-import { Container } from '@mui/material'
+import { Container, styled } from '@mui/material'
 
-import './AppPage.scss'
+/** {@link Container} com margem superior. */
+const ContainerWithMargin = styled(Container)`
+    margin-top: 2ex;
+`
 
 interface AppPageProps {
     children: React.ReactNode
@@ -13,8 +16,8 @@ interface AppPageProps {
  */
 export default function AppPage({ children }: AppPageProps) {
     return (
-        <Container maxWidth="lg" className="app-page">
+        <ContainerWithMargin maxWidth="lg">
             { children }
-        </Container>
+        </ContainerWithMargin>
     )
 }

@@ -6,6 +6,7 @@ import { Theme } from '@mui/material/styles'
 import './HeaderBar.scss'
 import AccountMenu from './AccountMenu'
 import NavBar from './NavBar'
+import ThemeSwitch from './ThemeSwitch'
 import SearchBar from './search/SearchBar'
 
 /**
@@ -13,6 +14,7 @@ import SearchBar from './search/SearchBar'
  *  - logotipo
  *  - barra de busca
  *  - links de navegação
+ *  - seletor de tema
  */
 export default function HeaderBar() {
     const isLarge = useMediaQuery((theme: Theme) => (
@@ -36,9 +38,8 @@ export default function HeaderBar() {
 
                     {/* Navegação */}
                     <Box className={isLarge ? 'header-box-right' : ''}>
-                        {isLarge && (
-                            <NavBar />
-                        )}
+                        {isLarge && <NavBar />}
+                        {isLarge && <ThemeSwitch />}
                         <AccountMenu />
                     </Box>
 

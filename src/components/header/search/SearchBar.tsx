@@ -8,7 +8,10 @@ import MatchAutocomplete, { InputParams } from './MatchAutocomplete'
 import SearchInput from './SearchInput'
 import MatchItem from './MatchItem'
 
-const _TODO = css`max-width: 60ch;`
+/** Classe CSS com largura máxima fixada. */
+const hasMaxWidth = css`
+    max-width: 60ch;
+`
 
 /** Opção do {@link MatchAutocomplete} para adicionar margem para o botão de clear.  */
 const componentsProps = {
@@ -38,7 +41,7 @@ export default function SearchBar() {
     return (
         <MatchAutocomplete
             fullWidth
-            className={_TODO}
+            className={hasMaxWidth}
             onChange={redirectToChoice}
             renderInput={renderInput}
             renderOption={renderOption}
@@ -46,6 +49,11 @@ export default function SearchBar() {
             autoComplete
             filterSelectedOptions
             includeInputInList
+            clearText="Limpar"
+            openText="Abrir"
+            closeText="Fechar"
+            loadingText="Carregando..."
+            noOptionsText="Sem resultados"
         />
     )
 }

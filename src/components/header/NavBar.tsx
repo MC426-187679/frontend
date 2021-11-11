@@ -2,8 +2,6 @@ import React, { ReactNode } from 'react'
 import { Link as RouterLink, useRouteMatch } from 'react-router-dom'
 import { Button, styled } from '@mui/material'
 
-import ThemeSwitch from './ThemeSwitch'
-
 /** Elevemnto de navegação com margens laterais. */
 const Nav = styled('nav')(({ theme }) => ({
     margin: theme.spacing('auto', 2),
@@ -21,7 +19,6 @@ export default function NavBar() {
             <NavLink to="/grade">
                 Grade
             </NavLink>
-            <ThemeSwitch />
         </Nav>
     )
 }

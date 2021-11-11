@@ -19,7 +19,7 @@ const SearchIcon = styled(Search)(({ theme }) => ({
 /** Caixa de texto para entrada do usuário. */
 export default function SearchInput(props: InputParams) {
     const { InputProps, InputLabelProps, loading, ...params } = props
-    const { startAdornment, endAdornment, className, ...inputParams } = InputProps
+    const { startAdornment, endAdornment, ...inputParams } = InputProps
 
     const inputRef = useRef<HTMLInputElement>(null)
     return (
@@ -28,7 +28,6 @@ export default function SearchInput(props: InputParams) {
             inputRef={inputRef}
             {...params}
             {...inputParams}
-            className={`search-input ${className}`}
             startAdornment={(
                 <>
                     <SearchIcon />
@@ -45,7 +44,7 @@ export default function SearchInput(props: InputParams) {
     )
 }
 
-/** Ícone circular com efeito de loading. */
+/** Ícone circular com padding. */
 const PaddedProgress = styled(CircularProgress)(({ theme }) => ({
     padding: theme.spacing(0.5),
 }))
