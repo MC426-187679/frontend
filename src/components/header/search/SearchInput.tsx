@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { RefObject, useRef } from 'react'
 import { CircularProgress, Fade, InputBase, styled } from '@mui/material'
 import { Search } from '@mui/icons-material'
 
@@ -16,37 +16,19 @@ const SearchIcon = styled(Search)(({ theme }) => ({
     margin: theme.spacing(0, 1),
 }))
 
-/** Ícone circular com efeito de loading. */
-const PaddedProgress = styled(CircularProgress)(({ theme }) => ({
-    height: '100%',
-    padding: theme.spacing(1),
-}))
-
-/** Fade-in de 500ms e fade-out de 0ms. */
-const loadingDuration = {
-    enter: 500,
-    exit: 0,
-} as const
-
-/** Loading circular com efeito de fade-in. */
-function Loading({ isLoading }: { isLoading: boolean }) {
-    return (
-        <Fade in={isLoading} timeout={loadingDuration} unmountOnExit>
-            <PaddedProgress />
-        </Fade>
-    )
-}
-
 /** Caixa de texto para entrada do usuário. */
 export default function SearchInput(props: InputParams) {
     const { InputProps, InputLabelProps, loading, ...params } = props
-    const { startAdornment, endAdornment, ...inputParams } = InputProps
+    const { startAdornment, endAdornment, className, ...inputParams } = InputProps
 
+    const inputRef = useRef<HTMLInputElement>(null)
     return (
         <Input
             placeholder="Pesquisar..."
+            inputRef={inputRef}
             {...params}
             {...inputParams}
+            className={`search-input ${className}`}
             startAdornment={(
                 <>
                     <SearchIcon />
@@ -55,10 +37,36 @@ export default function SearchInput(props: InputParams) {
             )}
             endAdornment={(
                 <>
-                    <Loading isLoading={loading} />
+                    <Loading isLoading={loading} inputRef={inputRef} />
                     {endAdornment}
                 </>
             )}
         />
+    )
+}
+
+/** Ícone circular com efeito de loading. */
+const PaddedProgress = styled(CircularProgress)(({ theme }) => ({
+    padding: theme.spacing(0.5),
+}))
+
+/** Fade-in de 500ms e fade-out de 0ms. */
+const loadingDuration = {
+    enter: 500,
+    exit: 0,
+} as const
+
+interface LoadingProps {
+    isLoading: boolean
+    inputRef: RefObject<HTMLInputElement>
+}
+
+/** Loading circular com efeito de fade-in. */
+function Loading({ isLoading, inputRef }: LoadingProps) {
+    const size = inputRef.current?.clientHeight ?? 0
+    return (
+        <Fade in={isLoading} timeout={loadingDuration} unmountOnExit>
+            <PaddedProgress size={size} />
+        </Fade>
     )
 }

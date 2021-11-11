@@ -33,14 +33,15 @@ interface NavLinkProps {
     endIcon?: ReactNode
 }
 
-/** Instnaciação de {@link Button} com `component` {@link RouterLink}. */
-type ButtonWithLink = (props: NavLinkProps & {
-    component: typeof RouterLink
-    color: 'inherit'
-    size: 'large'
-    variant: 'outlined' | 'text'
-    'aria-current': 'page'
-}) => JSX.Element
+/** Instanciação de {@link Button} com `component` {@link RouterLink}. */
+type ButtonWithLink =
+    (props: NavLinkProps & {
+        component: typeof RouterLink
+        color: 'inherit'
+        size: 'large'
+        variant: 'outlined' | 'text'
+        'aria-current': 'page'
+    }) => JSX.Element
 
 /** Botão de navegação, com largura fixada e margem lateral. */
 const NavButton = styled(Button as ButtonWithLink)(({ theme }) => ({

@@ -11,13 +11,6 @@ abstract class Match {
 
     /** URL da página relacionada a aquele resultado. */
     abstract asUrl(): string | undefined
-
-    /** Se duas matchs são idênticas. */
-    static equals(first: Match, other: Match) {
-        const firstID = first.uniqueMatchIdentifier()
-        const otherID = other.uniqueMatchIdentifier()
-        return firstID === otherID
-    }
 }
 
 /** Parser para um tipo de resultado específico. */

@@ -6,11 +6,10 @@ import {
     AutocompleteRenderInputParams,
 } from '@mui/material'
 
-import { Match } from 'models/match'
-import { useMatches } from './matches'
+import { MatchedContent, useMatches } from './matches'
 
-/** Instância de {@link Autocomplete} com `T = Match`. */
-type MatchAutocompleteBaseProps = AutocompleteProps<Match, false, false, true>
+/** Instância de {@link Autocomplete} com `T = MatchedContent`. */
+type MatchAutocompleteBaseProps = AutocompleteProps<MatchedContent, false, false, true>
 
 /** Propriedades sobrescritas em {@link MatchAutocomplete}. */
 type OverridedProps =
@@ -68,7 +67,7 @@ export default function MatchAutocomplete(props: MatchAutocompleteProps) {
             handleHomeEndKeys={params.handleHomeEndKeys ?? true}
             filterOptions={noFilter}
             options={matches.results}
-            isOptionEqualToValue={Match.equals}
+            isOptionEqualToValue={matchedEquals}
             inputValue={input}
             renderInput={renderWithLoading}
             onInputChange={searchInput}
@@ -88,11 +87,16 @@ function noFilter<T>(options: T[]) {
 }
 
 /** Se o resultado da busca não tem link. */
-function isDisabled(option: Match) {
-    return option.asUrl() === undefined
+function isDisabled(option: MatchedContent) {
+    return option.asUrl === undefined
+}
+
+/** Se dois resultado são iguais. */
+function matchedEquals(a: MatchedContent, b: MatchedContent) {
+    return a.identifier === b.identifier
 }
 
 /** Descrição única do resultado. */
-function getDescription(match: Match) {
-    return match.uniqueMatchDescription()
+function getDescription(match: MatchedContent) {
+    return match.description
 }

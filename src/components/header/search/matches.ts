@@ -3,18 +3,43 @@ import { distance as levenshtein } from 'fastest-levenshtein'
 
 import { Match } from 'models/match'
 
+/** Conteúdo adaptado de {@link Match}. */
+export interface MatchedContent {
+    /** Resultado de {@link Match.uniqueMatchIdentifier}. */
+    readonly identifier: string
+    /** Resultado de {@link Match.uniqueMatchDescription}. */
+    readonly description: string
+    /** Resultado de {@link Match.asUrl}. */
+    readonly asUrl: string | undefined
+}
+
 /** Conjunto de resultados retornados pela API de busca. */
 export interface Matches {
     /** Texto usado na busca. */
     readonly query: string
     /** Resultados da busca. */
-    readonly results: ReadonlyArray<Match>
+    readonly results: ReadonlyArray<MatchedContent>
 }
 
 namespace Matches {
     /** Resultados iniciais, para busca vazia. */
     export function empty(): Matches {
         return { query: '', results: [] }
+    }
+
+    /** Conversão de {@link Match} para {@link MatchedContent}. */
+    function asMatched(match: Match): MatchedContent {
+        return {
+            identifier: match.uniqueMatchIdentifier(),
+            description: match.uniqueMatchDescription(),
+            asUrl: match.asUrl(),
+        }
+    }
+
+    /** Constrói {@link Matches} a partir do resultado de {@link Match.fetch}. */
+    export function from(matches: Match[], query: string) {
+        const results = matches.map(asMatched)
+        return { query, results }
     }
 }
 
@@ -163,7 +188,7 @@ class RequestThrottler {
     /** Callaback para quando o servidor responder alguma requisição. */
     set onMatches(sendValue: (matches: Matches) => void) {
         this.queue.onOutput = (results, query) => {
-            sendValue({ results, query })
+            sendValue(Matches.from(results, query))
         }
     }
 }

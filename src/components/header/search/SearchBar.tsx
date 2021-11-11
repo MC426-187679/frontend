@@ -1,10 +1,23 @@
 import React, { HTMLAttributes, useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
+import { AutocompleteRenderOptionState } from '@mui/material'
+import { css } from '@emotion/css'
 
-import './SearchBar.scss'
-import { Match } from 'models/match'
-import SearchInput from './SearchInput'
+import { MatchedContent } from './matches'
 import MatchAutocomplete, { InputParams } from './MatchAutocomplete'
+import SearchInput from './SearchInput'
+import MatchItem from './MatchItem'
+
+const _TODO = css`max-width: 60ch;`
+
+/** Opção do {@link MatchAutocomplete} para adicionar margem para o botão de clear.  */
+const componentsProps = {
+    clearIndicator: {
+        className: css`
+            right: 4px;
+        `,
+    },
+}
 
 /**
  * Barra de Busca Principal: lista resultados de busca e redireciona resultado escolhido para a
@@ -14,12 +27,9 @@ export default function SearchBar() {
     const history = useHistory()
     // redireciona quando escolhido
     const redirectToChoice = useCallback(
-        (_, match: Match | string | null | undefined) => {
-            if (match instanceof Match) {
-                const path = match.asUrl()
-                if (path) {
-                    history.push(path)
-                }
+        (_, match: MatchedContent | string | null | undefined) => {
+            if (typeof match === 'object' && match?.asUrl) {
+                history.push(match.asUrl)
             }
         },
         [history],
@@ -28,28 +38,36 @@ export default function SearchBar() {
     return (
         <MatchAutocomplete
             fullWidth
-            className="search-bar-input"
+            className={_TODO}
             onChange={redirectToChoice}
             renderInput={renderInput}
             renderOption={renderOption}
+            componentsProps={componentsProps}
             autoComplete
             filterSelectedOptions
             includeInputInList
-            disablePortal
         />
     )
 }
 
-/** Opção de resultado da busca, renderizado como `<li>`. */
-function renderOption(props: HTMLAttributes<HTMLLIElement>, option: Match) {
-    return (
-        <li {...props} key={option.uniqueMatchIdentifier()}>
-            { option.uniqueMatchDescription() }
-        </li>
-    )
+/**
+ * Opção de resultado da busca.
+ *
+ * @see {@link MatchItem}
+ */
+function renderOption(
+    props: HTMLAttributes<HTMLLIElement>,
+    option: MatchedContent,
+    state: AutocompleteRenderOptionState,
+) {
+    return <MatchItem {...props} option={option} {...state} />
 }
 
-/** Caixa de texto para entrada do usuário. */
+/**
+ * Caixa de texto para entrada do usuário.
+ *
+ * @see {@link SearchInput}
+ */
 function renderInput(props: InputParams) {
     return <SearchInput {...props} />
 }
