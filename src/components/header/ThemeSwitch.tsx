@@ -1,31 +1,52 @@
 import React, { useCallback } from 'react'
 import { FormControlLabel, Switch } from '@mui/material'
+import { css } from '@emotion/css'
 
 import { useThemeMode } from 'components/loader/ThemeModeProvider'
+
+/** ID do componente {@link ThemeSwitch}. */
+const switchId = 'theme-switch'
+/** Descirção textual do {@link ThemeSwitch}. */
+const switchLabel = 'Tema Escuro'
+/** Formatação do label em {@link ThemeSwitch}. */
+const switchLabelProps = {
+    typography: {
+        noWrap: true,
+        className: css`
+            padding: 0 1ch;
+        `,
+    },
+}
 
 /** Seletor de tema para testes. */
 export default function ThemeSwitch() {
     const [theme, setTheme] = useThemeMode()
+    const checked = (theme === 'dark')
 
     const changeTheme = useCallback(
-        (_, checked: boolean) => {
-            setTheme(checked ? 'dark' : 'light')
+        (_, isChecked: boolean) => {
+            setTheme(isChecked ? 'dark' : 'light')
         },
         [setTheme],
     )
 
     return (
         <FormControlLabel
-            label="Tema Escuro"
+            id={switchId}
+            label={switchLabel}
+            aria-label={switchLabel}
+            labelPlacement="end"
             control={(
                 <Switch
-                    checked={theme === 'dark'}
+                    checked={checked}
                     onChange={changeTheme}
                     inputProps={{
-                        'aria-label': 'Tema Escuro',
+                        'aria-labelledby': switchId,
+                        role: 'switch',
                     }}
                 />
             )}
+            componentsProps={switchLabelProps}
         />
     )
 }

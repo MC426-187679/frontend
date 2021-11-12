@@ -48,16 +48,6 @@ export type Search = (query: string) => void
 
 /** Opções para {@link useMatches} e para o {@link RequestThrottler}. */
 interface Config {
-    /**
-     *  Maior número de caracteres distintos na caixa busca que segue o tempo de espera
-     * entre requisições. Se o texto mudar mais caracteres do que isso, a requisição é
-     * iniciada imediatamente.
-     */
-    readonly maxDistinctChars?: number
-    /* Tempo de espera entre requisições normais. */
-    readonly waitMillis?: number
-    /** Maior número de requisições não-resolvidas em um dado momento. */
-    readonly maxOpenRequests?: number
     /** Callback para requisições que resultam em erro. */
     readonly onError?: (error: any) => void
     /** Callback para quando a fila de requisições está cheia. */
@@ -74,16 +64,10 @@ function doNothing() { }
  * opções na lista de espera para requisições ao servidor.
  *
  * @param {Config} config Configurações do limitador de requisições ({@link Config}).
- * @param config.maxDistinctChars padrão: 5.
- * @param config.waitMillis padrão: 1000.
- * @param config.maxOpenRequests padrão: 5.
  *
  * @returns Resultados atuais e função para busca de próximos resultados.
  */
 export function useMatches({
-    maxDistinctChars = 5,
-    waitMillis = 1000,
-    maxOpenRequests = 5,
     onError = doNothing,
     onFull = doNothing,
     setLoading = doNothing,
@@ -92,14 +76,7 @@ export function useMatches({
     const [{ matches: current, throttler }, setMatches] = useState(() => ({
         matches: Matches.empty(),
         // as configurações são usada apenas no setup
-        throttler: new RequestThrottler({
-            maxDistinctChars,
-            waitMillis,
-            maxOpenRequests,
-            onError,
-            onFull,
-            setLoading,
-        }),
+        throttler: new RequestThrottler(),
     }))
 
     // de forma memoizada (muda apenas com 'setMatches')
@@ -124,10 +101,11 @@ export function useMatches({
 }
 
 /**
- *  Limitador de requisições, que só faz uma requisição depois de {@link Config.waitMillis} terem
- * passados da última requisição, ou se o texto da caixa de entrada mudou mais que
- * {@link Config.maxDistinctChars} caracteres. Se existirem {@link Config.maxOpenRequests}
- * requisições não concluídas, espera uma delas terminar para fazer a próxima.
+ *  Limitador de requisições, que só faz uma requisição depois de
+ * {@link ControlledInterval.waitMillis} terem passados da última requisição, ou se o texto da
+ * caixa de entrada mudou mais que {@link StreamBarrier.maxDistinctChars} caracteres. Se
+ * existirem {@link RequestQueue.maxOpenRequests} requisições não concluídas, espera uma delas
+ * terminar para fazer a próxima.
  *
  * As entrada recebidas (em {@link next}) enquanto o sistema está em espera podem ser ignoradas.
  */
@@ -139,10 +117,18 @@ class RequestThrottler {
     /** Fila para evitar muitas requisições em aberto. */
     private readonly queue: RequestQueue
 
-    constructor(config: Required<Config>) {
-        this.interval = new ControlledInterval(config.waitMillis)
-        this.barrier = new StreamBarrier(config.maxDistinctChars)
-        this.queue = new RequestQueue(config.maxOpenRequests)
+    /**
+     * @param maxDistinctChars Maior número de caracteres distintos na caixa busca que segue o
+     *  tempo de espera entre requisições. Se o texto mudar mais caracteres do que isso, a
+     *  requisição é iniciada imediatamente. (padrão: 5)
+     * @param waitMillis Tempo de espera entre requisições normais em milissegundos. (padrão: 1000)
+     * @param maxOpenRequests Maior número de requisições não-resolvidas em um dado momento.
+     *  (padrão: 5)
+     */
+    constructor(maxDistinctChars = 5, waitMillis = 1000, maxOpenRequests = 5) {
+        this.interval = new ControlledInterval(waitMillis)
+        this.barrier = new StreamBarrier(maxDistinctChars)
+        this.queue = new RequestQueue(maxOpenRequests)
 
         // quando a barreira envia um valor
         this.barrier.onSend = (query) => {
@@ -349,14 +335,13 @@ class ControlledInterval {
     private readonly waitMillis: number
 
     /** ID da execução atual. */
-    private timeoutID: TimeoutID | undefined
+    private timeoutID: TimeoutID | undefined = undefined
     /** Callback quando o intervalo é concluído. */
     onComplete: () => void = doNothing
 
     /** @param waitMillis tempo predefinido para conclusão. */
     constructor(waitMillis: number) {
         this.waitMillis = waitMillis
-        this.timeoutID = undefined
     }
 
     /** Encerra a execução atual, sem concluir. */

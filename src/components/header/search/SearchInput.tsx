@@ -1,13 +1,17 @@
 import React, { RefObject, useRef } from 'react'
-import { CircularProgress, Fade, InputBase, styled } from '@mui/material'
+import { CircularProgress, Fade, InputBase } from '@mui/material'
+import { styled, emphasize } from '@mui/material/styles'
 import { Search } from '@mui/icons-material'
 
 import { InputParams } from './MatchAutocomplete'
 
-/** Caixa de texto com cor do background. */
+/** Caixa de texto com cor de background. */
 const Input = styled(InputBase)(({ theme }) => ({
-    backgroundColor: theme.palette.background.default,
     borderRadius: theme.shape.borderRadius,
+    backgroundColor: theme.palette.background.default,
+    '&:hover': {
+        backgroundColor: emphasize(theme.palette.background.default, 0.05),
+    },
 }))
 
 /** Ícone de busca, com margem lateral. */

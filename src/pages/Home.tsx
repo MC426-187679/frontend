@@ -16,7 +16,7 @@ const HomeHeader = styled('header')`
 /** Página Principal. */
 function HomePage() {
     return (
-        <AppPage>
+        <AppPage notitle>
             <HomeHeader>
                 <p>
                     Edit <code>src/app/App.tsx</code> and save to reload.

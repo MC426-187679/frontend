@@ -2,7 +2,7 @@ import React, { MouseEvent, ReactNode, useCallback, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { Button, IconButton, Menu, MenuItem, useMediaQuery } from '@mui/material'
 import { Theme } from '@mui/material/styles'
-import AccountCircle from '@mui/icons-material/AccountCircle'
+import { AccountCircle } from '@mui/icons-material'
 
 /**
  * Links e Opções da Conta: muda de acordo com o usuário logado (TODO)

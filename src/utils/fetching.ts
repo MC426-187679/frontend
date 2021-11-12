@@ -20,6 +20,14 @@ export class InvalidResponseError extends Error {
     }
 }
 
+/** Opções padrões para {@link fetch}. */
+const defaultOptions: RequestInit = {
+    mode: 'same-origin',
+    credentials: 'same-origin',
+    referrerPolicy: 'same-origin',
+    keepalive: false,
+}
+
 /**
  * Requisita dado da API e parseia como JSON.
  *
@@ -33,7 +41,7 @@ export class InvalidResponseError extends Error {
  * @throws Erros do {@link fetch} ou do {@link Response.json}.
  */
 export async function fetchJson(input: RequestInfo, init?: RequestInit) {
-    const response = await fetch(input, init)
+    const response = await fetch(input, init ?? defaultOptions)
     // apenas 200 é OK
     if (response.status !== 200) {
         throw new InvalidResponseError(response)

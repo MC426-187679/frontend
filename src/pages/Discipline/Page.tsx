@@ -16,10 +16,12 @@ interface DisciplinePageProps {
  *  de erro.
  */
 function DisciplinePage({ match }: DisciplinePageProps) {
+    const { code } = match.params
+
     return (
-        <AppPage>
+        <AppPage title={code}>
             <ApiLoader
-                item={match.params.code}
+                item={code}
                 fetch={Discipline.fetch}
                 redirect404
                 render={(data) => <DisciplineCard discipline={data} />}

@@ -11,7 +11,7 @@ import App from './App'
 ReactDOM.render(
     <StrictMode>
         <StyledEngineProvider injectFirst>
-            <ThemeModeProvider defaultMode="light">
+            <ThemeModeProvider defaultMode="dark">
                 <BrowserRouter>
                     <CssBaseline />
                     <App />
