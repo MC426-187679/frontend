@@ -9,7 +9,7 @@ import {
 } from '@mui/material'
 
 import './Card.scss'
-import type { Discipline } from 'models/discipline'
+import type { Discipline } from '../types/discipline'
 
 import DisciplineLink from './Link'
 

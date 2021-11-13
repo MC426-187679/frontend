@@ -3,7 +3,7 @@ import { styled } from '@mui/material'
 import autosuggestMatch from 'autosuggest-highlight/match'
 import autosuggestParse from 'autosuggest-highlight/parse'
 
-import { MatchedContent } from './matches'
+import type { MatchedContent } from '../types/content'
 
 /** Regex que dá match com espaços. */
 const singleSpace = /\s/g
@@ -66,7 +66,7 @@ export default function MatchItem(props: MatchItemProps) {
 
     return (
         <UnstyledAnchor
-            href={option.asUrl}
+            href={option.url}
             key={option.identifier}
             onClick={preventDefault}
         >

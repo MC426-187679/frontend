@@ -1,7 +1,7 @@
 import React from 'react'
 import { styled } from '@mui/material'
 
-import AppPage from 'components/layout/AppPage'
+import AppPage from 'components/AppPage'
 
 /** `header` com estilo da Home page. */
 const HomeHeader = styled('header')`

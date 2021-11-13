@@ -2,7 +2,7 @@ import React, { useCallback } from 'react'
 import { FormControlLabel, Switch } from '@mui/material'
 import { css } from '@emotion/css'
 
-import { useThemeMode } from 'components/loader/ThemeModeProvider'
+import { useThemeMode } from 'providers/Theme'
 
 /** ID do componente {@link ThemeSwitch}. */
 const switchId = 'theme-switch'

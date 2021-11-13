@@ -6,7 +6,8 @@ import {
     AutocompleteRenderInputParams,
 } from '@mui/material'
 
-import { MatchedContent, useMatches } from './matches'
+import type { MatchedContent } from '../types/content'
+import { useMatches } from '../hooks/useMatches'
 
 /** Instância de {@link Autocomplete} com `T = MatchedContent`. */
 type MatchAutocompleteBaseProps = AutocompleteProps<MatchedContent, false, false, true>
@@ -88,7 +89,7 @@ function noFilter<T>(options: T[]) {
 
 /** Se o resultado da busca não tem link. */
 function isDisabled(option: MatchedContent) {
-    return option.asUrl === undefined
+    return option.url === undefined
 }
 
 /** Se dois resultado são iguais. */

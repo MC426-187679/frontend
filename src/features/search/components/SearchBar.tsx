@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom'
 import { AutocompleteRenderOptionState } from '@mui/material'
 import { css } from '@emotion/css'
 
-import { MatchedContent } from './matches'
+import type { MatchedContent } from '../types/content'
 import MatchAutocomplete, { InputParams } from './MatchAutocomplete'
 import SearchInput from './SearchInput'
 import MatchItem from './MatchItem'
@@ -31,8 +31,8 @@ export default function SearchBar() {
     // redireciona quando escolhido
     const redirectToChoice = useCallback(
         (_, match: MatchedContent | string | null | undefined) => {
-            if (typeof match === 'object' && match?.asUrl) {
-                history.push(match.asUrl)
+            if (typeof match === 'object' && match?.url) {
+                history.push(match.url)
             }
         },
         [history],

@@ -3,11 +3,12 @@ import { Link as RouterLink } from 'react-router-dom'
 import { AppBar, Box, Link, Toolbar, Typography, useMediaQuery } from '@mui/material'
 import { Theme } from '@mui/material/styles'
 
+import { SearchBar } from 'features/search'
+
 import './HeaderBar.scss'
 import AccountMenu from './AccountMenu'
 import NavBar from './NavBar'
 import ThemeSwitch from './ThemeSwitch'
-import SearchBar from './search/SearchBar'
 
 /**
  * Barra de Cabeçalho em 3 partes:

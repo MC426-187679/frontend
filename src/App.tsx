@@ -1,10 +1,10 @@
 import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 
-import HeaderBar from 'components/header/HeaderBar'
+import AppBar from 'features/appbar'
 
 import Home from 'pages/Home'
-import Discipline from 'pages/Discipline/Page'
+import Discipline from 'features/discipline'
 
 /**
  * Componente Principal: cuida do cabeçalho e do switch de roteamento com o conteúdo real da
@@ -13,12 +13,10 @@ import Discipline from 'pages/Discipline/Page'
 export default function App() {
     return (
         <>
-            <HeaderBar />
+            <AppBar />
             <Switch>
                 {/* Página Principal */}
-                <Route path={Home.PATH} exact>
-                    <Home />
-                </Route>
+                <Route path={Home.PATH} exact component={Home} />
                 {/* Páginas de cada Disciplina */}
                 <Route path={Discipline.PATH} component={Discipline} />
             </Switch>

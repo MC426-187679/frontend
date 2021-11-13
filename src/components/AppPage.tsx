@@ -8,8 +8,10 @@ const ContainerWithMargin = styled(Container)`
 
 /** Propriedades do título. */
 type TitleProps = {
+    /** Título da página. */
     title: string
 } | {
+    /** Página sem mudança de título. */
     notitle: true
 }
 

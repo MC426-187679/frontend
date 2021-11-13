@@ -12,7 +12,7 @@ npm install --include=dev
 
 ## Estrutura do Diretório
 
-Seguindo esse [guia](https://www.taniarascia.com/react-architecture-directory-structure/).
+Seguindo esse [guia](https://github.com/alan2207/bulletproof-react/blob/master/docs/project-structure.md).
 
 ## Execução
 

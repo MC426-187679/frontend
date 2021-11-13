@@ -1,123 +1,27 @@
-import { useState, useMemo, useEffect } from 'react'
 import { distance as levenshtein } from 'fastest-levenshtein'
-
-import { Match } from 'models/match'
-
-/** Conteúdo adaptado de {@link Match}. */
-export interface MatchedContent {
-    /** Resultado de {@link Match.uniqueMatchIdentifier}. */
-    readonly identifier: string
-    /** Resultado de {@link Match.uniqueMatchDescription}. */
-    readonly description: string
-    /** Resultado de {@link Match.asUrl}. */
-    readonly asUrl: string | undefined
-}
-
-/** Conjunto de resultados retornados pela API de busca. */
-export interface Matches {
-    /** Texto usado na busca. */
-    readonly query: string
-    /** Resultados da busca. */
-    readonly results: ReadonlyArray<MatchedContent>
-}
-
-namespace Matches {
-    /** Resultados iniciais, para busca vazia. */
-    export function empty(): Matches {
-        return { query: '', results: [] }
-    }
-
-    /** Conversão de {@link Match} para {@link MatchedContent}. */
-    function asMatched(match: Match): MatchedContent {
-        return {
-            identifier: match.uniqueMatchIdentifier(),
-            description: match.uniqueMatchDescription(),
-            asUrl: match.asUrl(),
-        }
-    }
-
-    /** Constrói {@link Matches} a partir do resultado de {@link Match.fetch}. */
-    export function from(matches: Match[], query: string) {
-        const results = matches.map(asMatched)
-        return { query, results }
-    }
-}
-
-/** Função que coloca query na lista de espera para requisição. */
-export type Search = (query: string) => void
-
-/** Opções para {@link useMatches} e para o {@link RequestThrottler}. */
-interface Config {
-    /** Callback para requisições que resultam em erro. */
-    readonly onError?: (error: any) => void
-    /** Callback para quando a fila de requisições está cheia. */
-    readonly onFull?: () => void
-    /** Callback para atualização do estado de loading. */
-    readonly setLoading?: (isLoading: boolean) => void
-}
 
 /** Função que não faz nada, usada como padrão das callbacks. */
 function doNothing() { }
 
 /**
- *  Hook que mantém estado dos resultados de busca, com uma função que insere novas
- * opções na lista de espera para requisições ao servidor.
- *
- * @param {Config} config Configurações do limitador de requisições ({@link Config}).
- *
- * @returns Resultados atuais e função para busca de próximos resultados.
- */
-export function useMatches({
-    onError = doNothing,
-    onFull = doNothing,
-    setLoading = doNothing,
-}: Config = {}): [Matches, Search] {
-    // resultados e limitador compartilham o mesmo estado
-    const [{ matches: current, throttler }, setMatches] = useState(() => ({
-        matches: Matches.empty(),
-        // as configurações são usada apenas no setup
-        throttler: new RequestThrottler(),
-    }))
-
-    // de forma memoizada (muda apenas com 'setMatches')
-    const search = useMemo(() => {
-        // passa os resultados para o atualizador de estados
-        throttler.onMatches = (matches) => {
-            // sem mudar o limitador
-            setMatches({ matches, throttler })
-        }
-        // e monta função de busca
-        return (query: string) => throttler.next(query)
-    }, [setMatches])
-
-    // atualiza todas as callbacks quando uma delas mudar
-    useEffect(() => {
-        throttler.setLoading = setLoading
-        throttler.onFull = onFull
-        throttler.onError = onError
-    }, [onError, onFull, setLoading])
-
-    return [current, search]
-}
-
-/**
  *  Limitador de requisições, que só faz uma requisição depois de
- * {@link ControlledInterval.waitMillis} terem passados da última requisição, ou se o texto da
- * caixa de entrada mudou mais que {@link StreamBarrier.maxDistinctChars} caracteres. Se
- * existirem {@link RequestQueue.maxOpenRequests} requisições não concluídas, espera uma delas
- * terminar para fazer a próxima.
+ * {@link ControlledInterval.waitMillis} milissegundos terem passados da última requisição,
+ * ou se o texto da caixa de entrada mudou mais que {@link StreamBarrier.maxDistinctChars}
+ * caracteres. Se existirem {@link RequestQueue.maxOpenRequests} requisições não concluídas,
+ * espera uma delas terminar para fazer a próxima.
  *
  * As entrada recebidas (em {@link next}) enquanto o sistema está em espera podem ser ignoradas.
  */
-class RequestThrottler {
+export class RequestThrottler<Content> {
     /** Controle de intervalo de tempo para requisição. */
     private readonly interval: ControlledInterval
     /** Barreira enquanto o intervalo não é concluído. */
     private readonly barrier: StreamBarrier
     /** Fila para evitar muitas requisições em aberto. */
-    private readonly queue: RequestQueue
+    private readonly queue: RequestQueue<Content>
 
     /**
+     * @param fetch Função que faz a requisição do conteúdo.
      * @param maxDistinctChars Maior número de caracteres distintos na caixa busca que segue o
      *  tempo de espera entre requisições. Se o texto mudar mais caracteres do que isso, a
      *  requisição é iniciada imediatamente. (padrão: 5)
@@ -125,10 +29,15 @@ class RequestThrottler {
      * @param maxOpenRequests Maior número de requisições não-resolvidas em um dado momento.
      *  (padrão: 5)
      */
-    constructor(maxDistinctChars = 5, waitMillis = 1000, maxOpenRequests = 5) {
+    constructor(
+        fetch: (query: string) => Promise<Content>,
+        maxDistinctChars = 5,
+        waitMillis = 1000,
+        maxOpenRequests = 5,
+    ) {
         this.interval = new ControlledInterval(waitMillis)
         this.barrier = new StreamBarrier(maxDistinctChars)
-        this.queue = new RequestQueue(maxOpenRequests)
+        this.queue = new RequestQueue(maxOpenRequests, fetch)
 
         // quando a barreira envia um valor
         this.barrier.onSend = (query) => {
@@ -172,10 +81,13 @@ class RequestThrottler {
     }
 
     /** Callaback para quando o servidor responder alguma requisição. */
-    set onMatches(sendValue: (matches: Matches) => void) {
-        this.queue.onOutput = (results, query) => {
-            sendValue(Matches.from(results, query))
-        }
+    set onOutput(sendValue: (content: Content) => void) {
+        this.queue.onOutput = sendValue
+    }
+
+    /** Função que faz a requisição do conteúdo. */
+    set fetch(withFetch: (query: string) => Promise<Content>) {
+        this.queue.fetch = withFetch
     }
 }
 
@@ -184,16 +96,18 @@ class RequestThrottler {
  * que {@link maxOpenRequests}, as requisições são feitas diretamente. Caso contrário, o último
  * pedido é armazenado em {@link waiting} até alguma requsição encerrar.
  */
-class RequestQueue {
+export class RequestQueue<T> {
     /** Maior número de requisições não concluídas em um dado momento. */
     private readonly maxOpenRequests: number
     /** Número de requisições não concluídas. */
     private openRequests = 0
     /** Fila de tamanho um, para o último pedido não realizado. */
     private waiting: string | undefined
+    /** Função que faz a requisição assíncrona. */
+    fetch: (query: string) => Promise<T>
 
     /** Callback para o resultado da requisição. */
-    onOutput: (output: Match[], input: string) => void = doNothing
+    onOutput: (output: T) => void = doNothing
     /** Callback para erro na requisição. */
     onError: (error: any) => void = doNothing
     /** Callback para quando a fila está cheia. */
@@ -204,8 +118,9 @@ class RequestQueue {
     onRequestStart: (input: string) => void = doNothing
 
     /** @param maxOpenRequests Maior número de requisições ao mesmo tempo. */
-    constructor(maxOpenRequests: number) {
+    constructor(maxOpenRequests: number, fetch: (query: string) => Promise<T>) {
         this.maxOpenRequests = maxOpenRequests
+        this.fetch = fetch
     }
 
     /** Faz a requisição com a string de busca dada. */
@@ -214,8 +129,8 @@ class RequestQueue {
         this.openRequests += 1
         try {
             this.onRequestStart(input)
-            const output = await Match.fetch(input)
-            this.onOutput(output, input)
+            const output = await this.fetch(input)
+            this.onOutput(output)
         } catch (error) {
             this.onError(error)
         } finally {
@@ -268,7 +183,7 @@ class RequestQueue {
  *  Além disso, se a stream de entrada (recebida por {@link next}) for atualizada antes da barreira
  * ser aberta, o valor antigo é esquecido.
  */
-class StreamBarrier {
+export class StreamBarrier {
     /** Maior valor de distância que a barreira interrompe a passagem. */
     private readonly maxDistance: number
 
@@ -330,7 +245,7 @@ type TimeoutID = ReturnType<typeof setTimeout>
  *  Classe com funcionamento parecido com o {@link setInterval}, mas com controle de conclusão
  * e inicalização assíncrona (o intervalo pode ser terminado antes do tempo esperado).
  */
-class ControlledInterval {
+export class ControlledInterval {
     /** Tempo de conclusão em mili segundos. */
     private readonly waitMillis: number
 

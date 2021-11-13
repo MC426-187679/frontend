@@ -3,7 +3,7 @@ import { Link as RouterLink } from 'react-router-dom'
 import { Button } from '@mui/material'
 
 import './Link.scss'
-import { disciplineURL } from './params'
+import { disciplineURL } from '../utils/params'
 
 interface DisciplineLinkProps {
     code: string
@@ -11,7 +11,7 @@ interface DisciplineLinkProps {
     special?: boolean | undefined
 }
 
-export default function DisciplineLink({ code, partial, special = false }: DisciplineLinkProps) {
+export default function DisciplineLink({ code, partial, special }: DisciplineLinkProps) {
     const classes = partial ? 'discipline-link partial' : 'discipline-link'
 
     return (

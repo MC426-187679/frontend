@@ -4,19 +4,19 @@ import { BrowserRouter } from 'react-router-dom'
 import { CssBaseline } from '@mui/material'
 import { StyledEngineProvider } from '@mui/material/styles'
 
-import ThemeModeProvider from 'components/loader/ThemeModeProvider'
+import ThemeProvider from 'providers/Theme'
 import App from './App'
 
 /** Página completa. */
 ReactDOM.render(
     <StrictMode>
         <StyledEngineProvider injectFirst>
-            <ThemeModeProvider defaultMode="dark">
+            <ThemeProvider defaultMode="dark" storageKey="theme-mode">
                 <BrowserRouter>
                     <CssBaseline />
                     <App />
                 </BrowserRouter>
-            </ThemeModeProvider>
+            </ThemeProvider>
         </StyledEngineProvider>
     </StrictMode>,
     document.getElementById('root'),
