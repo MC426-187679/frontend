@@ -1,8 +1,7 @@
 import React, { StrictMode } from 'react'
 import ReactDOM from 'react-dom'
 import { BrowserRouter } from 'react-router-dom'
-import { CssBaseline } from '@mui/material'
-import { StyledEngineProvider } from '@mui/material/styles'
+import { CssBaseline, NoSsr, StyledEngineProvider } from '@mui/material'
 
 import ThemeProvider from 'providers/Theme'
 import App from './App'
@@ -11,12 +10,14 @@ import App from './App'
 ReactDOM.render(
     <StrictMode>
         <StyledEngineProvider injectFirst>
-            <ThemeProvider defaultMode="dark" storageKey="theme-mode">
-                <BrowserRouter>
-                    <CssBaseline />
-                    <App />
-                </BrowserRouter>
-            </ThemeProvider>
+            <NoSsr>
+                <ThemeProvider defaultMode="dark" storageKey="theme-mode">
+                    <BrowserRouter>
+                        <CssBaseline />
+                        <App />
+                    </BrowserRouter>
+                </ThemeProvider>
+            </NoSsr>
         </StyledEngineProvider>
     </StrictMode>,
     document.getElementById('root'),

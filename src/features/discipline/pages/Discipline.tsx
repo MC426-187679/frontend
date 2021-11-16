@@ -3,6 +3,7 @@ import { Redirect } from 'react-router-dom'
 
 import AppPage from 'components/AppPage'
 import { useApi, FetchState } from 'hooks/useApi'
+import { SendError } from 'features/error-messages'
 
 import DisciplineCard from '../components/Card'
 import { PAGE_PATH, MatchParams } from '../utils/params'
@@ -47,8 +48,12 @@ function DisciplineContent({ code }: DisciplineContentProps) {
     } else if (content.is404) {
         return <Redirect to="/404" />
     // página com erro
-    // TODO: usar sistema de erro
     } else {
-        return <>{ `${content.error}` }</>
+        return (
+            <SendError kind="discipline-page" severe>
+                Problema de conexão com o servidor: os dados da disciplina {code} puderam ser
+                recuperados. Por favor, cheque sua conexão ou tente novamente mais tarde.
+            </SendError>
+        )
     }
 }

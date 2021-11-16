@@ -1,4 +1,4 @@
-import React, { Dispatch, useCallback, useEffect, useState } from 'react'
+import React, { Dispatch, useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert, Collapse } from '@mui/material'
 
 import type { Message, Timeout } from '../types/message'
@@ -14,25 +14,25 @@ interface ErrorAlertProps {
 export default function ErrorAlert({ error, dispatch }: ErrorAlertProps) {
     // Collapse só deve ser aberto após primeira inicialização
     const initialized = useInitialized()
-    const [open, setOpen] = useState(true)
+    const { isOpen, open, close } = useOpen(true)
 
     // quando o Collapse fechar, remove mensagem do mapa
     const remove = useCallback(
         () => dispatch({ op: 'remove', key: error.kind }),
         [dispatch],
     )
-    const close = useCallback(() => setOpen(false), [setOpen])
 
     // inicia fechamento do Collapse após o timeout
-    useTimeout(error.timeout, close, [error])
+    useTimeout(error.timeout, () => close(), [error])
     // se a mensagem de erro for alterada, abre o Collapse novamente
-    useEffect(() => { setOpen(true) }, [error])
+    useEffect(() => open(), [error])
     return (
-        <Collapse in={initialized && open} onExited={remove}>
+        <Collapse in={initialized && isOpen} onExited={remove}>
             <Alert
+                variant="outlined"
                 severity={error.severe ? 'error' : 'warning'}
                 onClose={close}
-                variant="outlined"
+                closeText="Fechar"
             >
                 { error.message }
             </Alert>
@@ -53,6 +53,20 @@ function useInitialized() {
     }, [initialized, setInitilized])
 
     return initialized
+}
+
+/**
+ * Hook com estado booleano, com a operação de `open` (muda para `true`) e `close` (para `false`).
+ */
+function useOpen(initialState = true) {
+    const [isOpen, setOpen] = useState(initialState)
+
+    const operations = useMemo(() => ({
+        open: () => { setOpen(true) },
+        close: () => { setOpen(false) },
+    }), [setOpen])
+
+    return { isOpen, ...operations }
 }
 
 /**

@@ -23,7 +23,7 @@ export interface InputParams extends AutocompleteRenderInputParams {
 }
 
 interface MatchAutocompleteProps extends Omit<MatchAutocompleteBaseProps, OverridedProps> {
-    /** Erros encotrados durante a busca. */
+    /** Erros encontrados durante a busca. */
     onError?: (error: any) => void
     /** {@link AutocompleteProps.renderInput} com estado de loading. */
     renderInput: (params: InputParams) => ReactNode,

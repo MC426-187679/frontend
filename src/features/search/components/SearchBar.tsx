@@ -3,6 +3,8 @@ import { useHistory } from 'react-router-dom'
 import { AutocompleteRenderOptionState } from '@mui/material'
 import { css } from '@emotion/css'
 
+import { useErrors } from 'features/error-messages'
+
 import type { MatchedContent } from '../types/content'
 import MatchAutocomplete, { InputParams } from './MatchAutocomplete'
 import SearchInput from './SearchInput'
@@ -27,8 +29,8 @@ const componentsProps = {
  *  página do conteúdo associado.
  */
 export default function SearchBar() {
-    const history = useHistory()
     // redireciona quando escolhido
+    const history = useHistory()
     const redirectToChoice = useCallback(
         (_, match: MatchedContent | string | null | undefined) => {
             if (typeof match === 'object' && match?.url) {
@@ -37,12 +39,28 @@ export default function SearchBar() {
         },
         [history],
     )
+    // envia erro pro componente de mensagens de erro
+    const dispatchError = useErrors()
+    const sendError = useCallback(
+        (error?: { message?: any }) => {
+            const description = (typeof error?.message === 'string') ? `: ${error.message}` : ''
+
+            dispatchError({
+                kind: 'search-bar',
+                message: `Problema de conexão com o servidor na realização da busca${description}.
+                Por favor, cheque sua conexão ou tente novamente mais tarde.`,
+                timeout: '15 s',
+            })
+        },
+        [dispatchError],
+    )
 
     return (
         <MatchAutocomplete
             fullWidth
             className={hasMaxWidth}
             onChange={redirectToChoice}
+            onError={sendError}
             renderInput={renderInput}
             renderOption={renderOption}
             componentsProps={componentsProps}

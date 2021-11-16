@@ -2,6 +2,7 @@ import React from 'react'
 import { Route, Switch } from 'react-router-dom'
 
 import AppBar from 'features/appbar'
+import { ErrorsDisplay } from 'features/error-messages'
 
 import Home from 'pages/Home'
 import Discipline from 'features/discipline'
@@ -14,6 +15,7 @@ export default function App() {
     return (
         <>
             <AppBar />
+            <ErrorsDisplay />
             <Switch>
                 {/* Página Principal */}
                 <Route path={Home.PATH} exact component={Home} />
