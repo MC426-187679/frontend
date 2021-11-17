@@ -1,7 +1,9 @@
 import React, { ReactNode } from 'react'
-import { Link as RouterLink, useRouteMatch } from 'react-router-dom'
-import { Button, Stack } from '@mui/material'
+import { useRouteMatch } from 'react-router-dom'
+import { Stack } from '@mui/material'
 import { css } from '@emotion/css'
+
+import RouterButton from 'components/RouterButton'
 
 /**
  * Links de Navegação.
@@ -51,8 +53,7 @@ function NavLink({ to, ...props }: NavLinkProps) {
     const match = useRouteMatch(to)
 
     return (
-        <Button
-            component={RouterLink}
+        <RouterButton
             to={to}
             color="inherit"
             size="large"

@@ -1,15 +1,9 @@
 import React, { Reducer, useReducer } from 'react'
 import { Stack } from '@mui/material'
-import { css } from '@emotion/css'
 
 import type { Message } from '../types/message'
 import { useListener } from '../providers/errors'
 import ErrorAlert from './ErrorAlert'
-
-/** Classe CSS com largura total. */
-const fullWidth = css`
-    width: 100%;
-`
 
 /** Componente que desenha as messagens de erro do provedor atual em uma pilha. */
 export default function ErrorsDisplay() {
@@ -24,7 +18,7 @@ export default function ErrorsDisplay() {
     )
 
     return (
-        <Stack className={fullWidth}>
+        <Stack direction="column" width="100%">
             {messages.map(({ key, value }) => (
                 <ErrorAlert key={key} error={value} dispatch={dispatch} />
             ))}

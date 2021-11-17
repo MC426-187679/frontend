@@ -1,20 +1,17 @@
 import React from 'react'
-import {
-    Button,
-    Card,
-    CardActions,
-    CardContent,
-    Skeleton,
-    Typography,
-} from '@mui/material'
+import { Card, CardContent, Skeleton, Typography } from '@mui/material'
+import { css } from '@emotion/css'
 
-import './Card.scss'
 import type { Discipline } from '../types/discipline'
+import Requirements from './Requirements'
 
-import DisciplineLink from './Link'
+/** Classe CSS que limita o tamanho mínimo do componente. */
+const withMinWidth = css`
+    min-width: 42ch;
+`
 
 interface DisciplineCardProps {
-    discipline?: Discipline | undefined
+    discipline?: Discipline
 }
 
 /**
@@ -22,43 +19,34 @@ interface DisciplineCardProps {
  */
 export default function DisciplineCard({ discipline }: DisciplineCardProps) {
     return (
-        <Card className="discipline-card" color="inherit" raised>
+        <Card className={withMinWidth} color="inherit" raised>
             <CardContent>
-                <Typography className="code" color="text.secondary" gutterBottom>
+                {/* Código. */}
+                <Typography fontSize="14pt" color="text.secondary" gutterBottom>
                     { discipline?.code ?? <Skeleton width="5em" /> }
                 </Typography>
+                {/* Nome da disciplina. */}
                 <Typography variant="h5" component="div">
                     { discipline?.name ?? <Skeleton /> }
                 </Typography>
+                {/* Título da seção de requisitos. */}
+                <Typography variant="body2" marginTop="2ex">
+                    <RequirementsHeader count={discipline?.reqs?.length} />
+                </Typography>
+                {/* Grupos de requisitos. */}
                 <Requirements groups={discipline?.reqs} />
             </CardContent>
-            <CardActions>
-                <Button size="small">Learn More</Button>
-            </CardActions>
         </Card>
     )
 }
 
-interface RequirementsProps {
-    groups?: Discipline['reqs'] | undefined
+interface RequirementsHeaderProps {
+    count?: number
 }
 
-/**
- * Lista de requisitos da disciplina ou um aviso que não há pré-requisitos.
- */
-function Requirements({ groups }: RequirementsProps) {
-    return (
-        <>
-            <Typography variant="body2" className="requirements">
-                <RequirementsHeader groups={groups} />
-            </Typography>
-            <RequirementsBody groups={groups ?? []} />
-        </>
-    )
-}
-
-function RequirementsHeader({ groups }: RequirementsProps) {
-    switch (groups?.length) {
+/** Descrição textual do bloco de requisitos, com base no tamanho do vetor. */
+function RequirementsHeader({ count }: RequirementsHeaderProps) {
+    switch (count) {
         case undefined:
             return <Skeleton />
         case 0:
@@ -66,32 +54,4 @@ function RequirementsHeader({ groups }: RequirementsProps) {
         default:
             return <>Pré-requisitos:</>
     }
-}
-
-interface RequirementsBodyProps {
-    groups: Discipline['reqs']
-}
-
-function RequirementsBody({ groups }: RequirementsBodyProps) {
-    return (
-        <>
-            {groups.map((group, idx) => {
-                const items = group.map(({ code, special, partial }) => (
-                    <DisciplineLink
-                        key={code}
-                        code={code}
-                        special={special}
-                        partial={partial}
-                    />
-                ))
-
-                return (
-                    <p key={idx.toString(16)}>
-                        { (idx > 0) && 'Ou:' }
-                        { items }
-                    </p>
-                )
-            })}
-        </>
-    )
 }

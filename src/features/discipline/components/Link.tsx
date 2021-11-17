@@ -1,29 +1,51 @@
 import React from 'react'
-import { Link as RouterLink } from 'react-router-dom'
-import { Button } from '@mui/material'
+import { Typography, buttonClasses } from '@mui/material'
+import { css } from '@emotion/css'
 
-import './Link.scss'
+import RouterButton from 'components/RouterButton'
+
+import type { Requirement } from '../types/discipline'
 import { disciplineURL } from '../utils/params'
 
-interface DisciplineLinkProps {
+/** Classe CSS para {@link RouterButton}. */
+const baseClass = css`
+    width: 12ex;
+
+    &.${buttonClasses.disabled} {
+        pointer-events: inherit;
+        cursor: auto;
+        user-select: text;
+    }
+`
+
+/** Classe CSS com um `'*'` antes do texto. */
+const withMarker = css`
+    ::before {
+        content: '*';
+        position: relative;
+        left: -1ex;
+    }
+`
+
+export interface DisciplineLinkProps extends Partial<Requirement> {
     code: string
-    partial?: boolean | undefined
-    special?: boolean | undefined
 }
 
+/**
+ * Link de uma disciplina desenhado como botão.
+ */
 export default function DisciplineLink({ code, partial, special }: DisciplineLinkProps) {
-    const classes = partial ? 'discipline-link partial' : 'discipline-link'
-
     return (
-        <Button
+        <RouterButton
             color="primary"
             variant="contained"
-            className={classes}
+            className={partial ? `${baseClass} ${withMarker}` : baseClass}
+            to={special ? undefined : disciplineURL(code)}
             disabled={special}
-            component={RouterLink}
-            to={disciplineURL(code)}
         >
-            { code }
-        </Button>
+            <Typography variant="inherit" color="text.primary" component="span">
+                { code }
+            </Typography>
+        </RouterButton>
     )
 }

@@ -67,6 +67,9 @@
         "no-constant-condition": ["error", {
             "checkLoops": false
         }],
+        "prefer-arrow-callback": ["error", {
+            "allowNamedFunctions": true
+        }],
         // análise de tipos e valores
         "react/destructuring-assignment": "off",
         "react/require-default-props": "off",
