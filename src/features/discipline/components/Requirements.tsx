@@ -47,7 +47,7 @@ interface RequirementGroupProps {
 /** Um grupo de requisitos, representado por um {@link Paper} com {@link DisciplineLink}s. */
 function RequirementGroup({ group }: RequirementGroupProps) {
     return (
-        <Paper elevation={2}>
+        <Paper elevation={12}>
             <Stack direction="row" spacing={2} padding={1}>
                 {group.map(({ code, special, partial }) => (
                     <DisciplineLink

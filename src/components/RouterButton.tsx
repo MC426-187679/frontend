@@ -9,11 +9,13 @@ interface RouterButtonProps extends Omit<ButtonProps<'a'>, 'component'> {
     replace?: boolean | undefined
 }
 
-/** {@link Button} com subcomponente renderizado por {@link Link}. */
-export default function RouterButton({ to, replace, ...props }: RouterButtonProps) {
-    if (typeof to === 'string') {
-        return <Button component={RouterLink} {...props} to={to} replace={replace} />
-    } else {
-        return <Button component="a" {...props} />
-    }
-}
+/** {@link Button} com subcomponente renderizado por {@link RouterLink}. */
+export default React.forwardRef<HTMLAnchorElement, RouterButtonProps>(
+    function RouterButton({ to, replace, ...props }: RouterButtonProps, ref) {
+        if (typeof to === 'string') {
+            return <Button ref={ref} component={RouterLink} {...props} to={to} replace={replace} />
+        } else {
+            return <Button ref={ref} component="a" {...props} />
+        }
+    },
+)

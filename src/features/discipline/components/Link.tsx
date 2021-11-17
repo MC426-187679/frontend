@@ -1,5 +1,5 @@
 import React from 'react'
-import { Typography, buttonClasses } from '@mui/material'
+import { Tooltip, TooltipProps, buttonClasses, styled } from '@mui/material'
 import { css } from '@emotion/css'
 
 import RouterButton from 'components/RouterButton'
@@ -7,16 +7,17 @@ import RouterButton from 'components/RouterButton'
 import type { Requirement } from '../types/discipline'
 import { disciplineURL } from '../utils/params'
 
-/** Classe CSS para {@link RouterButton}. */
-const baseClass = css`
-    width: 12ex;
+/** {@link RouterButton} com largura fixa e menos efeito quando `disabled={true}`. */
+const DisciplineButton = styled(RouterButton)(({ theme }) => ({
+    width: '12ex',
 
-    &.${buttonClasses.disabled} {
-        pointer-events: inherit;
-        cursor: auto;
-        user-select: text;
-    }
-`
+    [`&.${buttonClasses.disabled}`]: {
+        pointerEvents: 'inherit',
+        cursor: 'auto',
+        userSelect: 'text',
+        color: theme.palette.action.active,
+    },
+}))
 
 /** Classe CSS com um `'*'` antes do texto. */
 const withMarker = css`
@@ -36,16 +37,29 @@ export interface DisciplineLinkProps extends Partial<Requirement> {
  */
 export default function DisciplineLink({ code, partial, special }: DisciplineLinkProps) {
     return (
-        <RouterButton
-            color="primary"
-            variant="contained"
-            className={partial ? `${baseClass} ${withMarker}` : baseClass}
-            to={special ? undefined : disciplineURL(code)}
-            disabled={special}
-        >
-            <Typography variant="inherit" color="text.primary" component="span">
+        <HideableTooltip title="Disciplina Especial" hide={!special} describeChild>
+            <DisciplineButton
+                color="primary"
+                variant="contained"
+                className={partial ? withMarker : undefined}
+                to={special ? undefined : disciplineURL(code)}
+                disabled={special}
+            >
                 { code }
-            </Typography>
-        </RouterButton>
+            </DisciplineButton>
+        </HideableTooltip>
     )
+}
+
+interface HideableTooltipProps extends TooltipProps {
+    hide?: boolean
+}
+
+/** {@link Tooltip} com opção de não ser renderizada. */
+function HideableTooltip({ hide, ...props }: HideableTooltipProps) {
+    if (hide) {
+        return props.children
+    } else {
+        return <Tooltip {...props} />
+    }
 }
