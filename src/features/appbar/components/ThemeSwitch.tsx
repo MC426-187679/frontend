@@ -17,6 +17,11 @@ const switchLabelProps = {
         `,
     },
 }
+/** Formatação do {@link FormControlLabel} em {@link ThemeSwitch}. */
+const switchControlClass = css`
+    margin-left: 0;
+    margin-right: 0;
+`
 
 /** Seletor de tema para testes. */
 export default function ThemeSwitch() {
@@ -35,6 +40,7 @@ export default function ThemeSwitch() {
             id={switchId}
             label={switchLabel}
             aria-label={switchLabel}
+            className={switchControlClass}
             labelPlacement="end"
             control={(
                 <Switch

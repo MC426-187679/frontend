@@ -1,6 +1,6 @@
-import React, { HTMLAttributes, useCallback } from 'react'
+import React, { HTMLAttributes, useCallback, useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
-import { AutocompleteRenderOptionState } from '@mui/material'
+import { AutocompleteRenderOptionState, useTheme } from '@mui/material'
 import { css } from '@emotion/css'
 
 import { useErrors } from 'features/error-messages'
@@ -11,24 +11,29 @@ import SearchInput from './SearchInput'
 import MatchItem from './MatchItem'
 
 /** Classe CSS com largura máxima fixada. */
-const hasMaxWidth = css`
+const autocompleteClass = css`
     max-width: 60ch;
+    overflow: hidden;
 `
-
-/** Opção do {@link MatchAutocomplete} para adicionar margem para o botão de clear.  */
-const componentsProps = {
-    clearIndicator: {
-        className: css`
-            right: 4px;
-        `,
-    },
-}
 
 /**
  * Barra de Busca Principal: lista resultados de busca e redireciona resultado escolhido para a
  *  página do conteúdo associado.
  */
 export default function SearchBar() {
+    // opção para adicionar margem no botão de clear
+    const theme = useTheme()
+    const componentsProps = useMemo(
+        () => ({
+            clearIndicator: {
+                className: css`
+                    right: ${theme.spacing(0.5)};
+                `,
+            },
+        }),
+        [theme],
+    )
+
     // redireciona quando escolhido
     const history = useHistory()
     const redirectToChoice = useCallback(
@@ -58,7 +63,8 @@ export default function SearchBar() {
     return (
         <MatchAutocomplete
             fullWidth
-            className={hasMaxWidth}
+            id="barra-de-busca"
+            className={autocompleteClass}
             onChange={redirectToChoice}
             onError={sendError}
             renderInput={renderInput}

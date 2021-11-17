@@ -1,11 +1,7 @@
 import React, { ReactNode } from 'react'
 import { Link as RouterLink, useRouteMatch } from 'react-router-dom'
-import { Button, styled } from '@mui/material'
-
-/** Elevemnto de navegação com margens laterais. */
-const Nav = styled('nav')(({ theme }) => ({
-    margin: theme.spacing('auto', 2),
-}))
+import { Button, Stack } from '@mui/material'
+import { css } from '@emotion/css'
 
 /**
  * Links de Navegação.
@@ -23,6 +19,24 @@ export default function NavBar() {
     )
 }
 
+/** {@link Stack} horizontal com `component="nav"`. */
+function Nav({ children }: { children?: ReactNode }) {
+    return (
+        <Stack
+            component="nav"
+            direction="row"
+            spacing={2}
+        >
+            { children }
+        </Stack>
+    )
+}
+
+/** Classe CSS com largura fixada. */
+const fixedWidth = css`
+    width: 12ch;
+`
+
 interface NavLinkProps {
     to: string
     children?: ReactNode
@@ -30,40 +44,22 @@ interface NavLinkProps {
     endIcon?: ReactNode
 }
 
-/** Instanciação de {@link Button} com `component` {@link RouterLink}. */
-type ButtonWithLink =
-    (props: NavLinkProps & {
-        component: typeof RouterLink
-        color: 'inherit'
-        size: 'large'
-        variant: 'outlined' | 'text'
-        'aria-current': 'page'
-    }) => JSX.Element
-
-/** Botão de navegação, com largura fixada e margem lateral. */
-const NavButton = styled(Button as ButtonWithLink)(({ theme }) => ({
-    width: '12ch',
-    margin: theme.spacing('auto', 1),
-}))
-
 /**
  * Um único link de navegação.
  */
-function NavLink({ children, to, startIcon, endIcon }: NavLinkProps) {
+function NavLink({ to, ...props }: NavLinkProps) {
     const match = useRouteMatch(to)
 
     return (
-        <NavButton
+        <Button
             component={RouterLink}
             to={to}
             color="inherit"
             size="large"
             variant={match ? 'outlined' : 'text'}
             aria-current="page"
-            startIcon={startIcon}
-            endIcon={endIcon}
-        >
-            { children }
-        </NavButton>
+            className={fixedWidth}
+            {...props}
+        />
     )
 }

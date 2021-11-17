@@ -27,6 +27,13 @@ const baseTheme: ThemeOptions = {
         },
     },
     components: {
+        MuiAutocomplete: {
+            styleOverrides: {
+                inputRoot: {
+                    flexWrap: 'nowrap',
+                },
+            },
+        },
         MuiUseMediaQuery: {
             defaultProps: {
                 noSsr: true,

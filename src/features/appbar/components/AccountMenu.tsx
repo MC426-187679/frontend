@@ -1,13 +1,16 @@
 import React, { MouseEvent, ReactNode, useCallback, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
-import { Button, IconButton, Menu, MenuItem, useMediaQuery } from '@mui/material'
-import { Theme } from '@mui/material/styles'
+import { Button, IconButton, Menu, MenuItem } from '@mui/material'
 import { AccountCircle } from '@mui/icons-material'
+
+interface AccountMenuProps {
+    isLarge?: boolean
+}
 
 /**
  * Links e Opções da Conta: muda de acordo com o usuário logado (TODO)
  */
-export default function AccountMenu() {
+export default function AccountMenu({ isLarge }: AccountMenuProps) {
     // NOTA: para evitar redesenhar as coisas, o menu sempre fica aberto em background,
     // mas só aparece quando ancorado no botão que abre o menu (foreground)
     const [anchor, setAnchor] = useState<HTMLElement | null>(null)
@@ -33,6 +36,7 @@ export default function AccountMenu() {
                 icon={<AccountCircle />}
                 id={menuId}
                 onClick={openMenu}
+                isLarge={isLarge}
             >
                 [Usuário]
             </ButtonWithHideableText>
@@ -74,17 +78,14 @@ interface ButtonWHTProps {
     id: string
     icon: ReactNode
     onClick: (event: MouseEvent<HTMLElement>) => void
+    isLarge?: boolean
 }
 
 /**
  *  Botão que vira um {@link Button} com um ícone para telas grandes, e só um {@link IconButton}
  * em telas pequenas.
  */
-function ButtonWithHideableText({ children, id, icon, onClick }: ButtonWHTProps) {
-    const isLarge = useMediaQuery((theme: Theme) => (
-        theme.breakpoints.up('sm')
-    ))
-
+function ButtonWithHideableText({ children, id, icon, onClick, isLarge }: ButtonWHTProps) {
     // desktop / tela grande
     if (isLarge) {
         return (

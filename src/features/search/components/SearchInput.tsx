@@ -57,7 +57,7 @@ const PaddedProgress = styled(CircularProgress)(({ theme }) => ({
 const loadingDuration = {
     enter: 500,
     exit: 0,
-} as const
+}
 
 interface LoadingProps {
     isLoading: boolean
