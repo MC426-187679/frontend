@@ -1,7 +1,8 @@
 import React, { Dispatch, useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert, Collapse } from '@mui/material'
 
-import type { Message, Timeout } from '../types/message'
+import type { Message } from '../types/message'
+import { Timeout, toMillis } from '../types/timeout'
 
 interface ErrorAlertProps {
     /** Mensagem de erro. */
@@ -27,7 +28,7 @@ export default function ErrorAlert({ error, dispatch }: ErrorAlertProps) {
     // se a mensagem de erro for alterada, abre o Collapse novamente
     useEffect(() => open(), [error])
     return (
-        <Collapse in={initialized && isOpen} onExited={remove}>
+        <Collapse in={initialized && isOpen} onExited={remove} unmountOnExit>
             <Alert
                 variant="outlined"
                 severity={error.severe ? 'error' : 'warning'}
@@ -93,20 +94,7 @@ function useTimeout(
         }
 
         // inicia timeout e retorna callback para cancelamento
-        const handle = setTimeout(() => config.finish(), parseMillis(timeout))
+        const handle = setTimeout(() => config.finish(), toMillis(timeout))
         return () => clearTimeout(handle)
     }, deps)
-}
-
-/** Parser de timeout para valor em mili sengundos. */
-function parseMillis(timeout: Timeout) {
-    const [value, unit] = timeout.split(' ')
-    const numeric = parseFloat(value)
-
-    switch (unit) {
-        case 's':
-            return numeric * 1000
-        default:
-            return numeric
-    }
 }

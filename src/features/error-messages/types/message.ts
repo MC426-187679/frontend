@@ -1,5 +1,4 @@
-/** Descrição textual do tempo para execução da callback. */
-export type Timeout = `${number} ${'s' | 'ms'}`
+import type { Timeout } from './timeout'
 
 /** Mensagem de erro. */
 export interface Message {
