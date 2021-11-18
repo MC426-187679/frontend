@@ -4,11 +4,10 @@ import { css } from '@emotion/css'
 
 import RouterButton from 'components/RouterButton'
 
-import type { Requirement } from '../types/discipline'
 import { disciplineURL } from '../utils/params'
 
 /** {@link RouterButton} com largura fixa e menos efeito quando `disabled={true}`. */
-const DisciplineButton = styled(RouterButton)(({ theme }) => ({
+const ButtonWithStyledDisabled = styled(RouterButton)(({ theme }) => ({
     width: '12ex',
 
     [`&.${buttonClasses.disabled}`]: {
@@ -28,17 +27,20 @@ const withMarker = css`
     }
 `
 
-export interface DisciplineLinkProps extends Partial<Requirement> {
+export interface DisciplineLinkProps {
     code: string
+    special?: boolean
+    partial?: boolean
 }
 
 /**
  * Link de uma disciplina desenhado como botão.
  */
 export default function DisciplineLink({ code, partial, special }: DisciplineLinkProps) {
+    const title = special ? 'Disciplina Especial' : 'Pré-requisito Parcial'
     return (
-        <HideableTooltip title="Disciplina Especial" hide={!special} describeChild>
-            <DisciplineButton
+        <HideableTooltip title={title} hide={!special && !partial} describeChild>
+            <ButtonWithStyledDisabled
                 color="primary"
                 variant="contained"
                 className={partial ? withMarker : undefined}
@@ -46,7 +48,7 @@ export default function DisciplineLink({ code, partial, special }: DisciplineLin
                 disabled={special}
             >
                 { code }
-            </DisciplineButton>
+            </ButtonWithStyledDisabled>
         </HideableTooltip>
     )
 }
