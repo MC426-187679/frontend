@@ -1,4 +1,4 @@
-import type { ExtractRouteParams, match } from 'react-router'
+import type { RouteParams } from 'utils/params'
 
 /** Diretório na URL da Página de Cursos. */
 const PAGE_DIR = 'disciplina'
@@ -6,9 +6,7 @@ const PAGE_DIR = 'disciplina'
 export const PAGE_PATH = `/${PAGE_DIR}/:code` as const
 
 /** Parâmetro da URL para uso com 'react-router-dom'. */
-export type Params = ExtractRouteParams<typeof PAGE_PATH, string>
-/** Match do 'react-router-dom' para a página de disciplinas. */
-export type MatchParams = match<Params>
+export type Params = RouteParams<typeof PAGE_PATH>
 
 /**
  *  URL da página da disciplina com o código dado.

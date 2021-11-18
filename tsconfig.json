@@ -1,10 +1,11 @@
 {
     "compilerOptions": {
         // codegen and lib checking
-        "target": "es6",
+        "target": "esnext",
         "lib": [
             "dom",
             "dom.iterable",
+            "ESNext.Promise",
             "esnext"
         ],
         "noEmit": true,

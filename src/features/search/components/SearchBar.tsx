@@ -1,5 +1,5 @@
 import React, { HTMLAttributes, useCallback, useMemo } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { AutocompleteRenderOptionState, useTheme } from '@mui/material'
 import { css } from '@emotion/css'
 
@@ -35,14 +35,14 @@ export default function SearchBar() {
     )
 
     // redireciona quando escolhido
-    const history = useHistory()
+    const navigate = useNavigate()
     const redirectToChoice = useCallback(
         (_, match: MatchedContent | string | null | undefined) => {
             if (typeof match === 'object' && match?.url) {
-                history.push(match.url)
+                navigate(match.url, { replace: false })
             }
         },
-        [history],
+        [navigate],
     )
     // envia erro pro componente de mensagens de erro
     const dispatchError = useErrors()

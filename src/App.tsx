@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Switch } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 import AppBar from 'features/appbar'
 import { ErrorsDisplay } from 'features/error-messages'
@@ -16,12 +16,12 @@ export default function App() {
         <>
             <AppBar />
             <ErrorsDisplay />
-            <Switch>
+            <Routes>
                 {/* Página Principal */}
-                <Route path={Home.PATH} exact component={Home} />
+                <Route path={Home.path} element={<Home />} caseSensitive />
                 {/* Páginas de cada Disciplina */}
-                <Route path={Discipline.PATH} component={Discipline} />
-            </Switch>
+                <Route path={Discipline.path} element={<Discipline />} caseSensitive />
+            </Routes>
         </>
     )
 }

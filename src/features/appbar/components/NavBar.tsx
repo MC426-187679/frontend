@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { useRouteMatch } from 'react-router-dom'
+import { useMatch } from 'react-router-dom'
 import { Stack } from '@mui/material'
 import { css } from '@emotion/css'
 
@@ -50,7 +50,7 @@ interface NavLinkProps {
  * Um único link de navegação.
  */
 function NavLink({ to, ...props }: NavLinkProps) {
-    const match = useRouteMatch(to)
+    const match = useMatch(to)
 
     return (
         <RouterButton

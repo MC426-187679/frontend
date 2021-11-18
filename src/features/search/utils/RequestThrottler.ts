@@ -84,11 +84,6 @@ export class RequestThrottler<Content> {
     set onOutput(sendValue: (content: Content) => void) {
         this.queue.onOutput = sendValue
     }
-
-    /** Função que faz a requisição do conteúdo. */
-    set fetch(withFetch: (query: string) => Promise<Content>) {
-        this.queue.fetch = withFetch
-    }
 }
 
 /**
@@ -104,7 +99,7 @@ export class RequestQueue<T> {
     /** Fila de tamanho um, para o último pedido não realizado. */
     private waiting: string | undefined
     /** Função que faz a requisição assíncrona. */
-    fetch: (query: string) => Promise<T>
+    private readonly fetch: (query: string) => PromiseLike<T>
 
     /** Callback para o resultado da requisição. */
     onOutput: (output: T) => void = doNothing
@@ -118,7 +113,7 @@ export class RequestQueue<T> {
     onRequestStart: (input: string) => void = doNothing
 
     /** @param maxOpenRequests Maior número de requisições ao mesmo tempo. */
-    constructor(maxOpenRequests: number, fetch: (query: string) => Promise<T>) {
+    constructor(maxOpenRequests: number, fetch: (query: string) => PromiseLike<T>) {
         this.maxOpenRequests = maxOpenRequests
         this.fetch = fetch
     }

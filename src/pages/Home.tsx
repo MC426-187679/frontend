@@ -1,10 +1,11 @@
 import React from 'react'
-import { styled } from '@mui/material'
+import { css } from '@emotion/css'
 
 import AppPage from 'components/AppPage'
+import { PageComponent } from 'utils/params'
 
-/** `header` com estilo da Home page. */
-const HomeHeader = styled('header')`
+/** Estilo da Home page. */
+const home = css`
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -14,27 +15,25 @@ const HomeHeader = styled('header')`
 `
 
 /** Página Principal. */
-function HomePage() {
-    return (
-        <AppPage notitle>
-            <HomeHeader>
-                <p>
-                    Edit <code>src/app/App.tsx</code> and save to reload.
-                </p>
-                <a
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </HomeHeader>
-        </AppPage>
-    )
-}
-
-namespace HomePage {
+export default PageComponent.from(
+    function HomePage() {
+        return (
+            <AppPage notitle>
+                <header className={home}>
+                    <p>
+                        Edit <code>src/app/App.tsx</code> and save to reload.
+                    </p>
+                    <a
+                        href="https://reactjs.org"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Learn React
+                    </a>
+                </header>
+            </AppPage>
+        )
+    },
     /** Caminho para a página principal. */
-    export const PATH = '/'
-}
-export default HomePage
+    { path: '/' },
+)

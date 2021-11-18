@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import React, { Dispatch, ReactNode, createContext, useContext } from 'react'
+import React, { Dispatch, ReactNode, createContext, useContext, useMemo } from 'react'
 import {
     ThemeProvider as MuiThemeProvider,
     ThemeOptions,
@@ -69,8 +69,8 @@ const THEMES = {
 export type ThemeMode = keyof typeof THEMES
 
 /** Contexto para o modo do tema. */
-const ThemeModeContext = createContext<[ThemeMode, Dispatch<ThemeMode>]>(
-    ['light', () => {}],
+const ThemeModeContext = createContext<readonly [ThemeMode, Dispatch<ThemeMode>]>(
+    ['dark', () => {}],
 )
 
 interface ThemeModeProviderProps {
@@ -87,9 +87,13 @@ export default function ThemeProvider(
     { defaultMode, children, storageKey }: ThemeModeProviderProps,
 ) {
     const [themeMode, setThemeMode] = useLocalStorage(storageKey, defaultMode)
+    const ctx = useMemo(
+        () => [themeMode, setThemeMode] as const,
+        [themeMode, setThemeMode],
+    )
 
     return (
-        <ThemeModeContext.Provider value={[themeMode, setThemeMode]}>
+        <ThemeModeContext.Provider value={ctx}>
             <MuiThemeProvider theme={THEMES[themeMode]}>
                 { children }
             </MuiThemeProvider>
