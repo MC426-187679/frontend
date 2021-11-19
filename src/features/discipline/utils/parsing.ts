@@ -1,4 +1,5 @@
-import { Parser, withNonBreakingSpace } from 'utils/parsing'
+import { Parser } from 'utils/parsing'
+import { Space } from 'utils/string'
 
 import type { Code, Requirement } from '../types/discipline'
 
@@ -14,7 +15,7 @@ namespace Parsing {
     /** {@link Parser} de código de disciplian. */
     export function code(item: any): Code {
         const text = Parser.string(item, { required: true })
-        const value = withNonBreakingSpace(text.toUpperCase())
+        const value = Space.withNonBreaking(text.toUpperCase())
 
         if (isCode(value)) {
             return value

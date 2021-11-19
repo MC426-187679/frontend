@@ -1,5 +1,6 @@
-import { Parser, withNormalSpace } from 'utils/parsing'
 import { Fetch } from 'utils/fetching'
+import { Parser } from 'utils/parsing'
+import { Space } from 'utils/string'
 
 import { Parsing } from '../utils/parsing'
 
@@ -78,7 +79,7 @@ export namespace Discipline {
      * @returns URL da API RESTful
      */
     export function urlFor<C extends Code | string>(code: C) {
-        return `/api/disciplina/${withNormalSpace(code)}` as const
+        return `/api/disciplina/${Space.restore(code)}` as const
     }
 
     /**

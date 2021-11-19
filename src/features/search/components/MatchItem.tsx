@@ -3,7 +3,7 @@ import { styled } from '@mui/material'
 import autosuggestMatch from 'autosuggest-highlight/match'
 import autosuggestParse from 'autosuggest-highlight/parse'
 
-import { withNonBreakingSpace } from 'utils/parsing'
+import { Space } from 'utils/string'
 import type { MatchedContent } from '../types/content'
 
 interface HighlightedTextProps {
@@ -23,7 +23,7 @@ function HighlightedTextBase({ children: fullText, query }: HighlightedTextProps
     return (
         <>
             {parts.map(({ text, highlight }, index) => {
-                const formatted = withNonBreakingSpace(text)
+                const formatted = Space.withNonBreaking(text)
 
                 if (highlight) {
                     return <strong key={index.toString(16)}>{formatted}</strong>

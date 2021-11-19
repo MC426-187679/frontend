@@ -168,34 +168,3 @@ export namespace Parser {
         }
     }
 }
-
-/** String com `From` trocado para `To`. */
-export type Replaced<Text extends string, From extends string, To extends string> =
-    Text extends `${infer Start}${From}${infer End}`
-        ? `${Start}${To}${Replaced<End, From, To>}`
-        : Text
-
-/** Espaço em branco que evita quebras de linha. */
-export type NonBreakingSpace = typeof nonBreakingSpace
-/** Espaço em branco que evita quebras de linha. */
-export const nonBreakingSpace = '\u00A0'
-
-/** Regex que dá match com espaços. */
-const singleSpace = /\s/g
-
-/** Troca espaços quaisquer por {@link nonBreakingSpace}. */
-export function withNonBreakingSpace<Text extends string>(
-    text: Text,
-): Replaced<Text, ' ', NonBreakingSpace> {
-    return text.replaceAll(singleSpace, nonBreakingSpace) as Replaced<Text, ' ', NonBreakingSpace>
-}
-
-/** Regex que dá match com {@link nonBreakingSpace}. */
-const singleNonBreaking = /\u00A0/g
-
-/** Troca {@link nonBreakingSpace} por espaços comuns. */
-export function withNormalSpace<Text extends string>(
-    text: Text,
-): Replaced<Text, NonBreakingSpace, ' '> {
-    return text.replaceAll(singleNonBreaking, ' ') as Replaced<Text, NonBreakingSpace, ' '>
-}
