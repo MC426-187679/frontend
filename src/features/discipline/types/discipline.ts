@@ -1,14 +1,14 @@
-import { Parser } from 'utils/parsing'
-import { fetchJson } from 'utils/fetching'
+import { Parser, withNormalSpace } from 'utils/parsing'
+import { Fetch } from 'utils/fetching'
 
 import { Parsing } from '../utils/parsing'
 
 // Símbolo especial para fazer com que `Code` seja diferente de `string`.
 declare const validCode: unique symbol
 
-/** Código de uma disciplina, no formato `[A-Z][A-Z ][0-9]{3}`. */
+/** Código de uma disciplina, no formato `[A-Z][A-Z ][0-9][0-9][0-9]`. */
 export type Code = string & {
-    [validCode]: true
+    [validCode]: never
 }
 
 /**
@@ -32,7 +32,7 @@ export namespace Requirement {
 
 /** Dados que representam uma Disciplina. */
 export interface Discipline {
-    /** Identificador no formato: `[A-Z][A-Z ][0-9]{3}` */
+    /** Identificador no formato: `[A-Z][A-Z ][0-9][0-9][0-9]` */
     readonly code: Code
     /** Nome da matéria / disciplina. */
     readonly name: string
@@ -63,7 +63,7 @@ export namespace Discipline {
         const code = Parsing.code(course.code)
         const name = Parser.string(course.name, { required: true })
         const syllabus = Parser.string(course.syllabus, { required: true })
-        const credits = Parser.int(course.credits, { required: true })
+        const credits = Parser.positiveInt(course.credits, { required: true })
         // parseia requisitos ou retorna lista vazia
         const reqs = Parser.array(course.reqs, Parsing.group)
         // parseia reqBy, removendo strings inválidas
@@ -78,18 +78,19 @@ export namespace Discipline {
      * @returns URL da API RESTful
      */
     export function urlFor<C extends Code | string>(code: C) {
-        return `/api/disciplina/${code}` as const
+        return `/api/disciplina/${withNormalSpace(code)}` as const
     }
 
     /**
      * Requisita e parseia disciplina da API.
      *
      * @param code URL da requisição.
+     * @param init Opções de requisição do {@link fetchJson}.
      * @returns Promessa com a disciplina.
      *
      * @throws Erros do {@link fetchJson} ou do {@link Discipline.parser}.
      */
-    export async function fetch(code: string) {
-        return parse(await fetchJson(urlFor(code)))
+    export async function fetch(code: string, init?: RequestInit) {
+        return parse(await Fetch.json(urlFor(code), init))
     }
 }

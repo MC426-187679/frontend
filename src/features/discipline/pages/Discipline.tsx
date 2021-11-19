@@ -2,7 +2,7 @@ import React from 'react'
 import { Navigate } from 'react-router-dom'
 
 import AppPage from 'components/AppPage'
-import { useApi, FetchState } from 'hooks/useApi'
+import { useFetch, FetchState } from 'hooks/useFetch'
 import { PageComponent } from 'utils/params'
 import { SendError } from 'features/error-messages'
 
@@ -27,12 +27,11 @@ export default PageComponent.from(
 
 /** Conteúdo da página de disciplinas. */
 function DisciplineContent({ code }: Params) {
-    const content = useApi(code, Discipline.fetch)
+    const content = useFetch(code, Discipline.fetch)
 
     // página com conteúdo
     if (content.state !== FetchState.Error) {
-        const discipline = content as { data?: Discipline }
-        return <DisciplineCard discipline={discipline?.data} />
+        return <DisciplineCard discipline={content.data} />
     // redireciona para página de erro
     // TODO: usar PATH da página (futura) de 404
     } else if (content.is404) {
@@ -42,7 +41,8 @@ function DisciplineContent({ code }: Params) {
         return (
             <SendError kind="discipline-page" severe>
                 Problema de conexão com o servidor: os dados da disciplina {code} puderam ser
-                recuperados. Por favor, cheque sua conexão ou tente novamente mais tarde.
+                recuperados. Por favor, cheque sua conexão com a internet ou tente novamente
+                mais tarde.
             </SendError>
         )
     }

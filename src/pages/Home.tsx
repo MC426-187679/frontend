@@ -6,7 +6,7 @@ import { PageComponent } from 'utils/params'
 
 /** Estilo da Home page. */
 const home = css`
-    min-height: 100vh;
+    min-height: 80vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -34,6 +34,6 @@ export default PageComponent.from(
             </AppPage>
         )
     },
-    /** Caminho para a página principal. */
+    // Caminho para a página principal.
     { path: '/' },
 )

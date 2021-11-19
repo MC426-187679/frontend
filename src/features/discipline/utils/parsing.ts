@@ -1,20 +1,20 @@
-import { Parser } from 'utils/parsing'
+import { Parser, withNonBreakingSpace } from 'utils/parsing'
 
 import type { Code, Requirement } from '../types/discipline'
 
 namespace Parsing {
     /** Regex para verificação de códigos de disciplinas. */
-    const validCode = /^[A-Z][A-Z ][0-9][0-9][0-9]$/
+    const validCode = /^[A-Z][A-Z\u00A0][0-9][0-9][0-9]$/ // TODO: testar regex
 
     /** Checa se a string é um código de discplina válido. */
     export function isCode(value: string): value is Code {
-        return Boolean(value.match(validCode))
+        return validCode.test(value)
     }
 
     /** {@link Parser} de código de disciplian. */
     export function code(item: any): Code {
         const text = Parser.string(item, { required: true })
-        const value = text.toUpperCase()
+        const value = withNonBreakingSpace(text.toUpperCase())
 
         if (isCode(value)) {
             return value

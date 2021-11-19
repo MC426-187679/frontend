@@ -53,7 +53,7 @@ export default function SearchBar() {
             dispatchError({
                 kind: 'search-bar',
                 message: `Problema de conexão com o servidor na realização da busca${description}.
-                Por favor, cheque sua conexão ou tente novamente mais tarde.`,
+                Por favor, cheque sua conexão com a internet ou tente novamente mais tarde.`,
                 timeout: '15 s',
             })
         },

@@ -6,3 +6,4 @@ import SendError from './components/SendError'
 
 export type { Message, Timeout }
 export { ErrorsDisplay, ErrorsProvider, SendError, useErrors }
+export default ErrorsDisplay

@@ -1,6 +1,6 @@
-/** Função que parseia um objeto qualquer como tipo `T`. */
-export interface Parser<T> {
-    (item: any, options?: Parser.Options<T>): T
+/** Função que parseia um objeto qualquer como tipo `Content`. */
+export interface Parser<Content> {
+    (item: any, options?: Parser.Options<Content>): Content
 }
 
 export namespace Parser {
@@ -9,11 +9,11 @@ export namespace Parser {
      *
      * Os valores padrões podem ser vistos em {@link defaultOptions}.
      */
-    export type Options<T> = {
+    export type Options<Content> = {
         /** Ignora erros de parsing. */
         readonly required?: false
         /** Usa esse valor em vez de acusar erro. */
-        readonly defaultsTo?: T
+        readonly defaultsTo?: Content
     } | {
         /** Acusa erro quando parsing não é completo. */
         readonly required: true
@@ -124,7 +124,29 @@ export namespace Parser {
         if (!required) {
             return defaultValue
         } else {
-            throw new Error(item, 'number')
+            throw new Error(item, 'integer')
+        }
+    }
+
+    /**
+     * Parseia um objeto como inteiro positivo.
+     *
+     * @param item Objeto qualquer.
+     * @param options Opções adicionais de parsing.
+     * @returns Inteiro positivo.
+     *
+     * @throws {@link Error} Se `options.required = true` e `item` não for numérico.
+     */
+    export function positiveInt(item: any, options?: Options<number>) {
+        const { required, defaultValue } = extract(options, 1)
+
+        const value = int(item, options)
+        if (value > 0) {
+            return value
+        } else if (!required) {
+            return defaultValue
+        } else {
+            throw new Error(item, 'positive integer')
         }
     }
 
@@ -145,4 +167,35 @@ export namespace Parser {
             this.type = type
         }
     }
+}
+
+/** String com `From` trocado para `To`. */
+export type Replaced<Text extends string, From extends string, To extends string> =
+    Text extends `${infer Start}${From}${infer End}`
+        ? `${Start}${To}${Replaced<End, From, To>}`
+        : Text
+
+/** Espaço em branco que evita quebras de linha. */
+export type NonBreakingSpace = typeof nonBreakingSpace
+/** Espaço em branco que evita quebras de linha. */
+export const nonBreakingSpace = '\u00A0'
+
+/** Regex que dá match com espaços. */
+const singleSpace = /\s/g
+
+/** Troca espaços quaisquer por {@link nonBreakingSpace}. */
+export function withNonBreakingSpace<Text extends string>(
+    text: Text,
+): Replaced<Text, ' ', NonBreakingSpace> {
+    return text.replaceAll(singleSpace, nonBreakingSpace) as Replaced<Text, ' ', NonBreakingSpace>
+}
+
+/** Regex que dá match com {@link nonBreakingSpace}. */
+const singleNonBreaking = /\u00A0/g
+
+/** Troca {@link nonBreakingSpace} por espaços comuns. */
+export function withNormalSpace<Text extends string>(
+    text: Text,
+): Replaced<Text, NonBreakingSpace, ' '> {
+    return text.replaceAll(singleNonBreaking, ' ') as Replaced<Text, NonBreakingSpace, ' '>
 }

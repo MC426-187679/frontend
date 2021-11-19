@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { Card, CardContent, Chip, Skeleton, Stack, Typography } from '@mui/material'
+import { Card, CardContent, Chip, Grid, Skeleton, Typography } from '@mui/material'
 import { css } from '@emotion/css'
 
 import type { Discipline } from '../types/discipline'
@@ -108,11 +108,13 @@ function RequiredBy({ codes }: { codes?: readonly string[] }) {
             <SectionHeader>
                 Essa disciplina pode ser importante para:
             </SectionHeader>
-            <Stack direction="row" spacing={2} padding={1}>
+            <Grid container spacing={2} padding={1}>
                 {codes.map((code) => (
-                    <DisciplineLink key={code} code={code} />
+                    <Grid key={code} item>
+                        <DisciplineLink code={code} />
+                    </Grid>
                 ))}
-            </Stack>
+            </Grid>
         </div>
     )
 }

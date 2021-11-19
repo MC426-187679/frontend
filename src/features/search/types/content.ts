@@ -1,5 +1,4 @@
-import type { Match } from './match'
-import { fetch as fetchMatch } from './match'
+import { Match } from './match'
 import { Matcher } from './matcher'
 
 /** Conteúdo adaptado de {@link Match}. */
@@ -14,11 +13,11 @@ export interface MatchedContent {
 
 export namespace MatchedContent {
     /** Conversão de {@link Match} para {@link MatchedContent}. */
-    export function from(anyMatch: Match): MatchedContent {
+    export function from(match: Match): MatchedContent {
         return {
-            identifier: anyMatch.uniqueMatchIdentifier(),
-            description: anyMatch.uniqueMatchDescription(),
-            url: anyMatch.asUrl(),
+            identifier: match.uniqueMatchIdentifier(),
+            description: match.uniqueMatchDescription(),
+            url: match.asUrl(),
         }
     }
 }
@@ -41,12 +40,13 @@ export namespace Matches {
      * Faz busca pela API REST.
      *
      * @param text texto a ser buscado.
+     * @param init Opções de requisição do {@link fetch}.
      * @return lista dos resultados para o texto, ordenados de maior para menor relevância.
      *
      * @throws Erros do {@link Match.fetch}.
      */
-    export async function fetch(query: string) {
-        const matches = await fetchMatch(query, Matcher.parse)
+    export async function fetch(query: string, init?: RequestInit) {
+        const matches = await Match.fetch(query, Matcher.parse, init)
         const results = matches.map(MatchedContent.from)
 
         return { query, results } as Matches

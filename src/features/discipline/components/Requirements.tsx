@@ -1,7 +1,8 @@
 import React from 'react'
-import { Skeleton, Stack, Paper } from '@mui/material'
+import { Paper, Skeleton, Stack } from '@mui/material'
 
-import type { Code, Discipline, Requirement } from '../types/discipline'
+import type { Code, Requirement } from '../types/discipline'
+import { Discipline } from '../types/discipline'
 import DisciplineLink from './Link'
 
 /** {@link Skeleton} no formato de {@link Requirements}. */

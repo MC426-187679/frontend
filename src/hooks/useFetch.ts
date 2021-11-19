@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { InvalidResponseError } from 'utils/fetching'
+import { InvalidResponseError, Fetch } from 'utils/fetching'
 
 /** Estado atual do {@link useApi}. */
 export const enum FetchState {
@@ -16,14 +16,18 @@ export const enum FetchState {
 export type FetchContent<Data> = {
     /** Estado de espera do resultado. */
     state: FetchState.Loading
+    /** Estado sem nenhum dado. */
+    data?: undefined
 } | {
     /** {@link useApi} resultou com dado. */
     state: FetchState.Fetched
     /** Dado recuperado por fetch. */
     data: Data
 } | {
-    /** {@link useApi} resultou com erro. */
+    /** {@link useFetch} resultou com erro. */
     state: FetchState.Error
+    /** Estado sem nenhum dado. */
+    data?: undefined
     /** Conteúdo do erro. */
     error: any
     /** Se é um erro de 404. */
@@ -40,8 +44,13 @@ const loadingContent = { state: FetchState.Loading } as const
  *
  * @param item Identificador do item requisitado. Refaz a requisição quando alterado.
  * @param fetch Função que faz a requisição. Pode ser alterada.
+ * @param init Opções de requisição do {@link fetch}.
  */
-export function useApi<Item, Content>(item: Item, fetch: (item: Item) => Promise<Content>) {
+export function useFetch<Item, Content>(
+    item: Item,
+    fetch: Fetch<Content, Item>,
+    init?: RequestInit,
+) {
     // esse valor que é alterado ao longo da requisição
     const [content, setContent] = useState<FetchContent<Content>>(loadingContent)
 
@@ -51,7 +60,7 @@ export function useApi<Item, Content>(item: Item, fetch: (item: Item) => Promise
         setContent(loadingContent)
 
         // dai monta a URL e faz a requisição
-        fetch(item).then(
+        fetch(item, init).then(
             // caso em que tudo foi OK
             (data) => {
                 setContent({

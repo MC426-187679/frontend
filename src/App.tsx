@@ -2,7 +2,7 @@ import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import AppBar from 'features/appbar'
-import { ErrorsDisplay } from 'features/error-messages'
+import ErrorsDisplay from 'features/error-messages'
 
 import Home from 'pages/Home'
 import Discipline from 'features/discipline'

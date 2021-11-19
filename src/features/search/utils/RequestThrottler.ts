@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { distance as levenshtein } from 'fastest-levenshtein'
+import type { Fetch } from 'utils/fetching'
 
 /** Função que não faz nada, usada como padrão das callbacks. */
 function doNothing() { }
@@ -30,7 +32,7 @@ export class RequestThrottler<Content> {
      *  (padrão: 5)
      */
     constructor(
-        fetch: (query: string) => Promise<Content>,
+        fetch: Fetch<Content>,
         maxDistinctChars = 5,
         waitMillis = 1000,
         maxOpenRequests = 5,
@@ -99,7 +101,7 @@ export class RequestQueue<T> {
     /** Fila de tamanho um, para o último pedido não realizado. */
     private waiting: string | undefined
     /** Função que faz a requisição assíncrona. */
-    private readonly fetch: (query: string) => PromiseLike<T>
+    private readonly fetch: Fetch<T>
 
     /** Callback para o resultado da requisição. */
     onOutput: (output: T) => void = doNothing
@@ -113,7 +115,7 @@ export class RequestQueue<T> {
     onRequestStart: (input: string) => void = doNothing
 
     /** @param maxOpenRequests Maior número de requisições ao mesmo tempo. */
-    constructor(maxOpenRequests: number, fetch: (query: string) => PromiseLike<T>) {
+    constructor(maxOpenRequests: number, fetch: Fetch<T>) {
         this.maxOpenRequests = maxOpenRequests
         this.fetch = fetch
     }

@@ -3,12 +3,8 @@ import { styled } from '@mui/material'
 import autosuggestMatch from 'autosuggest-highlight/match'
 import autosuggestParse from 'autosuggest-highlight/parse'
 
+import { withNonBreakingSpace } from 'utils/parsing'
 import type { MatchedContent } from '../types/content'
-
-/** Regex que dá match com espaços. */
-const singleSpace = /\s/g
-/** Espaço em branco que evita quebras de linha. */
-const nonBreakingSpace = '\u00A0'
 
 interface HighlightedTextProps {
     children: string
@@ -27,7 +23,7 @@ function HighlightedTextBase({ children: fullText, query }: HighlightedTextProps
     return (
         <>
             {parts.map(({ text, highlight }, index) => {
-                const formatted = text.replaceAll(singleSpace, nonBreakingSpace)
+                const formatted = withNonBreakingSpace(text)
 
                 if (highlight) {
                     return <strong key={index.toString(16)}>{formatted}</strong>

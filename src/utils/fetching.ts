@@ -1,3 +1,45 @@
+import { deepmerge } from '@mui/utils'
+
+/** Função que requisita um `Content` a partir de seu identificador. */
+export interface Fetch<Content, Id = string> {
+    (identifier: Id, init?: RequestInit): PromiseLike<Content>
+}
+
+export namespace Fetch {
+    /** Opções usadas no {@link fetch}. */
+    const defaultOptions: RequestInit = {
+        mode: 'same-origin',
+        credentials: 'same-origin',
+        referrerPolicy: 'same-origin',
+        keepalive: false,
+        headers: {
+            accept: 'application/json',
+        },
+    }
+
+    /**
+     * Requisita dado da API e parseia como JSON.
+     *
+     * @param url URL da requisição.
+     * @param init Opções de requisição do {@link fetch}.
+     * @returns Promessa com o JSON.
+     *
+     * @throws {@link InvalidResponseError} - Se a {@link Response} resultar em status diferente
+     *  de `200 OK`.
+     *
+     * @throws Erros do {@link fetch} ou do {@link Response.json}.
+     */
+    export async function json(url: string, init?: RequestInit) {
+        const requestOptions = deepmerge(defaultOptions, init, { clone: true })
+        const response = await fetch(url, requestOptions)
+        // apenas 200 é OK
+        if (response.status !== 200) {
+            throw new InvalidResponseError(response)
+        }
+        return response.json()
+    }
+}
+
 /** Resposta de servidor com status diferente de `200 OK`. */
 export class InvalidResponseError extends Error {
     /** Conteúdo da resposta. */
@@ -18,35 +60,4 @@ export class InvalidResponseError extends Error {
     get status() {
         return this.response.status
     }
-}
-
-/** Opções usadas no {@link fetch}. */
-const options: RequestInit = {
-    mode: 'same-origin',
-    credentials: 'same-origin',
-    referrerPolicy: 'same-origin',
-    keepalive: false,
-    headers: {
-        accept: 'application/json',
-    },
-}
-
-/**
- * Requisita dado da API e parseia como JSON.
- *
- * @param url URL da requisição.
- * @returns Promessa com o JSON.
- *
- * @throws {@link InvalidResponseError} - Se a {@link Response} resultar em status diferente
- *  de `200 OK`.
- *
- * @throws Erros do {@link fetch} ou do {@link Response.json}.
- */
-export async function fetchJson(url: string) {
-    const response = await fetch(url, options)
-    // apenas 200 é OK
-    if (response.status !== 200) {
-        throw new InvalidResponseError(response)
-    }
-    return response.json()
 }

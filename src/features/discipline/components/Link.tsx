@@ -8,7 +8,9 @@ import { disciplineURL } from '../utils/params'
 
 /** {@link RouterButton} com largura fixa e menos efeito quando `disabled={true}`. */
 const ButtonWithStyledDisabled = styled(RouterButton)(({ theme }) => ({
-    width: '12ex',
+    minWidth: '12ex',
+    width: '100%',
+    whiteSpace: 'nowrap',
 
     [`&.${buttonClasses.disabled}`]: {
         pointerEvents: 'inherit',

@@ -49,12 +49,12 @@ interface NavLinkProps {
 /**
  * Um único link de navegação.
  */
-function NavLink({ to, ...props }: NavLinkProps) {
-    const match = useMatch(to)
+function NavLink({ to: path, ...props }: NavLinkProps) {
+    const match = useMatch({ path, caseSensitive: true, end: true })
 
     return (
         <RouterButton
-            to={to}
+            to={path}
             color="inherit"
             size="large"
             variant={match ? 'outlined' : 'text'}
