@@ -1,7 +1,7 @@
 import React, { HTMLAttributes, SyntheticEvent } from 'react'
 import { styled } from '@mui/material'
-import autosuggestMatch from 'autosuggest-highlight/match'
 import autosuggestParse from 'autosuggest-highlight/parse'
+import Fuse from 'fuse.js'
 
 import { Space } from 'utils/string'
 import type { MatchedContent } from '../types/content'
@@ -58,11 +58,7 @@ interface HighlightedTextProps {
 /** Marca parte do texto em bold dependendo do valor de `query`. */
 const HighlightedText = React.memo(
     function HighlightedText({ children: fullText, query }: HighlightedTextProps) {
-        const matches = autosuggestMatch(fullText, query, {
-            insideWords: true,
-            findAllOccurrences: true,
-            requireMatchAll: false,
-        })
+        const matches = autosuggestMatch(fullText, query)
         const parts = autosuggestParse(fullText, matches)
 
         return (
@@ -82,3 +78,26 @@ const HighlightedText = React.memo(
     // comparação simplificada, muda apenas quando algum dos textos mudar
     (prev, next) => prev.query === next.query && prev.children === next.children,
 )
+
+/** Opções para a instância do {@link Fuse}. */
+const fuseOptions: Fuse.IFuseOptions<string> = {
+    isCaseSensitive: false,
+    findAllMatches: true,
+    ignoreFieldNorm: false,
+    ignoreLocation: true,
+    includeMatches: true,
+    includeScore: false,
+    minMatchCharLength: 3,
+    shouldSort: false,
+    useExtendedSearch: false,
+    threshold: 0.5,
+}
+
+/** Faz busca com {@link Fuse}, mas adapta resultados para {@link autosuggestParse}. */
+function autosuggestMatch(fullText: string, query: string) {
+    const fuse = new Fuse([fullText], fuseOptions)
+    const results = fuse.search(query)[0]?.matches ?? []
+    const matches = results[0]?.indices ?? []
+    // os índices do Fuse são inclusivos no final
+    return matches.map(([start, end]) => [start, end + 1] as [number, number])
+}
