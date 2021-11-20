@@ -6,9 +6,8 @@ type Unit = 'ms' | 's' | 'min' | 'h'
 
 /** Multiplicadores para transformação de cada unidade. */
 function multiplierToMillis(unit: Unit): number
-function multiplierToMillis(unit: string): number | undefined
-function multiplierToMillis(unit?: any): undefined
-function multiplierToMillis(unit?: any) {
+function multiplierToMillis(unit?: string | undefined): number | undefined
+function multiplierToMillis(unit?: unknown) {
     switch (unit) {
         case 'ms':
             return 1

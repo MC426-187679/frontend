@@ -13,7 +13,7 @@ namespace Parsing {
     }
 
     /** {@link Parser} de código de disciplian. */
-    export function code(item: any): Code {
+    export function code(item: unknown): Code {
         const text = Parser.string(item, { required: true })
         const value = Space.withNonBreaking(text.toUpperCase())
 
@@ -27,7 +27,7 @@ namespace Parsing {
 
 namespace Parsing {
     /** {@link Parser} de código de disciplina com marcador `*` de requisito parcial. */
-    function fromString(item: any) {
+    function fromString(item: unknown) {
         const text = Parser.string(item, { required: false })
         const code = text.replace('*', '')
         const partial = text.includes('*')
@@ -39,7 +39,7 @@ namespace Parsing {
     }
 
     /** {@link Parser} para requisitos de disciplinas. */
-    export function requirement(item: any): Requirement {
+    export function requirement(item: unknown): Requirement {
         // requisito recebido apenas pelo código
         if (typeof item === 'string') {
             const { code, partial } = fromString(item)
@@ -50,6 +50,8 @@ namespace Parsing {
             }
         // requisito recebido como objeto
         } else {
+            Parser.assertCanBeAcessed(item)
+
             const { code, partial } = fromString(item.code)
             return {
                 code,
@@ -87,7 +89,7 @@ namespace Parsing {
     }
 
     /** {@link Parser} para grupos de requisitos não vazios e sem repetição. */
-    export function group(item: any): Requirement.Group {
+    export function group(item: unknown): Requirement.Group {
         const reqs = Parser.array(item, Parsing.requirement)
         const reqGroup = distincts(reqs, (req) => req.code)
         if (reqGroup.length <= 0) {
@@ -97,7 +99,7 @@ namespace Parsing {
     }
 
     /** {@link Parser} para lista de códigos sem repetição. */
-    export function codes(item: any): Code[] {
+    export function codes(item: unknown): Code[] {
         const data = Parser.array(item, Parsing.code)
         return distincts(data, (code) => code)
     }

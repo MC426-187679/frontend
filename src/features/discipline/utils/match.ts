@@ -36,7 +36,9 @@ export default class DisciplineMatch extends Match {
     static readonly content = 'discipline'
 
     /** Parser de resultado de busca como disciplina. */
-    static parse(item: any) {
+    static parse(item: unknown) {
+        Parser.assertCanBeAcessed(item)
+
         const code = Parser.string(item.code, { required: true })
         const name = Parser.string(item.name, { required: true })
         return new DisciplineMatch(code, name)

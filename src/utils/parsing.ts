@@ -1,6 +1,6 @@
 /** Função que parseia um objeto qualquer como tipo `Content`. */
 export interface Parser<Content> {
-    (item: any, options?: Parser.Options<Content>): Content
+    (item: unknown, options?: Parser.Options<Content>): Content
 }
 
 export namespace Parser {
@@ -45,7 +45,7 @@ export namespace Parser {
      *
      * @throws Se `options.required = true` e `parser` dá algum erro.
      */
-    export function array<T>(item: any, parse: Parser<T>, options?: Options<T[]>) {
+    export function array<T>(item: unknown, parse: Parser<T>, options?: Options<T[]>) {
         const { required, defaultValue } = extract(options, [])
 
         if (Array.isArray(item)) {
@@ -81,7 +81,7 @@ export namespace Parser {
      *
      * @throws {@link Error} Se `options.required = true` e `item` não for string não-vazia.
      */
-    export function string(item: any, options?: Options<string>) {
+    export function string(item: unknown, options?: Options<string>) {
         const { required, defaultValue } = extract(options, '')
 
         if (typeof item === 'string' && item !== '') {
@@ -103,7 +103,7 @@ export namespace Parser {
      *
      * @throws {@link Error} Se `options.required = true` e `item` não for numérico.
      */
-    export function int(item: any, options?: Options<number>) {
+    export function int(item: unknown, options?: Options<number>) {
         const { required, defaultValue } = extract(options, 0)
 
         // arredonda inteiros
@@ -137,7 +137,7 @@ export namespace Parser {
      *
      * @throws {@link Error} Se `options.required = true` e `item` não for numérico.
      */
-    export function positiveInt(item: any, options?: Options<number>) {
+    export function positiveInt(item: unknown, options?: Options<number>) {
         const { required, defaultValue } = extract(options, 1)
 
         const value = int(item, options)
@@ -147,6 +147,21 @@ export namespace Parser {
             return defaultValue
         } else {
             throw new Error(item, 'positive integer')
+        }
+    }
+
+    /**
+     * Garante que o objeto pode ser acessado com chaves `[]` ou com ponto `item.prop`.
+     *
+     * @param item um item qualquer.
+     * @throws {@link Error} se `item` for `null` ou `undefined`, já que eles dão erro ao serem
+     *  acessados.
+     */
+    export function assertCanBeAcessed(item: unknown):
+        asserts item is Record<string | symbol, unknown> {
+        // apenas null e undefined dão erro quando acessados, o resto retorna undefined
+        if (item === undefined || item === null) {
+            throw new Error(item, 'não nulo')
         }
     }
 

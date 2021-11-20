@@ -44,7 +44,9 @@ export namespace Matcher {
      * @throws {@link MissingParser} se o conteúdo especificado não tem nenhum parser associado.
      * @throws {@link Parser.Error} se o objeto não tem os campos esperados.
      */
-    export function parse(match: any) {
+    export function parse(match: unknown) {
+        Parser.assertCanBeAcessed(match)
+
         const content = Parser.string(match.content, { required: true })
 
         const matcher = matchers.get(content)

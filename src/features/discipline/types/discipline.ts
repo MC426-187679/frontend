@@ -54,21 +54,22 @@ export namespace Discipline {
     /**
      * Tenta parsear um objeto como uma disciplina.
      *
-     * @param course objeto qualquer
+     * @param item objeto qualquer
      * @returns dados de uma disciplina
      *
      * @throws {@link Parser.Error} se o objeto não tem os campos obrigatórios.
      */
-    export function parse(course: any): Discipline {
+    export function parse(item: unknown): Discipline {
+        Parser.assertCanBeAcessed(item)
         // precisa de código, nome, ementa e créditos
-        const code = Parsing.code(course.code)
-        const name = Parser.string(course.name, { required: true })
-        const syllabus = Parser.string(course.syllabus, { required: true })
-        const credits = Parser.positiveInt(course.credits, { required: true })
+        const code = Parsing.code(item.code)
+        const name = Parser.string(item.name, { required: true })
+        const syllabus = Parser.string(item.syllabus, { required: true })
+        const credits = Parser.positiveInt(item.credits, { required: true })
         // parseia requisitos ou retorna lista vazia
-        const reqs = Parser.array(course.reqs, Parsing.group)
+        const reqs = Parser.array(item.reqs, Parsing.group)
         // parseia reqBy, removendo strings inválidas
-        const reqBy = Parsing.codes(course.reqBy)
+        const reqBy = Parsing.codes(item.reqBy)
         return { code, name, syllabus, credits, reqs, reqBy }
     }
 
