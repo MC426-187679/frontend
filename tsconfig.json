@@ -1,14 +1,15 @@
 {
     "compilerOptions": {
         // codegen and lib checking
-        "target": "es6",
+        "target": "esnext",
         "lib": [
             "dom",
             "dom.iterable",
+            "ESNext.Promise",
             "esnext"
         ],
         "noEmit": true,
-        "skipLibCheck": false,
+        "skipLibCheck": true,
         "baseUrl": "./src",
         // modules
         "module": "esnext",
@@ -21,7 +22,7 @@
         "allowJs": false,
         "allowSyntheticDefaultImports": true,
         "strict": true,
-        "exactOptionalPropertyTypes": true,
+        "exactOptionalPropertyTypes": false,
         "alwaysStrict": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
