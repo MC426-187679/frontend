@@ -26,24 +26,28 @@ export default PageComponent.from(
 )
 
 /** Conteúdo da página de disciplinas. */
-function DisciplineContent({ code }: Params) {
-    const content = useFetch(code, Discipline.fetch)
+const DisciplineContent = React.memo(
+    function DisciplineContent({ code }: Params) {
+        const content = useFetch(code, Discipline.fetch)
 
-    // página com conteúdo
-    if (content.state !== FetchState.Error) {
-        return <DisciplineCard discipline={content.data} />
-    // redireciona para página de erro
-    // TODO: usar PATH da página (futura) de 404
-    } else if (content.is404) {
-        return <Navigate to="/404" replace />
-    // página com erro
-    } else {
-        return (
-            <SendError kind="discipline-page" severe>
-                Problema de conexão com o servidor: os dados da disciplina {code} puderam ser
-                recuperados. Por favor, cheque sua conexão com a internet ou tente novamente
-                mais tarde.
-            </SendError>
-        )
-    }
-}
+        // página com conteúdo
+        if (content.state !== FetchState.Error) {
+            return <DisciplineCard discipline={content.data} />
+        // redireciona para página de erro
+        // TODO: usar PATH da página (futura) de 404
+        } else if (content.is404) {
+            return <Navigate to="/404" replace />
+        // página com erro
+        } else {
+            return (
+                <SendError kind="discipline-page" severe>
+                    Problema de conexão com o servidor: os dados da disciplina {code} puderam ser
+                    recuperados. Por favor, cheque sua conexão com a internet ou tente novamente
+                    mais tarde.
+                </SendError>
+            )
+        }
+    },
+    // só atualiza quando o código mudar
+    (prev, next) => prev.code === next.code,
+)

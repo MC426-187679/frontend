@@ -46,27 +46,34 @@ export interface DisciplineLinkProps {
 /**
  * Link de uma disciplina desenhado como botão.
  */
-export default function DisciplineLink(
-    { code, partial, special, className, ...props }: DisciplineLinkProps,
-) {
-    const title = special ? 'Disciplina Especial' : 'Pré-requisito Parcial'
+export default React.memo(
+    function DisciplineLink(
+        { code, partial, special, className, ...props }: DisciplineLinkProps,
+    ) {
+        const title = special ? 'Disciplina Especial' : 'Pré-requisito Parcial'
 
-    const classes = joined(className, partial && withMarker)
-    return (
-        <HideableTooltip title={title} hide={!special && !partial} describeChild>
-            <ButtonWithStyledDisabled
-                color="primary"
-                variant="contained"
-                className={classes}
-                to={special ? undefined : disciplineURL(code)}
-                disabled={special}
-                {...props}
-            >
-                { code }
-            </ButtonWithStyledDisabled>
-        </HideableTooltip>
-    )
-}
+        const classes = joined(className, partial && withMarker)
+        return (
+            <HideableTooltip title={title} hide={!special && !partial} describeChild>
+                <ButtonWithStyledDisabled
+                    color="primary"
+                    variant="contained"
+                    className={classes}
+                    to={special ? undefined : disciplineURL(code)}
+                    disabled={special}
+                    {...props}
+                >
+                    { code }
+                </ButtonWithStyledDisabled>
+            </HideableTooltip>
+        )
+    },
+    // só atualiza se alguma prop mudar
+    (prev, next) => {
+        const keys = ['code', 'special', 'partial', 'fullWidth', 'className', 'size'] as const
+        return prev === next || keys.every((key) => prev[key] === next[key])
+    },
+)
 
 interface HideableTooltipProps extends TooltipProps {
     hide?: boolean

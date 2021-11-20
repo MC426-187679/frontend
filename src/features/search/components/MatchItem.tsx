@@ -6,38 +6,6 @@ import autosuggestParse from 'autosuggest-highlight/parse'
 import { Space } from 'utils/string'
 import type { MatchedContent } from '../types/content'
 
-interface HighlightedTextProps {
-    children: string
-    query: string
-}
-
-/** Marca parte do texto em bold dependendo do valor de `query`. */
-function HighlightedTextBase({ children: fullText, query }: HighlightedTextProps) {
-    const matches = autosuggestMatch(fullText, query, {
-        insideWords: true,
-        findAllOccurrences: true,
-        requireMatchAll: false,
-    })
-    const parts = autosuggestParse(fullText, matches)
-
-    return (
-        <>
-            {parts.map(({ text, highlight }, index) => {
-                const formatted = Space.withNonBreaking(text)
-
-                if (highlight) {
-                    return <strong key={index.toString(16)}>{formatted}</strong>
-                } else {
-                    return formatted
-                }
-            })}
-        </>
-    )
-}
-
-/** Versão memoizada de {@link HighlightTextBase}. */
-const HighlightedText = React.memo(HighlightedTextBase)
-
 /** Elemento de anchor (`<a></a>`) sem estilização. */
 const UnstyledAnchor = styled('a')`
     color: inherit;
@@ -79,3 +47,38 @@ export default function MatchItem(props: MatchItemProps) {
 function preventDefault(event: SyntheticEvent) {
     event.preventDefault()
 }
+
+interface HighlightedTextProps {
+    /** Texto que da opção, que pode ser modificado. */
+    children: string
+    /** Texto na caixa de busca, usado para comparação. */
+    query: string
+}
+
+/** Marca parte do texto em bold dependendo do valor de `query`. */
+const HighlightedText = React.memo(
+    function HighlightedText({ children: fullText, query }: HighlightedTextProps) {
+        const matches = autosuggestMatch(fullText, query, {
+            insideWords: true,
+            findAllOccurrences: true,
+            requireMatchAll: false,
+        })
+        const parts = autosuggestParse(fullText, matches)
+
+        return (
+            <>
+                {parts.map(({ text, highlight }, index) => {
+                    const formatted = Space.withNonBreaking(text)
+
+                    if (highlight) {
+                        return <strong key={index.toString(16)}>{formatted}</strong>
+                    } else {
+                        return formatted
+                    }
+                })}
+            </>
+        )
+    },
+    // comparação simplificada, muda apenas quando algum dos textos mudar
+    (prev, next) => prev.query === next.query && prev.children === next.children,
+)

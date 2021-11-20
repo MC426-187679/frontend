@@ -23,34 +23,55 @@ const toolbarClass = css`
  *  - links de navegação
  *  - seletor de tema
  */
-export default function HeaderBar() {
-    const isOkay = useBreakpoint('sm')
-    const isMedium = useBreakpoint('md')
-    const isLarge = useBreakpoint('lg')
+export default React.memo(
+    function HeaderBar() {
+        const isOkay = useBreakpoint('sm')
+        const isMedium = useBreakpoint('md')
+        const isLarge = useBreakpoint('lg')
 
-    return (
-        <AppBar position="static">
-            <Toolbar className={toolbarClass}>
+        return (
+            <AppBar position="static">
+                <Toolbar className={toolbarClass}>
 
-                {/* Logotipo */}
-                <AlignedRow alignment="left">
-                    {isMedium && <BrandLink />}
-                </AlignedRow>
+                    {/* Logotipo */}
+                    <AlignedRow alignment="left">
+                        {isMedium && <BrandLink />}
+                    </AlignedRow>
 
-                {/* Busca */}
-                <SearchBar />
+                    {/* Busca */}
+                    <SearchBar />
 
-                {/* Navegação */}
-                <AlignedRow alignment="right">
-                    {isLarge && <NavBar />}
-                    {isOkay && <ThemeSwitch />}
-                    <AccountMenu isLarge={isOkay} />
-                </AlignedRow>
+                    {/* Navegação */}
+                    <AlignedRow alignment="right">
+                        {isLarge && <NavBar />}
+                        {isOkay && <ThemeSwitch />}
+                        <AccountMenu isLarge={isOkay} />
+                    </AlignedRow>
 
-            </Toolbar>
-        </AppBar>
-    )
-}
+                </Toolbar>
+            </AppBar>
+        )
+    },
+    // sempre igual
+    () => true,
+)
+
+/**
+ * Logotipo em texto com um link para a página principal.
+ */
+const BrandLink = React.memo(
+    function BrandLink() {
+        return (
+            <Link underline="none" color="inherit" component={RouterLink} to="/">
+                <Typography variant="h6" noWrap component="div" marginX={1}>
+                    Planejador
+                </Typography>
+            </Link>
+        )
+    },
+    // sempre igual
+    () => true,
+)
 
 /** {@link useMediaQuery} específico para {@link Breakpoint}s. */
 function useBreakpoint(key: Breakpoint, limit: 'up' | 'down' | 'only' = 'up') {
@@ -58,20 +79,6 @@ function useBreakpoint(key: Breakpoint, limit: 'up' | 'down' | 'only' = 'up') {
         return theme.breakpoints[limit](key)
     })
 }
-
-/**
- * Logotipo em texto com um link para a página principal.
- */
-function BrandLink() {
-    return (
-        <Link underline="none" color="inherit" component={RouterLink} to="/">
-            <Typography variant="h6" noWrap component="div" marginX={1}>
-                Planejador
-            </Typography>
-        </Link>
-    )
-}
-
 /** Classe CSS com configurações do container flex de {@link AlignedRow}. */
 const alignedRowClass = css`
     flex-basis: 0;

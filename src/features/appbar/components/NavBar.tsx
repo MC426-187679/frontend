@@ -8,18 +8,22 @@ import RouterButton from 'components/RouterButton'
 /**
  * Links de Navegação.
  */
-export default function NavBar() {
-    return (
-        <Nav>
-            <NavLink to="/arvore">
-                Árvore
-            </NavLink>
-            <NavLink to="/grade">
-                Grade
-            </NavLink>
-        </Nav>
-    )
-}
+export default React.memo(
+    function NavBar() {
+        return (
+            <Nav>
+                <NavLink to="/arvore">
+                    Árvore
+                </NavLink>
+                <NavLink to="/grade">
+                    Grade
+                </NavLink>
+            </Nav>
+        )
+    },
+    // sempre igual
+    () => true,
+)
 
 /** {@link Stack} horizontal com `component="nav"`. */
 function Nav({ children }: { children?: ReactNode }) {
@@ -40,27 +44,31 @@ const fixedWidth = css`
 `
 
 interface NavLinkProps {
+    /** href do link. */
     to: string
-    children?: ReactNode
-    startIcon?: ReactNode
-    endIcon?: ReactNode
+    /** Texto do link. */
+    children: string
 }
 
 /**
  * Um único link de navegação.
  */
-function NavLink({ to: path, ...props }: NavLinkProps) {
-    const match = useMatch({ path, caseSensitive: true, end: true })
+const NavLink = React.memo(
+    function NavLink({ to: path, children }: NavLinkProps) {
+        const match = useMatch({ path, caseSensitive: true, end: true })
 
-    return (
-        <RouterButton
-            to={path}
-            color="inherit"
-            size="large"
-            variant={match ? 'outlined' : 'text'}
-            aria-current="page"
-            className={fixedWidth}
-            {...props}
-        />
-    )
-}
+        return (
+            <RouterButton
+                to={path}
+                color="inherit"
+                size="large"
+                variant={match ? 'outlined' : 'text'}
+                aria-current="page"
+                className={fixedWidth}
+            >
+                { children }
+            </RouterButton>
+        )
+    },
+    // memoização padrão do React
+)

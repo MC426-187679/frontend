@@ -6,25 +6,29 @@ import { useListener } from '../providers/errors'
 import ErrorAlert from './ErrorAlert'
 
 /** Componente que desenha as messagens de erro do provedor atual em uma pilha. */
-export default function ErrorsDisplay() {
-    // mapa que armazena mensagens de erro na ordem em que foram passadas
-    const [messages, dispatch] = useOrderedMap<string, Message>()
-    // listener que insere mensagens no mapa
-    useListener(
-        (message) => {
-            dispatch({ op: 'insert', key: message.kind, value: message })
-        },
-        [dispatch],
-    )
+export default React.memo(
+    function ErrorsDisplay() {
+        // mapa que armazena mensagens de erro na ordem em que foram passadas
+        const [messages, dispatch] = useOrderedMap<string, Message>()
+        // listener que insere mensagens no mapa
+        useListener(
+            (message) => {
+                dispatch({ op: 'insert', key: message.kind, value: message })
+            },
+            [dispatch],
+        )
 
-    return (
-        <Stack direction="column" width="100%">
-            {messages.map(({ key, value }) => (
-                <ErrorAlert key={key} error={value} dispatch={dispatch} />
-            ))}
-        </Stack>
-    )
-}
+        return (
+            <Stack direction="column" width="100%">
+                {messages.map(({ key, value }) => (
+                    <ErrorAlert key={key} error={value} dispatch={dispatch} />
+                ))}
+            </Stack>
+        )
+    },
+    // sempre igual
+    () => true,
+)
 
 /** Mapa que mantém ordem de inserção. */
 interface OrderedMap<K, V> extends ReadonlyArray<{

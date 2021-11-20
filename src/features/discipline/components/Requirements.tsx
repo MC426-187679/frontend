@@ -5,19 +5,6 @@ import type { Code, Requirement } from '../types/discipline'
 import { Discipline } from '../types/discipline'
 import DisciplineLink from './Link'
 
-/** {@link Skeleton} no formato de {@link Requirements}. */
-const LoadingRequirements = React.memo(
-    function LoadingRequirements() {
-        const someData = { code: 'AA000' as Code, special: true, partial: true }
-        return (
-            <Skeleton width="100%">
-                <RequirementGroup group={[someData]} />
-                <RequirementGroup group={[someData]} />
-            </Skeleton>
-        )
-    },
-)
-
 interface RequirementsProps {
     /** Grupos de requisitos da disciplina. */
     groups?: Discipline['reqs']
@@ -38,6 +25,19 @@ export default function Requirements({ groups }: RequirementsProps) {
                 />
             ))}
         </Stack>
+    )
+}
+
+/** Dados usados durante o loading de {@link Requirements}. */
+const loadingData = [{ code: 'AA000' as Code, special: true, partial: true }]
+
+/** {@link Skeleton} no formato de {@link Requirements}. */
+function LoadingRequirements() {
+    return (
+        <Skeleton width="100%">
+            <RequirementGroup group={loadingData} />
+            <RequirementGroup group={loadingData} />
+        </Skeleton>
     )
 }
 

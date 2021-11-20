@@ -1,28 +1,48 @@
 import React, { Dispatch, useContext, useEffect, useState } from 'react'
 import type { Consumer, Message, Relay } from '../types/message'
 
-/** {@link Relay} simples que repassa as mensagens para subconsumidores. */
-function empty(): Relay {
-    // subconsumidores
-    const consumers = new Set<Consumer>()
+export namespace Errors {
+    /** {@link Relay} simples que repassa as mensagens para subconsumidores. */
+    function emptyRelay(): Relay {
+        // subconsumidores
+        const consumers = new Set<Consumer>()
 
-    return {
-        // insere novo subconsumidor
-        add: (consumer) => {
-            consumers.add(consumer)
-            return () => consumers.delete(consumer)
-        },
-        // recebe e repassa mensagens de erro
-        receive: (message) => {
-            consumers.forEach((consumer) => {
-                consumer.receive(message)
-            })
-        },
+        return {
+            // insere novo subconsumidor
+            add: (consumer) => {
+                consumers.add(consumer)
+                return () => consumers.delete(consumer)
+            },
+            // recebe e repassa mensagens de erro
+            receive: (message) => {
+                consumers.forEach((consumer) => {
+                    consumer.receive(message)
+                })
+            },
+        }
     }
-}
 
-/** Contexto das mensagens de erro. */
-const ErrorsContext = React.createContext(empty())
+    /** Contexto das mensagens de erro. */
+    export const Context = React.createContext(emptyRelay())
+
+    function doNothing() {}
+
+    interface ErrorsProviderProps {
+        /** Passar erros do provedor pai para esse novo. */
+        subscribeToParent?: boolean
+        /** Demais componentes. */
+        children?: React.ReactNode
+    }
+
+    /** Abre um novo recebedor de mensagens. */
+    export function Provider({ subscribeToParent, children }: ErrorsProviderProps) {
+        const [relay] = useState(emptyRelay)
+        useListener(subscribeToParent ? relay : doNothing)
+
+        return <Context.Provider value={relay}>{ children }</Context.Provider>
+    }
+
+}
 
 /**
  * Adiciona consumidor para mensagens de erro.
@@ -34,7 +54,7 @@ export function useListener(
     consumer: Consumer | Consumer['receive'],
     deps: React.DependencyList = [consumer],
 ) {
-    const relay = useContext(ErrorsContext)
+    const relay = useContext(Errors.Context)
 
     useEffect(
         // adiciona listener e retorna callback para remoção do listener
@@ -51,27 +71,6 @@ export function useListener(
 
 /** Retorna função que envia mensagens de erro pro contexto atual. */
 export function useErrors(): Dispatch<Message> {
-    const relay = useContext(ErrorsContext)
+    const relay = useContext(Errors.Context)
     return relay.receive
-}
-
-function doNothing() {}
-
-interface ErrorsProviderProps {
-    /** Passar erros do provedor pai para esse novo. */
-    subscribeToParent?: boolean
-    /** Demais componentes. */
-    children?: React.ReactNode
-}
-
-/** Abre um novo recebedor de mensagens. */
-export function ErrorsProvider({ subscribeToParent, children }: ErrorsProviderProps) {
-    const [relay] = useState(empty)
-
-    useListener(subscribeToParent ? relay : doNothing)
-    return (
-        <ErrorsContext.Provider value={relay}>
-            { children }
-        </ErrorsContext.Provider>
-    )
 }

@@ -60,7 +60,12 @@
         }],
         // definição e uso de variáveis
         "@typescript-eslint/no-use-before-define": ["error", {
-            "classes": false, "functions": false
+            "classes": false,
+            "functions": false,
+            "variables": false,
+            "enums": false,
+            "typedefs": false,
+            "ignoreTypeReferences": true
         }],
         "no-inner-declarations": "off",
         "max-classes-per-file": "off",
