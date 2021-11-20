@@ -41,6 +41,12 @@
         }],
         "react/jsx-one-expression-per-line": "off",
         "no-else-return": "off",
+        "max-len": ["error", {
+            "code": 99,
+            "ignoreUrls": true,
+            "ignoreComments": false
+        }],
+        "@typescript-eslint/lines-between-class-members": "off",
         // dependências e módulos
         "import/extensions": "off",
         "import/no-extraneous-dependencies": ["error", {
@@ -49,13 +55,26 @@
         "react/jsx-filename-extension": ["error", {
             "extensions": [".tsx"]
         }],
+        "no-restricted-imports": ["error", {
+            "patterns": ["features/*/*"]
+        }],
         // definição e uso de variáveis
         "@typescript-eslint/no-use-before-define": ["error", {
             "classes": false, "functions": false
         }],
+        "no-inner-declarations": "off",
+        "max-classes-per-file": "off",
+        "no-constant-condition": ["error", {
+            "checkLoops": false
+        }],
+        "prefer-arrow-callback": ["error", {
+            "allowNamedFunctions": true
+        }],
         // análise de tipos e valores
         "react/destructuring-assignment": "off",
         "react/require-default-props": "off",
+        "react/jsx-props-no-spreading": "off",
+        "react/function-component-definition": "off",
         // jest usa mocks que ocultam globais da DOM
         "@typescript-eslint/no-redeclare": ["error", {
             "builtinGlobals": false

@@ -1,0 +1,78 @@
+/** String com `From` trocado para `To`. */
+export type Replaced<Text extends string, From extends string, To extends string> =
+    Text extends `${infer Start}${From}${infer End}`
+        ? `${Start}${To}${Replaced<End, From, To>}`
+        : Text
+
+export namespace Space {
+    /** Espaço em branco que evita quebras de linha. */
+    export type NonBreaking = typeof nonBreaking
+    /** Espaço em branco que evita quebras de linha. */
+    export const nonBreaking = '\u00A0'
+
+    /** Regex que dá match com espaços. */
+    const singleSpace = /\s/g
+
+    /** Troca espaços quaisquer por {@link nonBreaking}. */
+    export function withNonBreaking<Text extends string>(
+        text: Text,
+    ): Replaced<Text, ' ', NonBreaking> {
+        return text.replaceAll(singleSpace, nonBreaking) as Replaced<Text, ' ', NonBreaking>
+    }
+
+    /** Regex que dá match com {@link nonBreaking}. */
+    const singleNonBreaking = /\u00A0/g
+
+    /** Troca {@link nonBreaking} por espaços comuns. */
+    export function restore<Text extends string>(
+        text: Text,
+    ): Replaced<Text, NonBreaking, ' '> {
+        return text.replaceAll(singleNonBreaking, ' ') as Replaced<Text, NonBreaking, ' '>
+    }
+}
+
+namespace Types {
+    /** Valores que têm valor lógico falso, `Boolean(value) === false`. */
+    type Falsy = false | null | undefined | '' | 0 | 0n
+
+    /** Tipos primitivos com transformação padrão para string. */
+    export type Formattable = string | number | bigint | boolean | null | undefined
+
+    /**
+     * Array apenas com elementos "verdadeiros", retornado por `array.filter(Boolean)`.
+     *
+     * @see {@link Array.filter}
+     * @see {@link Boolean}
+     */
+    export type Filtered<Array extends readonly any[]> =
+        Array extends [infer First, ...infer Rest]
+            ? First extends Falsy
+                ? Filtered<Rest>
+                : [First, ...Filtered<Rest>]
+            : []
+
+    /** Garante que `Type` é um subtipo de `Base`. */
+    type Assured<Type, Base> = Type extends Base ? Type : never
+
+    /**
+     * Retorno de `array.join(sep)`.
+     *
+     * @see {@link Array.join}
+     */
+    export type Joined<Array extends Formattable[], Sep extends string> =
+        Array extends [infer First, infer Second, ...infer Rest]
+        // eslint-disable-next-line max-len
+            ? `${Assured<First, Formattable>}${Sep}${Joined<Assured<[Second, ...Rest], Formattable[]>, Sep>}`
+            : Array extends [infer First]
+                ? `${Assured<First, Formattable>}`
+                : ''
+}
+
+/** Retorno de {@link joined}, que limpa valores {@link Falsy} antes de dar {@link Array.join}. */
+export type Joined<Args extends readonly Types.Formattable[], Sep extends string = ' '> =
+    Types.Joined<Types.Filtered<Args>, Sep>
+
+/** Junta todas os valores não-vazios em uma só, usando espaço como separador.  */
+export function joined<Args extends readonly Types.Formattable[]>(...args: Args): Joined<Args> {
+    return args.filter(Boolean).join(' ') as Joined<Args>
+}
