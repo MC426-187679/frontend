@@ -25,6 +25,7 @@ export default PageComponent.from(
                     </p>
                     <a
                         href="https://reactjs.org"
+                        hrefLang="en-US"
                         target="_blank"
                         rel="noopener noreferrer"
                     >

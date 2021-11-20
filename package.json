@@ -36,9 +36,11 @@
         "@testing-library/jest-dom": "^5.15",
         "@testing-library/react": "^12.1",
         "@testing-library/user-event": "^13.5",
+        "@types/css-mediaquery": "^0.1",
         "@types/jest": "^27.0",
         "@typescript-eslint/eslint-plugin": "^5.4",
         "@typescript-eslint/parser": "^5.4",
+        "css-mediaquery": "^0.1",
         "eslint": "^8.2",
         "eslint-config-airbnb": "^19",
         "eslint-config-airbnb-typescript": "^16",
@@ -47,7 +49,9 @@
         "eslint-plugin-jsx-a11y": "^6.5",
         "eslint-plugin-only-warn": "^1.0",
         "eslint-plugin-react": "^7.27",
-        "eslint-plugin-react-hooks": "^4.3"
+        "eslint-plugin-react-hooks": "^4.3",
+        "jest": "^27.3",
+        "ts-jest": "^27.0"
     },
     "browserslist": {
         "production": [

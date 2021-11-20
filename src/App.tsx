@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 import AppBar from 'features/appbar'
 import ErrorsDisplay from 'features/error-messages'
@@ -13,7 +13,7 @@ import Discipline from 'features/discipline'
  */
 export default function App() {
     return (
-        <>
+        <BrowserRouter>
             <AppBar />
             <ErrorsDisplay />
             <Routes>
@@ -22,6 +22,6 @@ export default function App() {
                 {/* Páginas de cada Disciplina */}
                 <Route path={Discipline.path} element={<Discipline />} caseSensitive />
             </Routes>
-        </>
+        </BrowserRouter>
     )
 }

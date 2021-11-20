@@ -9,6 +9,7 @@ import {
     responsiveFontSizes,
 } from '@mui/material/styles'
 import { indigo, pink } from '@mui/material/colors'
+import { ptBR } from '@mui/material/locale'
 import { deepmerge } from '@mui/utils'
 
 import { useStorage } from 'hooks/useStorage'
@@ -49,7 +50,7 @@ namespace Themes {
     /** Constrói tema a partir do tema base. */
     function buildTheme(options: ThemeOptions) {
         const merged = deepmerge(baseTheme, options)
-        return responsiveFontSizes(createTheme(merged))
+        return responsiveFontSizes(createTheme(merged, ptBR))
     }
 
     /** Opção de tema claro. */

@@ -1,24 +1,23 @@
 import React, { StrictMode } from 'react'
 import ReactDOM from 'react-dom'
-import { BrowserRouter } from 'react-router-dom'
 import { CssBaseline, NoSsr, StyledEngineProvider } from '@mui/material'
 
 import ThemeProvider from 'providers/Theme'
+
 import App from './App'
 
-/** Página completa. */
+/** Renderiza página completa. */
 ReactDOM.render(
     <StrictMode>
-        <StyledEngineProvider injectFirst>
-            <NoSsr>
-                <ThemeProvider storageKey="theme-mode">
-                    <BrowserRouter>
-                        <CssBaseline />
+        <NoSsr>
+            <StyledEngineProvider injectFirst>
+                <CssBaseline enableColorScheme>
+                    <ThemeProvider storageKey="theme-mode">
                         <App />
-                    </BrowserRouter>
-                </ThemeProvider>
-            </NoSsr>
-        </StyledEngineProvider>
+                    </ThemeProvider>
+                </CssBaseline>
+            </StyledEngineProvider>
+        </NoSsr>
     </StrictMode>,
     document.getElementById('root'),
 )
