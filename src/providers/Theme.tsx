@@ -9,7 +9,8 @@ import {
 } from '@mui/material/styles'
 import { indigo, pink } from '@mui/material/colors'
 import { deepmerge } from '@mui/utils'
-import { useLocalStorage } from '@rehooks/local-storage'
+
+import { useStorage } from 'hooks/useStorage'
 
 /**
  * Configurações base os temas usados.
@@ -82,11 +83,16 @@ interface ThemeModeProviderProps {
     children?: ReactNode
 }
 
+/** Checa se a string é um modo de tema válido. */
+function isThemeMode(key: string): key is ThemeMode {
+    return key in THEMES
+}
+
 /** Provedor de modo de tema, usando estado guardado no browser. */
 export default function ThemeProvider(
     { defaultMode, children, storageKey }: ThemeModeProviderProps,
 ) {
-    const [themeMode, setThemeMode] = useLocalStorage(storageKey, defaultMode)
+    const [themeMode, setThemeMode] = useStorage(storageKey, defaultMode, isThemeMode)
     const ctx = useMemo(
         () => [themeMode, setThemeMode] as const,
         [themeMode, setThemeMode],

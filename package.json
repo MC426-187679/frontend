@@ -17,7 +17,6 @@
         "@mui/icons-material": "^5.1",
         "@mui/material": "^5.1",
         "@mui/utils": "^5.1",
-        "@rehooks/local-storage": "^2.4",
         "@types/autosuggest-highlight": "^3.2",
         "@types/node": "^16.11",
         "@types/react": "^17.0",
