@@ -11,7 +11,7 @@ ReactDOM.render(
     <StrictMode>
         <StyledEngineProvider injectFirst>
             <NoSsr>
-                <ThemeProvider defaultMode="dark" storageKey="theme-mode">
+                <ThemeProvider storageKey="theme-mode">
                     <BrowserRouter>
                         <CssBaseline />
                         <App />
