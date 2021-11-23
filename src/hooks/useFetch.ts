@@ -34,6 +34,24 @@ export type FetchContent<Data> = {
     is404: boolean
 }
 
+/* eslint-disable-next-line @typescript-eslint/no-redeclare */
+export namespace FetchContent {
+    export async function resolve<Data>(promise: PromiseLike<Data>): Promise<FetchContent<Data>> {
+        try {
+            return {
+                state: FetchState.Fetched,
+                data: await promise,
+            }
+        } catch (error: any) {
+            return {
+                state: FetchState.Error,
+                error,
+                is404: is404(error),
+            }
+        }
+    }
+}
+
 /** {@link FetchContent} com estado de loading. */
 const loadingContent = { state: FetchState.Loading } as const
 
@@ -60,23 +78,7 @@ export function useFetch<Item, Content>(
         setContent(loadingContent)
 
         // dai monta a URL e faz a requisição
-        fetch(item, init).then(
-            // caso em que tudo foi OK
-            (data) => {
-                setContent({
-                    state: FetchState.Fetched,
-                    data,
-                })
-            },
-            // caso de erro
-            (error) => {
-                setContent({
-                    state: FetchState.Error,
-                    error,
-                    is404: is404(error),
-                })
-            },
-        )
+        FetchContent.resolve(fetch(item, init)).then(setContent)
     }, [item])
 
     // retorna o elemento escolhido
