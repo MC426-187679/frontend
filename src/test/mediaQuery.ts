@@ -1,5 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import type { Theme } from '@mui/material/styles'
 import mediaQuery from 'css-mediaquery'
+
+import { Themes } from 'config/themes'
+import type { ThemeMode } from 'providers/Theme'
 
 /** @see https://developer.mozilla.org/en-US/docs/Web/CSS/length */
 export type CSSLengthUnit =
@@ -76,15 +80,17 @@ export interface MediaValues {
 }
 
 declare global {
-    interface Window {
+    interface Mocks {
         /** Versão mocada do {@link window.matchMedia}. */
-        matchMediaMock: ReturnType<typeof prepareMatchMedia>
+        matchMedia?: ReturnType<typeof mockMatchMedia>
+        /** Versão mocada do {@link @mui/material/useMediaQuery} */
+        useMediaQuery?: ReturnType<typeof mockUseMediaQuery>
     }
 }
 
-/** Baseado em https://github.com/mui-org/material-ui/issues/16073#issuecomment-502359758 */
-export function prepareMatchMedia(values: MediaValues = {}) {
-    const mock = jest.fn(
+/** Baseado em https://github.com/mui-org/material-ui/issues/16073#issuecomment-502359758. */
+export function mockMatchMedia(values: MediaValues = {}) {
+    const matchMediaMock = jest.fn(
         function matchMedia(query: string) {
             return {
                 matches: mediaQuery.match(query, values),
@@ -98,7 +104,26 @@ export function prepareMatchMedia(values: MediaValues = {}) {
             }
         },
     )
-    window.matchMediaMock = mock
-    window.matchMedia = mock
-    return mock
+    window.mocks.matchMedia = matchMediaMock
+    window.matchMedia = matchMediaMock
+    return matchMediaMock
+}
+
+/**
+ *  Mock do pacote {@link @mui/material/useMediaQuery}.
+ */
+export function mockUseMediaQuery(mode: ThemeMode = 'dark') {
+    const useMediaQueryMock = jest.fn(
+        function useMediaQuery(query: string | ((theme: Theme) => string)) {
+            if (typeof query === 'function') {
+                return window.matchMedia(query(Themes[mode])).matches
+            } else {
+                return window.matchMedia(query).matches
+            }
+        },
+    )
+
+    jest.doMock('@mui/material/useMediaQuery', () => useMediaQueryMock)
+    window.mocks.useMediaQuery = useMediaQueryMock
+    return useMediaQueryMock
 }

@@ -11,11 +11,10 @@ ReactDOM.render(
     <StrictMode>
         <NoSsr>
             <StyledEngineProvider injectFirst>
-                <CssBaseline enableColorScheme>
-                    <ThemeProvider storageKey="theme-mode">
-                        <App />
-                    </ThemeProvider>
-                </CssBaseline>
+                <ThemeProvider storageKey="theme-mode">
+                    <CssBaseline enableColorScheme />
+                    <App />
+                </ThemeProvider>
             </StyledEngineProvider>
         </NoSsr>
     </StrictMode>,

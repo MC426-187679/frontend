@@ -8,16 +8,23 @@ import '@testing-library/jest-dom'
 import '@testing-library/react'
 import '@testing-library/user-event'
 
-import { MediaValues, prepareMatchMedia } from 'test/mediaQuery'
+import { mockMatchMedia, mockUseMediaQuery } from 'test/mediaQuery'
 
-const largeScreen: MediaValues = {
+declare global {
+    /** Coleção de mocks globais pela aplicação. */
+    interface Mocks extends Record<string, jest.Mock | undefined> {}
+
+    interface Window {
+        /** Coleção de mocks globais pela aplicação. */
+        mocks: Mocks
+    }
+}
+// inicialização do objeto
+window.mocks = {}
+
+// prepara funções de match de CSS
+mockMatchMedia({
     width: 1800,
     height: 800,
-}
-
-// prepara para a inicialização global
-prepareMatchMedia(largeScreen)
-// e prepara para os testes
-beforeEach(() => {
-    prepareMatchMedia(largeScreen)
 })
+mockUseMediaQuery()
