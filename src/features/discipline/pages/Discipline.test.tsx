@@ -45,7 +45,7 @@ test('fetch discipline with code character count bigger than 5', async () => {
     expect(screen.queryByText(/404 Not Found/)).toBeInTheDocument()
 })
 
-test('test fetch discipline with code character count lower than 5', async () => {
+test('fetch discipline with code character count lower than 5', async () => {
     mockFetch()
     await mockUseFetch('MC10', Discipline.fetch)
 
@@ -62,7 +62,7 @@ test('test fetch discipline with code character count lower than 5', async () =>
     expect(screen.queryByText(/404 Not Found/)).toBeInTheDocument()
 })
 
-test('test fetch discipline with special cases code', async () => {
+test('fetch discipline with special cases code', async () => {
     mockFetch()
     await mockUseFetch('AA200', Discipline.fetch)
 
@@ -79,7 +79,7 @@ test('test fetch discipline with special cases code', async () => {
     expect(screen.queryByText(/404 Not Found/)).toBeInTheDocument()
 })
 
-test('test fetch discipline with lower case code', async () => {
+test('fetch discipline with lower case code', async () => {
     mockFetch()
     await mockUseFetch('mc102', Discipline.fetch)
 

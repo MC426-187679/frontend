@@ -10,3 +10,11 @@ test('renders learn react link', () => {
     expect(linkElement).toBeInTheDocument()
     expect(window.mocks.useMediaQuery).toHaveBeenCalledTimes(3)
 })
+
+test('has search bar', () => {
+    render(<App />)
+
+    const searchBar = screen.getByPlaceholderText<HTMLInputElement>(/Pesquisar/)
+    expect(searchBar).toBeInTheDocument()
+    expect(searchBar).toBeVisible()
+})
