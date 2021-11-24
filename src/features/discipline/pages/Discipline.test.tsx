@@ -1,22 +1,15 @@
 import React from 'react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
-import { render, screen } from '@testing-library/react'
+import { screen, render, waitFor } from '@testing-library/react'
 
-import { mockFetch, mockUseFetch } from 'test/fetch'
-
-import { Discipline } from '../types/discipline'
+import { disciplineURL } from '../utils/params'
 import DisciplinePage from './Discipline'
 
 describe('fetch discipline', () => {
-    beforeEach(() => {
-        mockFetch()
-    })
-
-    test('with valid code', async () => {
-        await mockUseFetch('MC102', Discipline.fetch)
-
+    /** Renderiza uma página de dsiciplina e o resultado de sua requisição. */
+    async function loadDisciplinePage(code: string) {
         render(
-            <MemoryRouter initialEntries={['/disciplina/MC102']}>
+            <MemoryRouter initialEntries={[disciplineURL(code)]}>
                 <Routes>
                     <Route path={DisciplinePage.path} element={<DisciplinePage />} />
                     <Route path="/404" element={<>404 Not Found</>} />
@@ -24,6 +17,15 @@ describe('fetch discipline', () => {
             </MemoryRouter>,
         )
 
+        await waitFor(() => {
+            expect(screen.queryByText(RegExp(`${code}|Not Found`))).toBeInTheDocument()
+        })
+    }
+
+    test('with valid code', async () => {
+        await loadDisciplinePage('MC102')
+
+        expect(document.title).toEqual(expect.stringContaining('MC102'))
         expect(screen.queryByText(/MC102/)).toBeInTheDocument()
         expect(screen.queryByText(/Algoritmos e Programação de Computadores/)).toBeInTheDocument()
         const syllabus = /Conceitos básicos de organização de computadores./
@@ -38,18 +40,10 @@ describe('fetch discipline', () => {
         ['special cases code', 'AA200'],
         ['lower case code', 'mc102'],
     ])('with %s', async (message, code) => {
-        await mockUseFetch(code, Discipline.fetch)
+        await loadDisciplinePage(code)
 
-        render(
-            <MemoryRouter initialEntries={[`/disciplina/${code}`]}>
-                <Routes>
-                    <Route path={DisciplinePage.path} element={<DisciplinePage />} />
-                    <Route path="/404" element={<>404 Not Found</>} />
-                </Routes>
-            </MemoryRouter>,
-        )
-
-        expect(screen.queryByText(code)).not.toBeInTheDocument()
+        expect(document.title).toEqual(expect.not.stringContaining(code))
+        expect(screen.queryByText(RegExp(code))).not.toBeInTheDocument()
         expect(screen.queryByText(/404 Not Found/)).toBeInTheDocument()
     })
 })

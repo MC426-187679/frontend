@@ -38,9 +38,13 @@ export default function AppPage(props: AppPageProps) {
     // muda o título da página
     useEffect(() => {
         if (notitle || !title) {
-            document.title = baseTitle
+            return undefined
         } else {
+            // retorna o título base
             document.title = `${baseTitle} - ${title}`
+            return () => {
+                document.title = baseTitle
+            }
         }
     }, [title, notitle])
 

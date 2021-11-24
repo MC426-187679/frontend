@@ -1,41 +1,38 @@
-import type { Fetch } from 'utils/fetching'
+/** Muda a URL base de `path` para `to` se a requisição é do tipo `same-origin`. */
+function changeIfSameOrigin(path: string, to: URL) {
+    try {
+        return new URL(path).href
+    } catch {
+        const url = new URL(path, to)
+        url.pathname = `${to.pathname}${url.pathname}`
+        return url.href
+    }
+}
+
+/** {@link fetch} original, sem mock to jest. */
+export const unmockedFetch = fetch
 
 declare global {
     interface Mocks {
         /** Versão mocada do {@link fetch}. */
         fetch?: jest.MockedFunction<typeof fetch>
-        /** Versão mocada do {@link useFetch}. */
-        useFetch?: typeof useFetch
     }
 }
 
-/** {@link fetch} original, sem mock to jest. */
-const unmockedFetch = fetch
-
-/** Muda a porta de uma URL. */
-function changePort(path: string, port: `${bigint}`) {
-    try {
-        const url = new URL(path)
-        url.port = port
-        return url.toString()
-    } catch {
-        return new URL(path, `http://127.0.0.1:${port}`).toString()
-    }
-}
-
-/** Muda a porta antes de fazer a requisição. */
-export function mockFetch(port: `${bigint}` = '8080') {
+/** Redireciona as requisições do tipo 'same-origin' para `newOrigin`. */
+export function mockFetch(newOrigin: string) {
     window.mocks = window.mocks ?? {}
     window.mocks.fetch = window.mocks.fetch ?? jest.fn()
     window.fetch = window.mocks.fetch
     global.fetch = window.mocks.fetch
 
+    const origin = new URL(newOrigin)
     window.mocks.fetch.mockImplementation(
         function fetch(input: RequestInfo, init?: RequestInit) {
             if (typeof input === 'string') {
-                return unmockedFetch(changePort(input, port), init)
+                return unmockedFetch(changeIfSameOrigin(input, origin), init)
             } else {
-                const newInput = { ...input, url: changePort(input.url, port) }
+                const newInput = { ...input, url: changeIfSameOrigin(input.url, origin) }
                 return unmockedFetch(newInput, init)
             }
         },
@@ -43,22 +40,7 @@ export function mockFetch(port: `${bigint}` = '8080') {
     return window.mocks.fetch
 }
 
-type MockedUseFetch = jest.Mocked<typeof import('hooks/useFetch')>
-const { FetchContent } = jest.requireActual<typeof import('hooks/useFetch')>('hooks/useFetch')
-const { useFetch } = jest.requireMock<MockedUseFetch>('hooks/useFetch')
-jest.mock('hooks/useFetch')
-
-/** {@link hooks/useFetch} que carrega o conteúdo uma vez e repete requisições seguintes. */
-export async function mockUseFetch<Item, Content>(item: Item, fetch: Fetch<Content, Item>) {
-    window.mocks = window.mocks ?? {}
-    window.mocks.useFetch = useFetch
-
-    const content = await FetchContent.resolve(fetch(item))
-    window.mocks.useFetch.mockImplementation(
-        /* eslint-disable-next-line @typescript-eslint/no-shadow */
-        function useFetch() {
-            return content
-        },
-    )
-    return window.mocks.useFetch
-}
+beforeEach(() => {
+    // redireciona para a porta padrão do Vapor
+    mockFetch('http://localhost:8080')
+})
