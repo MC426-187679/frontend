@@ -1,8 +1,8 @@
 import React from 'react'
 import { Paper, Skeleton, Stack } from '@mui/material'
 
-import type { Code, Requirement } from '../types/discipline'
-import { Discipline } from '../types/discipline'
+import type { Discipline, Requirement } from '../types/discipline'
+import { Parsing } from '../utils/parsing'
 import DisciplineLink from './Link'
 
 interface RequirementsProps {
@@ -29,7 +29,7 @@ export default function Requirements({ groups }: RequirementsProps) {
 }
 
 /** Dados usados durante o loading de {@link Requirements}. */
-const loadingData = [{ code: 'AA000' as Code, special: true, partial: true }]
+const loadingData = [{ code: Parsing.code('AA000'), special: true, partial: true }]
 
 /** {@link Skeleton} no formato de {@link Requirements}. */
 function LoadingRequirements() {

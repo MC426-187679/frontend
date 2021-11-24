@@ -6,9 +6,9 @@ import { useFetch, FetchState } from 'hooks/useFetch'
 import { PageComponent } from 'utils/params'
 import { SendError } from 'features/error-messages'
 
-import DisciplineCard from '../components/Card'
 import { PAGE_PATH, Params } from '../utils/params'
 import { Discipline } from '../types/discipline'
+import DisciplineCard from '../components/Card'
 
 /**
  * Página das Disciplinas: mostra dados da disciplina atual (recuperada da URL) ou uma mensagem

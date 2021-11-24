@@ -1,7 +1,7 @@
 import { Parser } from 'utils/parsing'
 import { Match } from 'features/search'
 
-import { disciplineURL } from './params'
+import { url } from './params'
 
 /** Resultado  de disciplina. */
 export default class DisciplineMatch extends Match {
@@ -29,7 +29,7 @@ export default class DisciplineMatch extends Match {
 
     /** URL para acesso da disciplina. */
     asUrl() {
-        return disciplineURL(this.code)
+        return url(this.code)
     }
 
     /** Seletor de resultados de busca como disciplina. */

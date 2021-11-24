@@ -1,14 +1,17 @@
 import { Fetch } from 'utils/fetching'
 import { Parser } from 'utils/parsing'
 import { Space } from 'utils/string'
+import { Matcher } from 'features/search'
 
 import { Parsing } from '../utils/parsing'
+import { url } from '../utils/params'
+import DisciplineMatch from '../utils/match'
 
 // Símbolo especial para fazer com que `Code` seja diferente de `string`.
 declare const validCode: unique symbol
 
-/** Código de uma disciplina, no formato `[A-Z][A-Z ][0-9][0-9][0-9]`. */
-export type Code = string & {
+/** Código de uma disciplina, no formato `[A-Z][A-Z\u00A0][0-9][0-9][0-9]`. */
+export type Code = `${string}${bigint}` & {
     [validCode]: never
 }
 
@@ -51,6 +54,9 @@ export interface Discipline {
 }
 
 export namespace Discipline {
+    // registra o matcher antes de qualquer possibilidade de uso do tipo
+    Matcher.register(DisciplineMatch)
+
     /**
      * Tenta parsear um objeto como uma disciplina.
      *
@@ -74,12 +80,22 @@ export namespace Discipline {
     }
 
     /**
+     * Constrói URL de acesso da página da discplina no browser.
+     *
+     * @param code códido da disciplina
+     * @returns URL da página
+     */
+    export function pagePath<C extends Code | string>(code: C) {
+        return url(Space.restore(code))
+    }
+
+    /**
      * Constrói URL da API para recuperar dados da disciplina.
      *
      * @param code códido da disciplina a ser recuperada
      * @returns URL da API RESTful
      */
-    export function urlFor<C extends Code | string>(code: C) {
+    export function loadPath<C extends Code | string>(code: C) {
         return `/api/disciplina/${Space.restore(code)}` as const
     }
 
@@ -87,12 +103,12 @@ export namespace Discipline {
      * Requisita e parseia disciplina da API.
      *
      * @param code URL da requisição.
-     * @param init Opções de requisição do {@link fetchJson}.
+     * @param init Opções de requisição do {@link Fetch.json}.
      * @returns Promessa com a disciplina.
      *
-     * @throws Erros do {@link fetchJson} ou do {@link Discipline.parser}.
+     * @throws Erros do {@link Fetch.json} ou do {@link Discipline.parse}.
      */
     export async function fetch(code: string, init?: RequestInit) {
-        return parse(await Fetch.json(urlFor(code), init))
+        return parse(await Fetch.json(loadPath(code), init))
     }
 }

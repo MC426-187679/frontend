@@ -6,7 +6,7 @@ import RouterButton from 'components/RouterButton'
 import { joined } from 'utils/string'
 
 import type { Requirement } from '../types/discipline'
-import { disciplineURL } from '../utils/params'
+import { Discipline } from '../types/discipline'
 
 /** {@link RouterButton} com largura fixa e menos efeito quando `disabled={true}`. */
 const ButtonWithStyledDisabled = styled(RouterButton)(({ theme }) => ({
@@ -59,7 +59,7 @@ export default React.memo(
                     color="primary"
                     variant="contained"
                     className={classes}
-                    to={special ? undefined : disciplineURL(code)}
+                    to={special ? undefined : Discipline.pagePath(code)}
                     disabled={special}
                     {...props}
                 >

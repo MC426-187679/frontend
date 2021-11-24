@@ -71,7 +71,6 @@ export default function SearchBar() {
             renderOption={renderOption}
             componentsProps={componentsProps}
             autoComplete
-            filterSelectedOptions
             includeInputInList
             clearText="Limpar"
             openText="Abrir"
