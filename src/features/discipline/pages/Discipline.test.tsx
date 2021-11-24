@@ -2,14 +2,14 @@ import React from 'react'
 import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import { screen, render, waitFor } from '@testing-library/react'
 
-import { disciplineURL } from '../utils/params'
+import { Discipline } from '../types/discipline'
 import DisciplinePage from './Discipline'
 
 describe('fetch discipline', () => {
     /** Renderiza uma página de dsiciplina e o resultado de sua requisição. */
     async function loadDisciplinePage(code: string) {
         render(
-            <MemoryRouter initialEntries={[disciplineURL(code)]}>
+            <MemoryRouter initialEntries={[Discipline.pagePath(code)]}>
                 <Routes>
                     <Route path={DisciplinePage.path} element={<DisciplinePage />} />
                     <Route path="/404" element={<>404 Not Found</>} />

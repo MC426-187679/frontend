@@ -3,7 +3,7 @@ import { distance as levenshtein } from 'fastest-levenshtein'
 import type { Fetch } from 'utils/fetching'
 
 /** Função que não faz nada, usada como padrão das callbacks. */
-function doNothing() { }
+export function doNothing() { }
 
 /**
  *  Limitador de requisições, que só faz uma requisição depois de
@@ -74,11 +74,16 @@ export class RequestThrottler<Content> {
 
     /** Callback para atualização do estado de loading. */
     set setLoading(sendStatus: (isLoading: boolean) => void) {
-        this.queue.onRequestStart = () => {
-            sendStatus(true)
-        }
-        this.queue.onEmpty = () => {
-            sendStatus(false)
+        if (Object.is(sendStatus, doNothing)) {
+            this.queue.onRequestStart = doNothing
+            this.queue.onEmpty = doNothing
+        } else {
+            this.queue.onRequestStart = () => {
+                sendStatus(true)
+            }
+            this.queue.onEmpty = () => {
+                sendStatus(false)
+            }
         }
     }
 
