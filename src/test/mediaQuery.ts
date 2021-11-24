@@ -13,11 +13,11 @@ export type CSSLengthUnit =
 /** @see https://developer.mozilla.org/en-US/docs/Web/CSS/length */
 export type CSSLength = `${number}${CSSLengthUnit}`
 /** @see https://developer.mozilla.org/en-US/docs/Web/CSS/resolution */
-export type CSSResolution = number | `${number}` | `${number}${'dpi' | 'dpcm' | 'dppx' | 'x'}`
+export type CSSResolution = `${number}${'dpi' | 'dpcm' | 'dppx' | 'x'}`
 /** @see https://developer.mozilla.org/en-US/docs/Web/CSS/ratio */
 export type CSSRatio = `${number}/${number}`
 /** @see https://developer.mozilla.org/en-US/docs/Web/CSS/integer */
-export type CSSInteger = `${bigint}` // único modo type-safe
+export type CSSInteger = `${bigint}`
 
 /** Valores usado como referência no mock do {@link window.matchMedia}. */
 export interface MediaValues {
