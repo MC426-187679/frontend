@@ -29,7 +29,7 @@ describe('the full application', () => {
     test('has search bar', () => {
         render(<App />)
 
-        const searchBar = screen.getByPlaceholderText<HTMLInputElement>(/Pesquisar/)
+        const searchBar = screen.getByPlaceholderText(/Pesquisar/)
         expect(searchBar).toBeInTheDocument()
         expect(searchBar).toBeVisible()
     })
