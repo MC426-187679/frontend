@@ -7,8 +7,8 @@ import { Space } from 'utils/string'
 import { Discipline } from 'features/discipline'
 import SearchBar from './SearchBar'
 
-describe('user input', () => {
-    test('changes text value', async () => {
+describe('when user input text', () => {
+    test('the searchbox changes value', async () => {
         render(
             <MemoryRouter>
                 <SearchBar />
@@ -24,7 +24,7 @@ describe('user input', () => {
         expect(input).toHaveValue('MC102')
     })
 
-    test('display popper', async () => {
+    test('the component displays a hidden popper', async () => {
         render(
             <MemoryRouter>
                 <SearchBar />
@@ -41,7 +41,7 @@ describe('user input', () => {
         expect(popper).toBeVisible()
     })
 
-    test('display options', async () => {
+    test('the list of options is displayed', async () => {
         render(
             <MemoryRouter>
                 <SearchBar />
@@ -63,6 +63,87 @@ describe('user input', () => {
             expect(options[i]).toBeVisible()
         }
     })
+})
+
+/**
+ * Constrói regex que dá match com as mesmas palavras de `groups`, mas ignora a quantidade de
+ * espaços em branco em cada grupo e ignora todo tipo de texto entre os grupos. Util para texto
+ * do HTML, que pode mudar os espaços.
+ *
+ * @param groups lista de textos cujas palavras devem dar match em ordem.
+ * @returns RegExp que ignora quantidade espaços entre palvras.
+ */
+function wordsMatching(...groups: string[]) {
+    const regexGroups = groups.map((group) => {
+        return group
+            .split(/\s+/)
+            .filter((str) => str.length > 0)
+            .join('\\s+')
+    })
+    return new RegExp(regexGroups.join('.*'))
+}
+
+describe.each([
+    'MC102',
+    'MC322',
+    'MC558',
+    'F 329',
+    'MS211',
+])('when the user searches for %s', (code) => {
+    test(`it displays an option with '${code}'`, async () => {
+        render(
+            <MemoryRouter>
+                <SearchBar />
+            </MemoryRouter>,
+        )
+
+        await act(async () => {
+            const input = screen.getByPlaceholderText(/Pesquisar/)
+            userEvent.click(input)
+            await userEvent.type(input, code, { delay: 10 })
+        })
+
+        const allOptions = await screen.findAllByRole('option', {}, { timeout: 2_000 })
+        const optionsWithSameCode = allOptions.filter((option) => {
+            return option.textContent?.match(wordsMatching(code))
+        })
+        expect(optionsWithSameCode).toHaveLength(1)
+
+        const option = optionsWithSameCode[0]
+        expect(option).toBeVisible()
+        expect(option.textContent).toMatch(Space.withNonBreaking(code))
+    })
+
+    test('by name, it displays the expected option', async () => {
+        const discipline = await Discipline.fetch(code)
+        expect(discipline.code).toBe(Space.withNonBreaking(code))
+
+        render(
+            <MemoryRouter>
+                <SearchBar />
+            </MemoryRouter>,
+        )
+
+        await act(async () => {
+            const input = screen.getByPlaceholderText(/Pesquisar/)
+            userEvent.click(input)
+            await userEvent.type(input, discipline.name, { delay: 10 })
+        })
+
+        const allOptions = await screen.findAllByRole('option', {}, { timeout: 2_000 })
+        const optionsWithSameName = allOptions.filter((option) => {
+            return option.textContent?.match(wordsMatching(discipline.name))
+        })
+        expect(optionsWithSameName).not.toHaveLength(0)
+        const optionsWithSameCode = allOptions.filter((option) => {
+            return option.textContent?.match(wordsMatching(code))
+        })
+        expect(optionsWithSameCode).toHaveLength(1)
+
+        const option = optionsWithSameCode[0]
+        expect(option).toBeVisible()
+        expect(option.textContent).toMatch(wordsMatching(code, discipline.name))
+    })
 
     /** Componente que renderiza rota atual na URL. */
     function DisplayLocation() {
@@ -74,13 +155,7 @@ describe('user input', () => {
         )
     }
 
-    test.each([
-        'MC102',
-        'MC322',
-        'MC426',
-        'F 128',
-        'MA111',
-    ])('changes navigation with %s', async (code) => {
+    test('and clicks on the option, the url changes', async () => {
         const discipline = await Discipline.fetch(code)
         expect(discipline.code).toBe(Space.withNonBreaking(code))
 
@@ -100,33 +175,14 @@ describe('user input', () => {
             userEvent.click(input)
             await userEvent.type(input, code, { delay: 10 })
         })
-        await screen.findByRole('listbox', {}, { timeout: 2_000 })
 
-        const options = screen.getAllByText(wordsMatching(discipline.name))
-        expect(options).not.toHaveLength(0)
-        const option = options[0]
-        expect(option).toBeVisible()
-        expect(option.textContent).toMatch(Space.withNonBreaking(code))
+        const allOptions = await screen.findAllByRole('option', {}, { timeout: 2_000 })
+        const option = allOptions.find((item) => item.textContent?.match(wordsMatching(code)))
+        expect(option).not.toBeNull()
 
         expect(location).toHaveTextContent(startLocation)
-        await act(async () => userEvent.click(option))
+        await act(async () => userEvent.click(option!))
         expect(location).toBeInTheDocument()
         expect(location).toHaveTextContent(`Current path: ${Discipline.pagePath(code)}`)
     })
 })
-
-/**
- * Constrói regex que dá match com as mesmas palavras de `text`, mas ignora a quantidade de
- * espaços em branco. Util para texto do HTML, que pode mudar os espaços.
- *
- * @param text lista de textos cujas palavras devem dar match em ordem.
- * @returns RegExp que ignora quantidade espaços entre palvras.
- */
-function wordsMatching(...text: string[]) {
-    // palavras não vazias
-    const words = text
-        .flatMap((str) => str.split(/\s/))
-        .filter((str) => str.length > 0)
-
-    return new RegExp(words.join('\\s+'))
-}
