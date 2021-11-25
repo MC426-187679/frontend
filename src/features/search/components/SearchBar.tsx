@@ -77,6 +77,7 @@ export default function SearchBar() {
             closeText="Fechar"
             loadingText="Carregando..."
             noOptionsText="Sem resultados"
+            role="searchbox"
         />
     )
 }

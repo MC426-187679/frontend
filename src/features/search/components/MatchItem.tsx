@@ -1,13 +1,13 @@
 import React, { HTMLAttributes, SyntheticEvent } from 'react'
-import { styled } from '@mui/material'
+import { css } from '@emotion/css'
 import autosuggestParse from 'autosuggest-highlight/parse'
 import Fuse from 'fuse.js'
 
 import { Space } from 'utils/string'
 import type { MatchedContent } from '../types/content'
 
-/** Elemento de anchor (`<a></a>`) sem estilização. */
-const UnstyledAnchor = styled('a')`
+/** Remove estilização de elemento de anchor (`<a>`). */
+const anchotWithoutStyling = css`
     color: inherit;
     text-decoration: none;
     & li {
@@ -29,7 +29,8 @@ export default function MatchItem(props: MatchItemProps) {
     const { option, inputValue, selected, ...params } = props
 
     return (
-        <UnstyledAnchor
+        <a
+            className={anchotWithoutStyling}
             href={option.url}
             key={option.identifier}
             onClick={preventDefault}
@@ -39,7 +40,7 @@ export default function MatchItem(props: MatchItemProps) {
                     { option.description }
                 </HighlightedText>
             </li>
-        </UnstyledAnchor>
+        </a>
     )
 }
 

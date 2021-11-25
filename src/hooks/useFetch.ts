@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { InvalidResponseError, Fetch } from 'utils/fetching'
+import { InvalidResponseError, type Fetch } from 'utils/fetching'
 
 /** Estado atual do {@link useApi}. */
 export const enum FetchState {
@@ -30,7 +30,7 @@ export type FetchContent<Data> = {
     data?: undefined
     /** Conteúdo do erro. */
     error: any
-    /** Se é um erro de 404. */
+    /** Se é um erro HTTP de `404 Not Found`. */
     is404: boolean
 }
 

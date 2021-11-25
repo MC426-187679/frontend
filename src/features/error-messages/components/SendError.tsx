@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { Message } from '../types/message'
+import type { Message } from '../types/message'
 import { useErrors } from '../providers/errors'
 
 interface SendErrorProps extends Omit<Message, 'message'> {

@@ -29,6 +29,7 @@ export default React.memo(
 function Nav({ children }: { children?: ReactNode }) {
     return (
         <Stack
+            role="navigation"
             component="nav"
             direction="row"
             spacing={2}
@@ -63,7 +64,7 @@ const NavLink = React.memo(
                 color="inherit"
                 size="large"
                 variant={match ? 'outlined' : 'text'}
-                aria-current="page"
+                aria-current={match ? 'page' : undefined}
                 className={fixedWidth}
             >
                 { children }

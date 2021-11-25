@@ -30,6 +30,7 @@ export default function SearchInput(props: InputParams) {
         <Input
             placeholder="Pesquisar..."
             inputRef={inputRef}
+            role="textbox"
             {...params}
             {...inputParams}
             startAdornment={(

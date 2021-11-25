@@ -1,9 +1,18 @@
-import React, { Reducer, useReducer } from 'react'
+import React, { type Reducer, useReducer } from 'react'
 import { Stack } from '@mui/material'
+import { css } from '@emotion/css'
 
 import type { Message } from '../types/message'
 import { useListener } from '../providers/errors'
 import ErrorAlert from './ErrorAlert'
+
+const withoutMarkersAndFullWidth = css`
+    list-style: none;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+`
 
 /** Componente que desenha as messagens de erro do provedor atual em uma pilha. */
 export default React.memo(
@@ -17,9 +26,17 @@ export default React.memo(
             },
             [dispatch],
         )
+        // remove o elemento se vazio
+        if (messages.length <= 0) {
+            return null
+        }
 
         return (
-            <Stack direction="column" width="100%">
+            <Stack
+                className={withoutMarkersAndFullWidth}
+                direction="column"
+                component="ul"
+            >
                 {messages.map(({ key, value }) => (
                     <ErrorAlert key={key} error={value} dispatch={dispatch} />
                 ))}

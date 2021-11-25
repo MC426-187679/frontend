@@ -45,9 +45,10 @@ function LoadingRequirements() {
 function RequirementGroup({ group }: { group: Requirement.Group }) {
     return (
         <Paper elevation={12}>
-            <Stack direction="row" spacing={2} padding={1}>
+            <Stack direction="row" spacing={2} padding={1} role="list">
                 {group.map(({ code, special, partial }) => (
                     <DisciplineLink
+                        role="listitem"
                         key={code}
                         code={code}
                         special={special}

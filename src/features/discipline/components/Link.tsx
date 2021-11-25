@@ -1,8 +1,8 @@
 import React from 'react'
-import { Tooltip, TooltipProps, buttonClasses, styled } from '@mui/material'
+import { buttonClasses, styled } from '@mui/material'
 import { css } from '@emotion/css'
 
-import RouterButton from 'components/RouterButton'
+import RouterButton, { type RouterButtonProps } from 'components/RouterButton'
 import { joined } from 'utils/string'
 
 import type { Requirement } from '../types/discipline'
@@ -30,17 +30,15 @@ const withMarker = css`
     }
 `
 
-export interface DisciplineLinkProps {
+type OverridedProps = 'color' | 'variant' | 'to' | 'disabled' | 'title'
+
+export interface DisciplineLinkProps extends Omit<RouterButtonProps, OverridedProps> {
     /** Código da disciplina ({@link Requirement.code }). */
     code: Requirement['code'] | string
     /** Se a disciplina existe ({@link Requirement.special }). */
     special?: Requirement['special']
     /** Se o link deve ser decorado como requisito parcial ({@link Requirement.partial }). */
     partial?: Requirement['partial']
-
-    fullWidth?: boolean
-    size?: 'small' | 'medium' | 'large'
-    className?: string
 }
 
 /**
@@ -50,22 +48,25 @@ export default React.memo(
     function DisciplineLink(
         { code, partial, special, className, ...props }: DisciplineLinkProps,
     ) {
-        const title = special ? 'Disciplina Especial' : 'Pré-requisito Parcial'
+        let title: string | undefined
+        if (special) {
+            title = 'Disciplina Especial'
+        } else if (partial) {
+            title = 'Pré-requisito Parcial'
+        }
 
-        const classes = joined(className, partial && withMarker)
         return (
-            <HideableTooltip title={title} hide={!special && !partial} describeChild>
-                <ButtonWithStyledDisabled
-                    color="primary"
-                    variant="contained"
-                    className={classes}
-                    to={special ? undefined : Discipline.pagePath(code)}
-                    disabled={special}
-                    {...props}
-                >
-                    { code }
-                </ButtonWithStyledDisabled>
-            </HideableTooltip>
+            <ButtonWithStyledDisabled
+                color="primary"
+                variant="contained"
+                className={joined(className, partial && withMarker)}
+                to={special ? undefined : Discipline.pagePath(code)}
+                disabled={special}
+                title={title}
+                {...props}
+            >
+                { code }
+            </ButtonWithStyledDisabled>
         )
     },
     // só atualiza se alguma prop mudar
@@ -74,16 +75,3 @@ export default React.memo(
         return prev === next || keys.every((key) => prev[key] === next[key])
     },
 )
-
-interface HideableTooltipProps extends TooltipProps {
-    hide?: boolean
-}
-
-/** {@link Tooltip} com opção de não ser renderizada. */
-function HideableTooltip({ hide, ...props }: HideableTooltipProps) {
-    if (hide) {
-        return props.children
-    } else {
-        return <Tooltip {...props} />
-    }
-}

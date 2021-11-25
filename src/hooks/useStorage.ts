@@ -1,4 +1,5 @@
-import { DependencyList, Dispatch, Reducer, SetStateAction, useEffect, useReducer } from 'react'
+import type { DependencyList, Dispatch, Reducer, SetStateAction } from 'react'
+import { useEffect, useReducer } from 'react'
 
 /** Opções do {@link EventListener} em {@link useEventListener}. */
 export interface EventListenerOptions<Type extends keyof WindowEventMap>

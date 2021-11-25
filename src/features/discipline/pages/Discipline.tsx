@@ -6,7 +6,7 @@ import { useFetch, FetchState } from 'hooks/useFetch'
 import { PageComponent } from 'utils/params'
 import { SendError } from 'features/error-messages'
 
-import { PAGE_PATH, Params } from '../utils/params'
+import { PAGE_PATH, type Params } from '../utils/params'
 import { Discipline } from '../types/discipline'
 import DisciplineCard from '../components/Card'
 

@@ -1,4 +1,4 @@
-import { And, Digit, Extends, Formattable, LowercaseAscii, Not, Resolve } from 'types/basic'
+import type { And, Digit, Extends, Formattable, LowercaseAscii, Not, Resolve } from 'types/basic'
 
 /** String com `From` trocado para `To`. */
 export type Replaced<Text extends Formattable, From extends Formattable, To extends Formattable>

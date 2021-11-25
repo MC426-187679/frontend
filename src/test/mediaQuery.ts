@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { createTheme, Theme, ThemeOptions } from '@mui/material'
+import { createTheme, type Theme, type ThemeOptions } from '@mui/material'
 import mediaQuery from 'css-mediaquery'
 
 import { Themes } from 'config/themes'

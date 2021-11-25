@@ -1,8 +1,9 @@
-import React, { ReactNode, useEffect } from 'react'
-import { Container, styled } from '@mui/material'
+import React, { type ReactNode, useEffect } from 'react'
+import { Container } from '@mui/material'
+import { css } from '@emotion/css'
 
-/** {@link Container} com margem superior. */
-const ContainerWithMargin = styled(Container)`
+/** Classe CSS com margem superior. */
+const withMargin = css`
     margin-top: 2ex;
 `
 
@@ -49,8 +50,8 @@ export default function AppPage(props: AppPageProps) {
     }, [title, notitle])
 
     return (
-        <ContainerWithMargin maxWidth="lg">
+        <Container className={withMargin} maxWidth="lg" component="main">
             { children }
-        </ContainerWithMargin>
+        </Container>
     )
 }
