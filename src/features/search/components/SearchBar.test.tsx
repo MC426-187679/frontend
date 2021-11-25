@@ -7,7 +7,7 @@ import { Space } from 'utils/string'
 import { Discipline } from 'features/discipline'
 import SearchBar from './SearchBar'
 
-describe('when user input text', () => {
+describe('when user inputs text', () => {
     test('the searchbox changes value', async () => {
         render(
             <MemoryRouter>
@@ -15,7 +15,7 @@ describe('when user input text', () => {
             </MemoryRouter>,
         )
 
-        const input = screen.getByPlaceholderText<HTMLInputElement>(/Pesquisar/)
+        const input = screen.getByPlaceholderText(/Pesquisar/)
         expect(input).toBeVisible()
         expect(input).toHaveValue('')
 
@@ -34,7 +34,6 @@ describe('when user input text', () => {
         expect(screen.queryByRole('presentation')).toBeNull()
         await act(async () => {
             const input = screen.getByPlaceholderText(/Pesquisar/)
-            userEvent.click(input)
             await userEvent.type(input, 'MC426', { delay: 10 })
         })
         const popper = screen.queryByRole('presentation')
@@ -51,7 +50,6 @@ describe('when user input text', () => {
 
         await act(async () => {
             const input = screen.getByPlaceholderText(/Pesquisar/)
-            userEvent.click(input)
             await userEvent.type(input, 'F 128', { delay: 10 })
         })
         const optionList = await screen.findByRole('listbox', {}, { timeout: 2_000 })
@@ -99,7 +97,6 @@ describe.each([
 
         await act(async () => {
             const input = screen.getByPlaceholderText(/Pesquisar/)
-            userEvent.click(input)
             await userEvent.type(input, code, { delay: 10 })
         })
 
@@ -126,7 +123,6 @@ describe.each([
 
         await act(async () => {
             const input = screen.getByPlaceholderText(/Pesquisar/)
-            userEvent.click(input)
             await userEvent.type(input, discipline.name, { delay: 10 })
         })
 
@@ -150,7 +146,7 @@ describe.each([
         const { pathname } = useLocation()
         return (
             <div role="status" data-testid="pathname">
-                Current path: {pathname}
+                {pathname}
             </div>
         )
     }
@@ -166,13 +162,12 @@ describe.each([
             </MemoryRouter>,
         )
 
-        const location = screen.getByTestId('pathname')
-        expect(location).toHaveTextContent('Current path: /')
-        const startLocation = location.textContent ?? ''
+        const pathname = screen.getByTestId('pathname')
+        expect(pathname).toHaveTextContent('/')
+        const initialPath = pathname.textContent ?? ''
 
         await act(async () => {
             const input = screen.getByPlaceholderText(/Pesquisar/)
-            userEvent.click(input)
             await userEvent.type(input, code, { delay: 10 })
         })
 
@@ -180,9 +175,9 @@ describe.each([
         const option = allOptions.find((item) => item.textContent?.match(wordsMatching(code)))
         expect(option).not.toBeNull()
 
-        expect(location).toHaveTextContent(startLocation)
+        expect(pathname).toHaveTextContent(initialPath)
         await act(async () => userEvent.click(option!))
-        expect(location).toBeInTheDocument()
-        expect(location).toHaveTextContent(`Current path: ${Discipline.pagePath(code)}`)
+        expect(pathname).toBeInTheDocument()
+        expect(pathname).toHaveTextContent(Discipline.pagePath(code))
     })
 })
