@@ -16,9 +16,6 @@ type TitleProps = {
     notitle: true
 }
 
-/** Título inicial da página, antes de alterações. */
-const [baseTitle] = document.title.split(' - ')
-
 type AppPageProps = TitleProps & {
     children?: ReactNode
 }
@@ -42,9 +39,10 @@ export default function AppPage(props: AppPageProps) {
             return undefined
         } else {
             // retorna o título base
-            document.title = `${baseTitle} - ${title}`
+            const oldTitle = document.title
+            document.title = `${oldTitle} - ${title}`
             return () => {
-                document.title = baseTitle
+                document.title = oldTitle
             }
         }
     }, [title, notitle])
