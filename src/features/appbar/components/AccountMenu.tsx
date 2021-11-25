@@ -1,4 +1,4 @@
-import React, { MouseEvent, ReactNode, useCallback, useState } from 'react'
+import React, { type MouseEvent, type ReactNode, useCallback, useState } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { Button, IconButton, Menu, MenuItem } from '@mui/material'
 import { AccountCircle } from '@mui/icons-material'

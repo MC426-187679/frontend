@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { ThemeOptions, createTheme, lighten, responsiveFontSizes } from '@mui/material/styles'
+import { type ThemeOptions, createTheme, lighten, responsiveFontSizes } from '@mui/material/styles'
 import { indigo, pink } from '@mui/material/colors'
 import { ptBR } from '@mui/material/locale'
 import { deepmerge } from '@mui/utils'

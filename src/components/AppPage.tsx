@@ -1,8 +1,9 @@
-import React, { ReactNode, useEffect } from 'react'
-import { Container, styled } from '@mui/material'
+import React, { type ReactNode, useEffect } from 'react'
+import { Container } from '@mui/material'
+import { css } from '@emotion/css'
 
-/** {@link Container} com margem superior. */
-const ContainerWithMargin = styled(Container)`
+/** Classe CSS com margem superior. */
+const withMargin = css`
     margin-top: 2ex;
 `
 
@@ -14,9 +15,6 @@ type TitleProps = {
     /** Página sem mudança de título. */
     notitle: true
 }
-
-/** Título inicial da página, antes de alterações. */
-const [baseTitle] = document.title.split(' - ')
 
 type AppPageProps = TitleProps & {
     children?: ReactNode
@@ -38,15 +36,20 @@ export default function AppPage(props: AppPageProps) {
     // muda o título da página
     useEffect(() => {
         if (notitle || !title) {
-            document.title = baseTitle
+            return undefined
         } else {
-            document.title = `${baseTitle} - ${title}`
+            // retorna o título base
+            const oldTitle = document.title
+            document.title = `${oldTitle} - ${title}`
+            return () => {
+                document.title = oldTitle
+            }
         }
     }, [title, notitle])
 
     return (
-        <ContainerWithMargin maxWidth="lg">
+        <Container className={withMargin} maxWidth="lg" component="main">
             { children }
-        </ContainerWithMargin>
+        </Container>
     )
 }

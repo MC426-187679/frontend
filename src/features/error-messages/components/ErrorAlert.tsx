@@ -1,8 +1,8 @@
-import React, { Dispatch, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { type Dispatch, useCallback, useEffect, useMemo, useState } from 'react'
 import { Alert, Collapse } from '@mui/material'
 
 import type { Message } from '../types/message'
-import { Timeout, toMillis } from '../types/timeout'
+import { type Timeout, toMillis } from '../types/timeout'
 
 interface ErrorAlertProps {
     /** Mensagem de erro. */
@@ -28,11 +28,12 @@ export default function ErrorAlert({ error, dispatch }: ErrorAlertProps) {
     // se a mensagem de erro for alterada, abre o Collapse novamente
     useEffect(() => open(), [error])
     return (
-        <Collapse in={initialized && isOpen} onExited={remove} unmountOnExit>
+        <Collapse in={initialized && isOpen} onExited={remove} component="li" unmountOnExit>
             <Alert
                 variant="outlined"
                 severity={error.severe ? 'error' : 'warning'}
                 onClose={close}
+                role="alert"
                 closeText="Fechar"
             >
                 { error.message }

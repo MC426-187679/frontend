@@ -88,16 +88,16 @@ function noFilter<T>(options: T[]) {
 }
 
 /** Se o resultado da busca não tem link. */
-function isDisabled(option: MatchedContent) {
-    return option.url === undefined
+function isDisabled(option?: MatchedContent) {
+    return option?.url === undefined
 }
 
 /** Se dois resultado são iguais. */
-function matchedEquals(a: MatchedContent, b: MatchedContent) {
-    return a.identifier === b.identifier
+function matchedEquals(a?: MatchedContent, b?: MatchedContent) {
+    return a?.identifier === b?.identifier
 }
 
 /** Descrição única do resultado. */
-function getDescription(match: MatchedContent) {
-    return match.description
+function getDescription(match?: MatchedContent) {
+    return match?.description ?? ''
 }

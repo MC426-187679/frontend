@@ -1,8 +1,5 @@
-/** String com `From` trocado para `To`. */
-export type Replaced<Text extends string, From extends string, To extends string> =
-    Text extends `${infer Start}${From}${infer End}`
-        ? `${Start}${To}${Replaced<End, From, To>}`
-        : Text
+import type { Formattable, Filtered, Joined as ArrayJoined, Split } from 'types/basic'
+import type { Replaced } from 'types/string'
 
 export namespace Space {
     /** Espaço em branco que evita quebras de linha. */
@@ -31,48 +28,32 @@ export namespace Space {
     }
 }
 
-namespace Types {
-    /** Valores que têm valor lógico falso, `Boolean(value) === false`. */
-    type Falsy = false | null | undefined | '' | 0 | 0n
-
-    /** Tipos primitivos com transformação padrão para string. */
-    export type Formattable = string | number | bigint | boolean | null | undefined
-
-    /**
-     * Array apenas com elementos "verdadeiros", retornado por `array.filter(Boolean)`.
-     *
-     * @see {@link Array.filter}
-     * @see {@link Boolean}
-     */
-    export type Filtered<Array extends readonly any[]> =
-        Array extends [infer First, ...infer Rest]
-            ? First extends Falsy
-                ? Filtered<Rest>
-                : [First, ...Filtered<Rest>]
-            : []
-
-    /** Garante que `Type` é um subtipo de `Base`. */
-    type Assured<Type, Base> = Type extends Base ? Type : never
-
-    /**
-     * Retorno de `array.join(sep)`.
-     *
-     * @see {@link Array.join}
-     */
-    export type Joined<Array extends Formattable[], Sep extends string> =
-        Array extends [infer First, infer Second, ...infer Rest]
-        // eslint-disable-next-line max-len
-            ? `${Assured<First, Formattable>}${Sep}${Joined<Assured<[Second, ...Rest], Formattable[]>, Sep>}`
-            : Array extends [infer First]
-                ? `${Assured<First, Formattable>}`
-                : ''
-}
-
 /** Retorno de {@link joined}, que limpa valores {@link Falsy} antes de dar {@link Array.join}. */
-export type Joined<Args extends readonly Types.Formattable[], Sep extends string = ' '> =
-    Types.Joined<Types.Filtered<Args>, Sep>
+export type Joined<Args extends readonly Formattable[], Sep extends string = ' '>
+    = ArrayJoined<Filtered<Args>, Sep>
 
 /** Junta todas os valores não-vazios em uma só, usando espaço como separador.  */
-export function joined<Args extends readonly Types.Formattable[]>(...args: Args): Joined<Args> {
+export function joined<Args extends readonly Formattable[]>(...args: Args): Joined<Args> {
     return args.filter(Boolean).join(' ') as Joined<Args>
+}
+
+type Flatten<Args extends readonly string[], Sep extends string>
+    = Args extends [infer First, ...infer Rest]
+        ? [
+            ...Split<Extract<First, string>, Sep>,
+            ...Flatten<Extract<Rest, readonly string[]>, Sep>,
+        ]
+        : []
+
+/** Retorno de {@link splitJoin}. */
+export type SplitJoin<Args extends readonly string[], Sep extends string = '/'>
+    = Joined<Flatten<Args, Sep>, Sep>
+
+/** Separa as string por '/' e rejunta depois, limpando pedaços vazios. */
+export function splitJoin<Args extends readonly string[]>(...args: Args): SplitJoin<Args> {
+    return args.flatMap(splitOnSlash).filter(Boolean).join('/') as SplitJoin<Args>
+}
+
+function splitOnSlash<Path extends string>(path: Path): Split<Path, '/'> {
+    return path.split('/') as Split<Path, '/'>
 }
