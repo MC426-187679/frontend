@@ -9,7 +9,6 @@ import '@testing-library/react'
 import '@testing-library/user-event'
 
 import 'test/mediaQuery'
-import 'test/fetch'
 
 declare global {
     /** Coleção de mocks globais pela aplicação. */

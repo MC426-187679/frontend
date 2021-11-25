@@ -1,4 +1,4 @@
-import type { Formattable, Filtered, Joined as ArrayJoined, Split } from 'types/basic'
+import type { Formattable, Filtered, Joined as ArrayJoined } from 'types/basic'
 import type { Replaced } from 'types/string'
 
 export namespace Space {
@@ -35,25 +35,4 @@ export type Joined<Args extends readonly Formattable[], Sep extends string = ' '
 /** Junta todas os valores não-vazios em uma só, usando espaço como separador.  */
 export function joined<Args extends readonly Formattable[]>(...args: Args): Joined<Args> {
     return args.filter(Boolean).join(' ') as Joined<Args>
-}
-
-type Flatten<Args extends readonly string[], Sep extends string>
-    = Args extends [infer First, ...infer Rest]
-        ? [
-            ...Split<Extract<First, string>, Sep>,
-            ...Flatten<Extract<Rest, readonly string[]>, Sep>,
-        ]
-        : []
-
-/** Retorno de {@link splitJoin}. */
-export type SplitJoin<Args extends readonly string[], Sep extends string = '/'>
-    = Joined<Flatten<Args, Sep>, Sep>
-
-/** Separa as string por '/' e rejunta depois, limpando pedaços vazios. */
-export function splitJoin<Args extends readonly string[]>(...args: Args): SplitJoin<Args> {
-    return args.flatMap(splitOnSlash).filter(Boolean).join('/') as SplitJoin<Args>
-}
-
-function splitOnSlash<Path extends string>(path: Path): Split<Path, '/'> {
-    return path.split('/') as Split<Path, '/'>
 }

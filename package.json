@@ -6,7 +6,7 @@
     "scripts": {
         "start": "ESLINT_NO_DEV_ERRORS=true react-scripts start",
         "build": "react-scripts build",
-        "test": "NODE_ENV=test react-scripts test",
+        "test": "react-scripts test --testURL=http://127.0.0.1:8080",
         "eject": "react-scripts eject",
         "lint": "eslint ."
     },
