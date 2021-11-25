@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 import { Card, CardContent, Chip, Grid, Skeleton, Typography } from '@mui/material'
 import { css } from '@emotion/css'
 
@@ -21,13 +21,13 @@ interface DisciplineCardProps {
 export default function DisciplineCard({ discipline }: DisciplineCardProps) {
     return (
         <Card className={withMinWidth} color="inherit" raised>
-            <CardContent>
+            <CardContent component="article" aria-labelledby="discipline-header">
                 {/* Código. */}
                 <Typography variant="h6" color="text.secondary" gutterBottom>
                     { discipline?.code ?? <Skeleton width="5em" /> }
                 </Typography>
                 {/* Nome da disciplina. */}
-                <Typography variant="h4" component="div">
+                <Typography variant="h4" id="discipline-header">
                     { discipline?.name ?? <Skeleton /> }
                 </Typography>
                 {/* Ementa. */}
@@ -38,12 +38,13 @@ export default function DisciplineCard({ discipline }: DisciplineCardProps) {
                 <Typography variant="body1" component="div">
                     <Credits value={discipline?.credits} />
                 </Typography>
-                {/* Título da seção de requisitos. */}
-                <SectionHeader>
-                    <RequirementsHeader count={discipline?.reqs?.length} />
-                </SectionHeader>
-                {/* Grupos de requisitos. */}
-                <Requirements groups={discipline?.reqs} />
+                {/* Seção de requisitos. */}
+                <section aria-labelledby="requirements">
+                    <SectionHeader id="requirements">
+                        <RequirementsHeader count={discipline?.reqs?.length} />
+                    </SectionHeader>
+                    <Requirements groups={discipline?.reqs} />
+                </section>
                 {/* Disciplinas que tem esta como requisito. */}
                 <RequiredBy codes={discipline?.reqBy} />
             </CardContent>
@@ -67,9 +68,10 @@ function Credits({ value }: { value?: number }) {
 }
 
 /** {@link Typography} com formatação de header e com margem. */
-function SectionHeader({ children }: { children?: ReactNode }) {
+function SectionHeader({ children, id }: { children?: ReactNode, id: string }) {
     return (
         <Typography
+            id={id}
             variant="h6"
             color="text.secondary"
             marginTop="1ex"
@@ -104,17 +106,17 @@ function RequiredBy({ codes }: { codes?: readonly string[] }) {
     }
 
     return (
-        <div className={extraMargin}>
-            <SectionHeader>
+        <section className={extraMargin} aria-labelledby="required-by">
+            <SectionHeader id="required-by">
                 Essa disciplina pode ser importante para:
             </SectionHeader>
-            <Grid container spacing={2} padding={1}>
+            <Grid container spacing={2} padding={1} role="list">
                 {codes.map((code) => (
                     <Grid key={code} item>
-                        <DisciplineLink code={code} />
+                        <DisciplineLink code={code} role="listitem" />
                     </Grid>
                 ))}
             </Grid>
-        </div>
+        </section>
     )
 }

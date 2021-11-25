@@ -8,23 +8,15 @@ import '@testing-library/jest-dom'
 import '@testing-library/react'
 import '@testing-library/user-event'
 
-import { mockMatchMedia, mockUseMediaQuery } from 'test/mediaQuery'
+import 'test/mediaQuery'
+import 'test/fetch'
 
 declare global {
     /** Coleção de mocks globais pela aplicação. */
-    interface Mocks extends Record<string, jest.Mock | undefined> {}
+    interface Mocks extends Record<string, jest.MockedFunction<any>> {}
 
     interface Window {
         /** Coleção de mocks globais pela aplicação. */
-        mocks: Mocks
+        mocks?: Mocks
     }
 }
-// inicialização do objeto
-window.mocks = {}
-
-// prepara funções de match de CSS
-mockMatchMedia({
-    width: 1800,
-    height: 800,
-})
-mockUseMediaQuery()

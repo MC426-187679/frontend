@@ -1,7 +1,9 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+
+import type { Fetch } from 'utils/fetching'
 
 import { Matches } from '../types/content'
-import { RequestThrottler } from '../utils/RequestThrottler'
+import { RequestThrottler, doNothing } from '../utils/RequestThrottler'
 
 /** Função que coloca query na lista de espera para requisição. */
 export type Search = (query: string) => void
@@ -16,9 +18,6 @@ interface Config {
     readonly setLoading?: (isLoading: boolean) => void
 }
 
-/** Função que não faz nada, usada como padrão das callbacks. */
-function doNothing() { }
-
 /**
  *  Hook que mantém estado dos resultados de busca, com uma função que insere novas
  * opções na lista de espera para requisições ao servidor.
@@ -31,31 +30,44 @@ export function useMatches({
     onError = doNothing,
     onFull = doNothing,
     setLoading = doNothing,
-}: Config = {}): [Matches, Search] {
-    // resultados e limitador compartilham o mesmo estado
-    const [{ matches: current, throttler }, setMatches] = useState(() => ({
-        matches: Matches.empty(),
-        // as configurações são usada apenas no setup
-        throttler: new RequestThrottler(Matches.fetch),
-    }))
+}: Config = {}): [matches: Matches, search: Search] {
+    const [throttler, useSetCallback] = useThrottler(Matches.fetch)
+    const [matches, setMatches] = useState(Matches.empty)
 
-    // de forma memoizada (muda apenas com 'setMatches')
-    const search = useMemo(() => {
-        // passa os resultados para o atualizador de estados
-        throttler.onOutput = (matches) => {
-            // sem mudar o limitador
-            setMatches({ matches, throttler })
-        }
-        // e monta função de busca
-        return (query: string) => throttler.next(query)
-    }, [setMatches])
+    // seta as callbacks fo throttler
+    useSetCallback('onOutput', setMatches)
+    useSetCallback('onError', onError)
+    useSetCallback('onFull', onFull)
+    useSetCallback('setLoading', setLoading)
 
-    // atualiza todas as callbacks quando uma delas mudar
-    useEffect(() => {
-        throttler.setLoading = setLoading
-        throttler.onFull = onFull
-        throttler.onError = onError
-    }, [onError, onFull, setLoading])
+    const search: Search = useCallback(
+        (query) => throttler.next(query),
+        [throttler],
+    )
+    return [matches, search]
+}
 
-    return [current, search]
+/**
+ * Hook que mantém um {@link RequestThrottler} e um subhook para controle de suas callbacks.
+ *
+ * @param fetch função de requisição de `T` a partir dos textos.
+ * @returns par `[throttler, useSetter]` em que `useSetter` pode ser usado para setar a setar uma
+ *  das callbacks do `throttler` e resetar ela quando o componente for removido.
+ */
+function useThrottler<T>(fetch: Fetch<T>) {
+    const [throttler] = useState(() => new RequestThrottler(fetch))
+
+    /** Hook que associa `callback` a `key` e desassocia durante a remoção do componente. */
+    function useSetter<Key extends Exclude<keyof RequestThrottler<T>, 'next'>>(
+        key: Key,
+        callback: RequestThrottler<T>[Key],
+    ) {
+        useEffect(() => {
+            throttler[key] = callback
+            return () => {
+                throttler[key] = doNothing
+            }
+        }, [callback])
+    }
+    return [throttler, useSetter] as const
 }

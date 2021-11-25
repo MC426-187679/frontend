@@ -1,5 +1,5 @@
-import React, { ChangeEvent, useCallback } from 'react'
-import { FormControlLabel, Switch } from '@mui/material'
+import React, { useCallback } from 'react'
+import { FormControlLabel, Switch, type SwitchProps } from '@mui/material'
 import { css } from '@emotion/css'
 
 import { useThemeMode } from 'providers/Theme'
@@ -23,10 +23,8 @@ export default React.memo(
     () => true,
 )
 
-/** ID do componente {@link SwitchControl}. */
-const switchId = 'theme-switch'
 /** Descirção textual do {@link SwitchControl}. */
-const switchLabel = 'Tema Escuro'
+const switchLabelId = 'theme-switch-label'
 /** Formatação do label em {@link SwitchControl}. */
 const switchLabelProps = {
     typography: {
@@ -34,6 +32,7 @@ const switchLabelProps = {
         className: css`
             padding: 0 1ch;
         `,
+        id: switchLabelId,
     },
 }
 /** Formatação do {@link FormControlLabel} em {@link SwitchControl}. */
@@ -42,28 +41,20 @@ const switchControlClass = css`
     margin-right: 0;
 `
 
-interface SwitchControlProps {
-    /** Se o switch deve estar marcado. */
-    checked: boolean
-    /** Callback de mudança no switch. */
-    onChange?: (event: ChangeEvent<HTMLInputElement>, checked: boolean) => void
-}
+type SwicthControlProps = Omit<SwitchProps, 'inputProps'>
 
 /** Formatação para o {@link ThemeSwitch}. */
-function SwitchControl({ checked, onChange }: SwitchControlProps) {
+function SwitchControl(props: SwicthControlProps) {
     return (
         <FormControlLabel
-            id={switchId}
-            label={switchLabel}
-            aria-label={switchLabel}
+            label="Tema Escuro"
             className={switchControlClass}
             labelPlacement="end"
             control={(
                 <Switch
-                    checked={checked}
-                    onChange={onChange}
+                    {...props}
                     inputProps={{
-                        'aria-labelledby': switchId,
+                        'aria-labelledby': switchLabelId,
                         role: 'switch',
                     }}
                 />

@@ -1,7 +1,7 @@
-import React, { ReactNode } from 'react'
+import React, { type AriaRole, type ReactNode } from 'react'
 import { Link as RouterLink } from 'react-router-dom'
 import { AppBar, Link, Stack, Toolbar, Typography, useMediaQuery } from '@mui/material'
-import { Breakpoint, Theme } from '@mui/material/styles'
+import type { Breakpoint, Theme } from '@mui/material/styles'
 import { css } from '@emotion/css'
 
 import { SearchBar } from 'features/search'
@@ -30,8 +30,8 @@ export default React.memo(
         const isLarge = useBreakpoint('lg')
 
         return (
-            <AppBar position="static">
-                <Toolbar className={toolbarClass}>
+            <AppBar position="static" role="banner">
+                <Toolbar className={toolbarClass} role="toolbar">
 
                     {/* Logotipo */}
                     <AlignedRow alignment="left">
@@ -88,16 +88,18 @@ const alignedRowClass = css`
 type AlignedRowProps = {
     children?: ReactNode
     alignment: 'left' | 'right'
+    role?: AriaRole
 }
 
 /** {@link Stack} com `direction="row"` e alinhamento da flexbox. */
-function AlignedRow({ children, alignment }: AlignedRowProps) {
+function AlignedRow({ children, alignment, role }: AlignedRowProps) {
     if (!children) {
         return null
     }
 
     return (
         <Stack
+            role={role}
             direction="row"
             spacing={2}
             className={alignedRowClass}

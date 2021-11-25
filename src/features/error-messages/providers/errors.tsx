@@ -1,4 +1,4 @@
-import React, { Dispatch, useContext, useEffect, useState } from 'react'
+import React, { type Dispatch, useContext, useEffect, useState } from 'react'
 import type { Consumer, Message, Relay } from '../types/message'
 
 export namespace Errors {
