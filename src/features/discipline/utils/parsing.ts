@@ -77,12 +77,12 @@ namespace Parsing {
         array.sort((a, b) => collator.compare(key(a), key(b)))
 
         let lastKey = ''
-        const uniques = array.flatMap((item) => {
-            if (collator.compare(key(item), lastKey) === 0) {
-                return []
-            } else {
+        const uniques = array.filter((item) => {
+            if (collator.compare(key(item), lastKey) !== 0) {
                 lastKey = key(item)
-                return [item]
+                return true
+            } else {
+                return false
             }
         })
         return uniques

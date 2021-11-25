@@ -74,11 +74,12 @@ export function mockFetch<Origin extends string>(newOrigin: Url<Origin>) {
     const origin = new URL(newOrigin)
     window.mocks.fetch.mockImplementation(
         function fetch(input: RequestInfo, init?: RequestInit) {
+            const noCache: RequestInit = { ...init, cache: 'no-cache' }
             if (typeof input === 'string') {
-                return unmockedFetch(changeIfSameOrigin(input, origin), init)
+                return unmockedFetch(changeIfSameOrigin(input, origin), noCache)
             } else {
                 const newInput = { ...input, url: changeIfSameOrigin(input.url, origin) }
-                return unmockedFetch(newInput, init)
+                return unmockedFetch(newInput, noCache)
             }
         },
     )
