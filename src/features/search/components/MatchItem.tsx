@@ -99,6 +99,19 @@ function autosuggestMatch(fullText: string, query: string) {
     const fuse = new Fuse([fullText], fuseOptions)
     const results = fuse.search(query)[0]?.matches ?? []
     const matches = results[0]?.indices ?? []
-    // os índices do Fuse são inclusivos no final
-    return matches.map(([start, end]) => [start, end + 1] as [number, number])
+    // evita problemas de texto repetido
+    const ranges = [] as Array<[number, number]>
+    matches.forEach(([start, end]) => {
+        const hasOverlap = ranges.some((range) => overlaps([start, end + 1], range))
+        if (!hasOverlap) {
+            // os índices do Fuse são inclusivos no final
+            ranges.push([start, end + 1])
+        }
+    })
+    return ranges
+}
+
+/** Diz se `rangeA` e `rangeB` têm algum ponto em comum. */
+function overlaps(rangeA: [number, number], rangeB: [number, number]) {
+    return !(rangeA[0] >= rangeB[1] || rangeA[1] <= rangeB[0])
 }

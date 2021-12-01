@@ -112,6 +112,8 @@ describe.each([
     })
 
     test('by name, it displays the expected option', async () => {
+        jest.useRealTimers()
+
         const discipline = await Discipline.fetch(code)
         expect(discipline.code).toBe(Space.withNonBreaking(code))
 
@@ -124,6 +126,8 @@ describe.each([
         await act(async () => {
             const input = screen.getByPlaceholderText(/Pesquisar/)
             await userEvent.type(input, discipline.name, { delay: 10 })
+            // espera alguns milissegundos para atualizar o texto
+            await new Promise((resolve) => { setTimeout(resolve, 100) })
         })
 
         const allOptions = await screen.findAllByRole('option', {}, { timeout: 2_000 })
