@@ -1,0 +1,93 @@
+stages:
+  - image
+  - build
+  - test
+
+variables:
+  GIT_DEPTH: 5
+  GIT_SUBMODULE_STRATEGY: none
+  # Tag and builder image to deploy for building
+  DEPLOY_TAG: $CI_COMMIT_REF_SLUG
+  BUILDER_IMAGE: $CI_REGISTRY/$CI_PROJECT_PATH/builder
+  SKIP_BUILDER_IMAGE: "false"
+  # Tag and backend image to use in tests
+  BACKEND_IMAGE_TAG: latest
+  SERVER_IMAGE: $CI_REGISTRY/$CI_PROJECT_NAMESPACE/backend/deploy
+
+workflow:
+  rules:
+    # Main branch - deploy image as latest
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      variables:
+        DEPLOY_TAG: latest
+    # Other branches need manual run at Gitlab
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+# Build image that contains the dependencies for building the app
+builder-image:
+  stage: image
+  image: docker:latest
+  tags:
+    - docker
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $BUILDER_IMAGE:$DEPLOY_TAG -f Dockerfile.builder .
+    - docker push $BUILDER_IMAGE:$DEPLOY_TAG
+  interruptible: true
+  rules:
+    - if: $SKIP_BUILDER_IMAGE == "false"
+      changes:
+        - Dockerfile.builder
+        - package.json
+        - package-lock.json
+  needs: []
+
+# Template for jobs that use react
+.react-template: &react-template
+  image: $BUILDER_IMAGE:$DEPLOY_TAG
+  before_script:
+    # Avoid builder image missing react-scripts bug
+    - npm install react-scripts
+  needs:
+    - job: builder-image
+      optional: true
+      artifacts: false
+
+# Main build job
+build-release:
+  stage: build
+  <<: *react-template
+  script:
+    - npm run build
+  artifacts:
+    name: "react-app"
+    paths:
+      - build/
+    expire_in: 1 hour
+
+# Run npm linter (again)
+run-linter:
+  stage: test
+  <<: *react-template
+  before_script:
+    - npm install eslint
+  script:
+    - npm run lint
+
+# Run tests
+test-development-mode:
+  stage: test
+  <<: *react-template
+  services:
+    - name: $SERVER_IMAGE:$BACKEND_IMAGE_TAG
+      alias: server
+      variables:
+        LOG_LEVEL: error
+  variables:
+    CI: "true"
+    TEST_URL: http://server:8080
+  script:
+    - npm run test -- --coverage --verbose --colors

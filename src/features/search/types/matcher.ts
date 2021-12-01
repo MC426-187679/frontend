@@ -22,11 +22,6 @@ export namespace Matcher {
      * @throws Erro genérico, caso o tipo de conteúdo já tenha um parser registrado.
      */
     export function register(matcher: Matcher) {
-        if (matchers.has(matcher.content)) {
-            // não deveria chegar nesse caso nunca
-            throw new Error(`${matcher.content} já tem um parser associado.`)
-        }
-
         matchers.set(matcher.content, matcher)
     }
 
