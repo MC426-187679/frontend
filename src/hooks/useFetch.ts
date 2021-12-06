@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { DependencyList, useEffect, useState } from 'react'
 
 import { InvalidResponseError, type Fetch } from 'utils/fetching'
 
@@ -68,6 +68,7 @@ export function useFetch<Item, Content>(
     item: Item,
     fetch: Fetch<Content, Item>,
     init?: RequestInit,
+    deps: DependencyList = [item],
 ) {
     // esse valor que é alterado ao longo da requisição
     const [content, setContent] = useState<FetchContent<Content>>(loadingContent)
@@ -79,7 +80,7 @@ export function useFetch<Item, Content>(
 
         // dai monta a URL e faz a requisição
         FetchContent.resolve(fetch(item, init)).then(setContent)
-    }, [item])
+    }, deps)
 
     // retorna o elemento escolhido
     return content

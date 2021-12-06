@@ -1,5 +1,3 @@
-import type { RouteParams } from 'utils/params'
-
 /** Diretório na URL da Página de Disciplinas. */
 const PAGE_DIR = 'disciplina'
 
@@ -10,6 +8,3 @@ export function url<Code extends string>(code: Code) {
 
 /** Caminho completo pra Página de Disciplinas. */
 export const PAGE_PATH = url(':code')
-
-/** Parâmetro da URL para uso com 'react-router-dom'. */
-export type Params = RouteParams<typeof PAGE_PATH>
