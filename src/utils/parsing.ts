@@ -33,6 +33,31 @@ export namespace Parser {
         }
     }
 
+    /** Objeto para comparação de texto insensitivo. */
+    const collator = new Intl.Collator('pt-BR', {
+        usage: 'sort',
+        sensitivity: 'base',
+        ignorePunctuation: true,
+        numeric: false,
+        caseFirst: 'upper',
+    })
+
+    /** Ordena o vetor e retorna os elementos com chaves distintas. */
+    function uniques<T>(items: T[], key: (item: T) => string) {
+        items.sort((a, b) => collator.compare(key(a), key(b)))
+
+        let lastKey = ''
+        const uniqueItems = items.filter((item) => {
+            if (collator.compare(key(item), lastKey) !== 0) {
+                lastKey = key(item)
+                return true
+            } else {
+                return false
+            }
+        })
+        return uniqueItems
+    }
+
     /**
      * Parseia um objeto como um vetor de `T`s.
      *
@@ -70,6 +95,24 @@ export namespace Parser {
         } else {
             throw new Error(item, 'array')
         }
+    }
+
+    /**
+     * Parser de array ignorando elementos com chave repetida.
+     *
+     * @param item Objeto qualquer.
+     * @param parse Parser do tipo `T`.
+     * @param key Extração da chave única do elemento.
+     * @param options Opções adicionais de parsing.
+     * @returns Vetor com os elementos parseados.
+     */
+    export function distincts<T>(
+        item: unknown,
+        parse: Parser<T>,
+        key: (item: T) => string,
+        options?: Options<T[]>,
+    ) {
+        return uniques(array(item, parse, options), key)
     }
 
     /**

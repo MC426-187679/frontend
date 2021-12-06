@@ -41,9 +41,9 @@ const DisciplineContent = React.memo(
         } else {
             return (
                 <SendError kind="discipline-page" severe>
-                    Problema de conexão com o servidor: os dados da disciplina {code} puderam ser
-                    recuperados. Por favor, cheque sua conexão com a internet ou tente novamente
-                    mais tarde.
+                    Problema de conexão com o servidor: os dados da disciplina {code} não puderam
+                    ser recuperados. Por favor, cheque sua conexão com a internet ou tente
+                    novamente mais tarde.
                 </SendError>
             )
         }

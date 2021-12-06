@@ -2,7 +2,10 @@
 export type Falsy = false | null | undefined | '' | 0 | 0n
 
 /** Primeiro dígito de um número positivo. */
-export type Digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+export type LeadingDigit = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+/** Dígitos decimais. */
+export type Digit = 0 | LeadingDigit
 
 /** Tipos primitivos com transformação padrão para string. */
 export type Formattable = string | number | bigint | boolean | null | undefined
