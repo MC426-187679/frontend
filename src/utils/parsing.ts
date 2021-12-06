@@ -175,16 +175,20 @@ export namespace Parser {
      * Parseia um objeto como inteiro positivo.
      *
      * @param item Objeto qualquer.
+     * @param includeZero Se zero deve ser considerado válido.
      * @param options Opções adicionais de parsing.
      * @returns Inteiro positivo.
      *
      * @throws {@link Error} Se `options.required = true` e `item` não for numérico.
      */
-    export function positiveInt(item: unknown, options?: Options<number>) {
+    export function positiveInt(
+        item: unknown,
+        { includeZero, ...options }: Options<number> & { includeZero?: boolean } = {},
+    ) {
         const { required, defaultValue } = extract(options, 1)
 
         const value = int(item, options)
-        if (value > 0) {
+        if (value > 0 || (includeZero && value === 0)) {
             return value
         } else if (!required) {
             return defaultValue
