@@ -77,14 +77,24 @@ export function useFetch<Item, Content>(
     useEffect(() => {
         // inicializa em estado de loading
         setContent(loadingContent)
+        // indireção, para trocara callback mesmo antes da promise resolver
+        const set = { content: setContent }
 
         // dai monta a URL e faz a requisição
-        FetchContent.resolve(fetch(item, init)).then(setContent)
+        FetchContent.resolve(fetch(item, init)).then((value) => {
+            set.content(value)
+        })
+        // se removido, cancela a callback
+        return () => {
+            set.content = doNothing
+        }
     }, deps)
 
     // retorna o elemento escolhido
     return content
 }
+
+function doNothing() { }
 
 /**
  *  Teste se `item` representa uma {@link InvalidResponseError} com status `404`.
