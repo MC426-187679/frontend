@@ -8,7 +8,7 @@ import { SendError } from 'features/error-messages'
 
 import { COURSE_PAGE_PATH } from '../utils/params'
 import { Course } from '../types/course'
-import CourseCard from '../components/Card'
+import CourseCard from '../components/CourseCard'
 
 export default PageComponent.from(
     function CoursePage({ code }) {

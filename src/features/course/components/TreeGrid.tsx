@@ -1,21 +1,23 @@
 import React from 'react'
-import { Paper, Skeleton, Stack } from '@mui/material'
+import { Grid, Paper, Skeleton, Stack } from '@mui/material'
+import { css } from '@emotion/css'
 
 import { DisciplineLink } from 'features/discipline'
 
-import type { Tree } from '../types/course'
+import { Tree } from '../types/course'
 
 interface TreeGridProps {
     tree?: Tree
 }
 
 export default function TreeGrid({ tree }: TreeGridProps) {
+    const max = tree ? Tree.maxCredits(tree) : undefined
     const semesters = tree ?? Array<undefined>(10).fill(undefined)
 
     return (
         <Stack direction="column" spacing={2}>
             {semesters.map((semester, idx) => (
-                <Semester key={idx.toString(16)} semester={semester} />
+                <Semester key={idx.toString(16)} semester={semester} maxCredits={max} />
             ))}
         </Stack>
     )
@@ -23,16 +25,65 @@ export default function TreeGrid({ tree }: TreeGridProps) {
 
 const skeletonProps = { component: Skeleton, width: '100%' } as const
 
-function Semester({ semester }: { semester?: Tree.Semester }) {
+interface SemesterProps {
+    semester?: Tree.Semester
+    maxCredits?: number
+}
+
+function Semester({ semester, maxCredits }: SemesterProps) {
     const isLoading = !semester
     return (
         <Paper elevation={12} {...(isLoading ? skeletonProps : {})}>
-            <Stack direction="row" spacing={2} padding={1} role="list">
-                {isLoading && <DisciplineLink role="listitem" code="AA000" special />}
-                {semester?.disciplines.map(({ code }) => (
-                    <DisciplineLink role="listitem" key={code} code={code} />
+            <Grid
+                container
+                direction="row"
+                spacing={2}
+                padding={1}
+                columns={maxCredits}
+                role="list"
+            >
+                {isLoading && (
+                    <Discipline key="loading" credits={2} code="AA000" />
+                )}
+                {semester?.disciplines.map(({ code, credits }) => (
+                    <Discipline key={code} credits={credits} code={code} />
                 ))}
-            </Stack>
+                {semester?.electives && (
+                    <Discipline key="electives" elective credits={semester.electives} />
+                )}
+            </Grid>
         </Paper>
+    )
+}
+
+type DisciplineProps = {
+    code: string
+    special?: boolean
+    credits: number
+    elective?: false
+} | {
+    elective: true
+    credits: number
+}
+
+const noPadding = css`
+    min-width: fit-content;
+    padding-left: 0;
+    padding-right: 0;
+`
+
+function Discipline({ credits, ...props }: DisciplineProps) {
+    const text = props.elective ? `${credits} créditos eletivos` : props.code
+
+    return (
+        <Grid item xs={credits}>
+            <DisciplineLink
+                className={noPadding}
+                role="listitem"
+                special={props.elective || props.special}
+                code={text}
+                fullWidth
+            />
+        </Grid>
     )
 }

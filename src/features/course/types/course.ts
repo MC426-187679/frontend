@@ -64,6 +64,23 @@ export namespace Tree {
         readonly electives?: number | undefined
     }
 
+    namespace Semester {
+        export function totalCredits({ disciplines, electives = 0 }: Semester) {
+            const required = disciplines.reduce((sum, { credits }) => sum + credits, 0)
+            return required + electives
+        }
+    }
+
+    export function maxCredits(tree: Tree) {
+        return tree.reduce(
+            (maximum, semester) => {
+                const credits = Semester.totalCredits(semester)
+                return (credits > maximum) ? credits : maximum
+            },
+            0,
+        )
+    }
+
     export function parse(item: unknown): Tree {
         return Parser.array(item, Parsing.semester, { required: true })
     }
