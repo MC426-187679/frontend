@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
 
-import type { Fetch } from 'utils/fetching'
-
 import { Matches } from '../types/content'
 import { RequestThrottler, doNothing } from '../utils/RequestThrottler'
 
@@ -12,8 +10,6 @@ export type Search = (query: string) => void
 interface Config {
     /** Callback para requisições que resultam em erro. */
     readonly onError?: (error: any) => void
-    /** Callback para quando a fila de requisições está cheia. */
-    readonly onFull?: () => void
     /** Callback para atualização do estado de loading. */
     readonly setLoading?: (isLoading: boolean) => void
 }
@@ -28,17 +24,15 @@ interface Config {
  */
 export function useMatches({
     onError = doNothing,
-    onFull = doNothing,
     setLoading = doNothing,
 }: Config = {}): [matches: Matches, search: Search] {
-    const [throttler, useSetCallback] = useThrottler(Matches.fetch)
+    const throttler = useThrottler(Matches.searchURL, Matches.parse)
     const [matches, setMatches] = useState(Matches.empty)
 
     // seta as callbacks fo throttler
-    useSetCallback('onOutput', setMatches)
-    useSetCallback('onError', onError)
-    useSetCallback('onFull', onFull)
-    useSetCallback('setLoading', setLoading)
+    throttler.onOutput = setMatches
+    throttler.onError = onError
+    throttler.setLoading = setLoading
 
     const search: Search = useCallback(
         (query) => throttler.next(query),
@@ -48,26 +42,20 @@ export function useMatches({
 }
 
 /**
- * Hook que mantém um {@link RequestThrottler} e um subhook para controle de suas callbacks.
+ * Hook que mantém um {@link RequestThrottler}.
  *
- * @param fetch função de requisição de `T` a partir dos textos.
- * @returns par `[throttler, useSetter]` em que `useSetter` pode ser usado para setar a setar uma
- *  das callbacks do `throttler` e resetar ela quando o componente for removido.
+ * @param url URL do web socket.
+ * @param fetch função de parseia `T` a partir dos textos.
+ * @returns o throttler.
  */
-function useThrottler<T>(fetch: Fetch<T>) {
-    const [throttler] = useState(() => new RequestThrottler(fetch))
+function useThrottler<T>(url: string, parser: (query: string, message: string) => T) {
+    const [throttler] = useState(() => new RequestThrottler(url, parser))
 
-    /** Hook que associa `callback` a `key` e desassocia durante a remoção do componente. */
-    function useSetter<Key extends Exclude<keyof RequestThrottler<T>, 'next'>>(
-        key: Key,
-        callback: RequestThrottler<T>[Key],
-    ) {
-        useEffect(() => {
-            throttler[key] = callback
-            return () => {
-                throttler[key] = doNothing
-            }
-        }, [callback])
-    }
-    return [throttler, useSetter] as const
+    // fechar o socket no final da vida do componente
+    useEffect(() => {
+        return () => {
+            throttler.close()
+        }
+    }, [throttler])
+    return throttler
 }

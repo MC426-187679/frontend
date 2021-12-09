@@ -6,7 +6,7 @@ import { useFetch, FetchState } from 'hooks/useFetch'
 import { PageComponent } from 'utils/params'
 import { SendError } from 'features/error-messages'
 
-import { PAGE_PATH, type Params } from '../utils/params'
+import { PAGE_PATH } from '../utils/params'
 import { Discipline } from '../types/discipline'
 import DisciplineCard from '../components/Card'
 
@@ -15,7 +15,7 @@ import DisciplineCard from '../components/Card'
  *  de erro.
  */
 export default PageComponent.from(
-    function DisciplinePage({ code }: Params) {
+    function DisciplinePage({ code }) {
         return (
             <AppPage title={code}>
                 <DisciplineContent code={code} />
@@ -25,9 +25,13 @@ export default PageComponent.from(
     { path: PAGE_PATH },
 )
 
+interface DisciplineContentProps {
+    code: string
+}
+
 /** Conteúdo da página de disciplinas. */
 const DisciplineContent = React.memo(
-    function DisciplineContent({ code }: Params) {
+    function DisciplineContent({ code }: DisciplineContentProps) {
         const content = useFetch(code, Discipline.fetch)
 
         // página com conteúdo
@@ -41,9 +45,9 @@ const DisciplineContent = React.memo(
         } else {
             return (
                 <SendError kind="discipline-page" severe>
-                    Problema de conexão com o servidor: os dados da disciplina {code} puderam ser
-                    recuperados. Por favor, cheque sua conexão com a internet ou tente novamente
-                    mais tarde.
+                    Problema de conexão com o servidor: os dados da disciplina {code} não puderam
+                    ser recuperados. Por favor, cheque sua conexão com a internet ou tente
+                    novamente mais tarde.
                 </SendError>
             )
         }

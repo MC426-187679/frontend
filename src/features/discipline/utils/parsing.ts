@@ -63,35 +63,9 @@ namespace Parsing {
 }
 
 namespace Parsing {
-    /** Objeto para comparação de texto insensitivo. */
-    const collator = new Intl.Collator('pt-BR', {
-        usage: 'sort',
-        sensitivity: 'base',
-        ignorePunctuation: true,
-        numeric: false,
-        caseFirst: 'upper',
-    })
-
-    /** Ordena o vetor e retorna os elementos com chaves distintas. */
-    function distincts<T>(array: T[], key: (item: T) => string) {
-        array.sort((a, b) => collator.compare(key(a), key(b)))
-
-        let lastKey = ''
-        const uniques = array.filter((item) => {
-            if (collator.compare(key(item), lastKey) !== 0) {
-                lastKey = key(item)
-                return true
-            } else {
-                return false
-            }
-        })
-        return uniques
-    }
-
     /** {@link Parser} para grupos de requisitos não vazios e sem repetição. */
     export function group(item: unknown): Requirement.Group {
-        const reqs = Parser.array(item, Parsing.requirement)
-        const reqGroup = distincts(reqs, (req) => req.code)
+        const reqGroup = Parser.distincts(item, Parsing.requirement, (req) => req.code)
         if (reqGroup.length <= 0) {
             throw new Parser.Error(reqGroup, 'Requirement.Group')
         }
@@ -100,8 +74,7 @@ namespace Parsing {
 
     /** {@link Parser} para lista de códigos sem repetição. */
     export function codes(item: unknown): Code[] {
-        const data = Parser.array(item, Parsing.code)
-        return distincts(data, (code) => code)
+        return Parser.distincts(item, Parsing.code, (code) => code)
     }
 }
 

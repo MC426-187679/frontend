@@ -46,16 +46,15 @@ export interface PageComponent<Path extends string, C extends BaseComponent<Path
 }
 
 export namespace PageComponent {
-    interface Options<Path extends string> {
-        /** URL do componente. */
-        readonly path: Path
-    }
-
     /** HOC que monta extrai parâmetros da URL para gerar um componente em página. */
-    export function from<Path extends string, C extends BaseComponent<Path>>(
+    export function from<
+        Path extends string,
+        C extends BaseComponent<Path>,
+        Options extends {},
+    >(
         Component: C,
-        { path }: Options<Path>,
-    ): PageComponent<Path, C> {
+        options: Options & { readonly path: Path },
+    ): PageComponent<Path, C> & Omit<Options, 'path'> {
         // eslint-disable-next-line @typescript-eslint/no-shadow
         function PageComponent(props: AdditionalProps<Path, C>) {
             const params = useParams() as RouteParams<Path>
@@ -65,6 +64,6 @@ export namespace PageComponent {
         // nome do super componente
         const displayName = `PageComponent(${Component.displayName ?? Component.name})`
         // propriedades adicionais
-        return Object.assign(PageComponent, { path, displayName })
+        return Object.assign(PageComponent, options, { displayName })
     }
 }

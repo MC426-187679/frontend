@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { DependencyList, useEffect, useState } from 'react'
 
 import { InvalidResponseError, type Fetch } from 'utils/fetching'
 
@@ -68,6 +68,7 @@ export function useFetch<Item, Content>(
     item: Item,
     fetch: Fetch<Content, Item>,
     init?: RequestInit,
+    deps: DependencyList = [item],
 ) {
     // esse valor que é alterado ao longo da requisição
     const [content, setContent] = useState<FetchContent<Content>>(loadingContent)
@@ -76,14 +77,24 @@ export function useFetch<Item, Content>(
     useEffect(() => {
         // inicializa em estado de loading
         setContent(loadingContent)
+        // indireção, para trocara callback mesmo antes da promise resolver
+        const set = { content: setContent }
 
         // dai monta a URL e faz a requisição
-        FetchContent.resolve(fetch(item, init)).then(setContent)
-    }, [item])
+        FetchContent.resolve(fetch(item, init)).then((value) => {
+            set.content(value)
+        })
+        // se removido, cancela a callback
+        return () => {
+            set.content = doNothing
+        }
+    }, deps)
 
     // retorna o elemento escolhido
     return content
 }
+
+function doNothing() { }
 
 /**
  *  Teste se `item` representa uma {@link InvalidResponseError} com status `404`.

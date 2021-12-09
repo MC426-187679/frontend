@@ -30,7 +30,7 @@ const withMarker = css`
     }
 `
 
-type OverridedProps = 'color' | 'variant' | 'to' | 'disabled' | 'title'
+type OverridedProps = 'color' | 'variant' | 'to' | 'disabled'
 
 export interface DisciplineLinkProps extends Omit<RouterButtonProps, OverridedProps> {
     /** Código da disciplina ({@link Requirement.code }). */

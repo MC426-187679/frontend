@@ -8,7 +8,7 @@ import DisciplineLink from './Link'
 
 /** Classe CSS que limita o tamanho mínimo do componente. */
 const withMinWidth = css`
-    min-width: 42ch;
+    min-width: 32ch;
 `
 
 interface DisciplineCardProps {
