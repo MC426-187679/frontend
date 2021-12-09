@@ -53,7 +53,7 @@ namespace Parsing {
     export function semester(item: unknown): Tree.Semester {
         Parser.assertCanBeAcessed(item)
         const disciplines = Parser.distincts(item.disciplines, discipline, (disc) => disc.code)
-        const electives = Parser.positiveInt(item.electives, { required: true, includeZero: true })
+        const electives = Parser.positiveInt(item.electives, { defaultsTo: undefined })
 
         return { disciplines, electives }
     }

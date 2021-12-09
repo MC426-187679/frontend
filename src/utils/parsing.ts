@@ -25,12 +25,8 @@ export namespace Parser {
     } as const
 
     /** Extrai os valores de opção, considerando os padrões. */
-    export function extract<T>(options: Options<T> | undefined, defaultsTo: T) {
-        const opt = options as { required?: boolean, defaultsTo?: T } | undefined
-        return {
-            required: opt?.required ?? defaultOptions.required,
-            defaultValue: opt?.defaultsTo ?? defaultsTo,
-        }
+    export function extract<T, U>(options: Options<T> | undefined, defaultsTo: U) {
+        return { ...defaultOptions, defaultsTo, ...options }
     }
 
     /** Objeto para comparação de texto insensitivo. */
@@ -70,8 +66,8 @@ export namespace Parser {
      *
      * @throws Se `options.required = true` e `parser` dá algum erro.
      */
-    export function array<T>(item: unknown, parse: Parser<T>, options?: Options<T[]>) {
-        const { required, defaultValue } = extract(options, [])
+    export function array<T, U = T[]>(item: unknown, parse: Parser<T>, options?: Options<U>) {
+        const { required, defaultsTo } = extract(options, [])
 
         if (Array.isArray(item)) {
             if (!required) {
@@ -91,7 +87,7 @@ export namespace Parser {
             }
         // se não for vetor, retorna padrão ou dá erro
         } else if (!required) {
-            return defaultValue
+            return defaultsTo
         } else {
             throw new Error(item, 'array')
         }
@@ -124,14 +120,14 @@ export namespace Parser {
      *
      * @throws {@link Error} Se `options.required = true` e `item` não for string não-vazia.
      */
-    export function string(item: unknown, options?: Options<string>) {
-        const { required, defaultValue } = extract(options, '')
+    export function string<T = string>(item: unknown, options?: Options<T>) {
+        const { required, defaultsTo } = extract(options, '')
 
         if (typeof item === 'string' && item !== '') {
             return item
         // se não for string, retorna padrão ou dá erro
         } else if (!required) {
-            return defaultValue
+            return defaultsTo
         } else {
             throw new Error(item, 'string')
         }
@@ -146,8 +142,8 @@ export namespace Parser {
      *
      * @throws {@link Error} Se `options.required = true` e `item` não for numérico.
      */
-    export function int(item: unknown, options?: Options<number>) {
-        const { required, defaultValue } = extract(options, 0)
+    export function int<T = number>(item: unknown, options?: Options<T>) {
+        const { required, defaultsTo } = extract(options, 0)
 
         // arredonda inteiros
         if (typeof item === 'number') {
@@ -165,7 +161,7 @@ export namespace Parser {
 
         // se não for numérico, retorna padrão ou dá erro
         if (!required) {
-            return defaultValue
+            return defaultsTo
         } else {
             throw new Error(item, 'integer')
         }
@@ -181,17 +177,17 @@ export namespace Parser {
      *
      * @throws {@link Error} Se `options.required = true` e `item` não for numérico.
      */
-    export function positiveInt(
+    export function positiveInt<T = number>(
         item: unknown,
-        { includeZero, ...options }: Options<number> & { includeZero?: boolean } = {},
+        { includeZero, ...options }: Options<T> & { includeZero?: boolean } = {},
     ) {
-        const { required, defaultValue } = extract(options, 1)
+        const { required, defaultsTo } = extract(options, 1)
 
         const value = int(item, options)
         if (value > 0 || (includeZero && value === 0)) {
             return value
         } else if (!required) {
-            return defaultValue
+            return defaultsTo
         } else {
             throw new Error(item, 'positive integer')
         }

@@ -61,7 +61,7 @@ export namespace Tree {
 
     export interface Semester {
         readonly disciplines: readonly DisciplinePreview[]
-        readonly electives: number
+        readonly electives?: number | undefined
     }
 
     export function parse(item: unknown): Tree {
