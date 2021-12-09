@@ -95,14 +95,10 @@ export class RequestThrottler<Content> {
  *  Fila de requisições de busca na API por WebSocket.
  */
 export class RequestQueue<T> {
-    /** URL do WebSocket. */
-    readonly url: string
     /** Parser dos JSON recebido. */
     private readonly parse: (message: string) => T
-    /** WebSocket para a comunicação. `null` representa socket fechado. */
-    private socket: WebSocket | null = null
-    /** Número de requisições não concluídas. */
-    private openRequests: number = 0
+    /** WebSocket para a comunicação com timeout. */
+    private readonly socket: TimedWebSocket
 
     /** Callback para o resultado da requisição. */
     onOutput: (output: T) => void = doNothing
@@ -113,44 +109,22 @@ export class RequestQueue<T> {
 
     /** Abre socket em URL e parseia os resultados. */
     constructor(url: string, parser: (message: string) => T) {
-        this.url = url
         this.parse = parser
-        this.openSocket()
-    }
+        this.socket = new TimedWebSocket(url)
 
-    /** Setup do socket. */
-    private openSocket() {
-        const self = this
-        this.socket = new WebSocket(this.url)
-        this.clear()
-
-        // parseia cada mensagem e envia pra cima
-        this.socket.onmessage = (event) => {
-            self.receive(event.data)
+        this.socket.onMessage = (message) => {
+            this.receive(message)
         }
-        // envia erro genérico
-        this.socket.onerror = () => {
-            self.onError(null)
-            self.decrement()
-        }
-        // se fechar, abre um novo
-        this.socket.onclose = () => {
-            if (self.socket != null) {
-                self.openSocket()
-            }
+        this.socket.onError = () => {
+            this.onError(null)
+            this.checkEmpty()
         }
     }
 
-    private decrement() {
-        this.openRequests -= 1
-        if (this.openRequests <= 0) {
-            this.clear()
+    private checkEmpty() {
+        if (!this.socket.hasOpenRequests) {
+            this.onEmpty()
         }
-    }
-
-    private clear() {
-        this.openRequests = 0
-        this.onEmpty()
     }
 
     private receive(data: unknown) {
@@ -159,28 +133,119 @@ export class RequestQueue<T> {
         } catch (error: any) {
             this.onError(error)
         } finally {
-            this.decrement()
+            this.checkEmpty()
         }
     }
 
     send(query: string) {
-        if (this.socket !== null) {
-            this.socket.send(query)
-            this.openRequests += 1
-        }
+        this.socket.send(query)
     }
 
     close() {
         this.onOutput = doNothing
         this.onError = doNothing
         this.onEmpty = doNothing
-        this.openRequests = 0
-        // marca socket como fechado, antes de fechar
-        const oldSocket = this.socket
-        this.socket = null
-        if (oldSocket !== null) {
-            oldSocket.close()
+        this.socket.close()
+    }
+}
+
+class TimedWebSocket {
+    private readonly url: string
+    private inner: QueueWebSocket | undefined
+    private interval: ControlledInterval
+
+    onMessage: (output: unknown) => void = doNothing
+    onError: () => void = doNothing
+
+    constructor(url: string, socketTimeout: number = 60) {
+        this.url = url
+        this.interval = new ControlledInterval(socketTimeout * 1000)
+
+        this.interval.onComplete = () => {
+            this.inner?.close()
         }
+    }
+
+    private openSocket() {
+        this.inner = new QueueWebSocket(
+            this.url,
+            this.onMessage,
+            this.onError,
+            () => {
+                delete this.inner
+            },
+        )
+        return this.inner
+    }
+
+    private get socket() {
+        return this.inner ?? this.openSocket()
+    }
+
+    get hasOpenRequests() {
+        if (this.inner) {
+            return this.inner.openRequests <= 0
+        } else {
+            return false
+        }
+    }
+
+    send(query: string) {
+        this.socket.send(query)
+        this.interval.start()
+    }
+
+    close() {
+        this.onError = doNothing
+        this.onMessage = doNothing
+
+        this.inner?.close()
+        delete this.inner
+        this.interval.close()
+    }
+}
+
+class QueueWebSocket extends WebSocket {
+    private queue: string | undefined
+    private sent: number = 0
+    private received: number = 0
+
+    constructor(
+        url: string,
+        onMessage: (data: unknown) => void = doNothing,
+        onError: () => void = doNothing,
+        onClose: () => void = doNothing,
+    ) {
+        super(url)
+
+        this.onmessage = (event) => {
+            this.received += 1
+            onMessage(event.data)
+        }
+        this.onerror = () => {
+            this.received += 1
+            onError()
+        }
+        this.onopen = () => {
+            if (this.queue !== undefined) {
+                super.send(this.queue)
+                this.sent += 1
+            }
+        }
+        this.onclose = onClose
+    }
+
+    send(data: string) {
+        if (this.readyState === this.OPEN) {
+            super.send(data)
+            this.sent += 1
+        } else {
+            this.queue = data
+        }
+    }
+
+    get openRequests() {
+        return this.sent - this.received
     }
 }
 
@@ -193,12 +258,12 @@ export class RequestQueue<T> {
  *  Além disso, se a stream de entrada (recebida por {@link next}) for atualizada antes da barreira
  * ser aberta, o valor antigo é esquecido.
  */
-export class StreamBarrier {
+class StreamBarrier {
     /** Maior valor de distância que a barreira interrompe a passagem. */
     private readonly maxDistance: number
 
     /** Última string enviada. */
-    lastSent = ''
+    private lastSent = ''
     /** Última recebida, possivelmente próxima a ser enviada. */
     private lastReceived = ''
     /** Quantidade de caracteres distintos entre {@link lastSent} e {@link lastReceived}. */
@@ -260,7 +325,7 @@ type TimeoutID = ReturnType<typeof setTimeout>
  *  Classe com funcionamento parecido com o {@link setInterval}, mas com controle de conclusão
  * e inicalização assíncrona (o intervalo pode ser terminado antes do tempo esperado).
  */
-export class ControlledInterval {
+class ControlledInterval {
     /** Tempo de conclusão em mili segundos. */
     private readonly waitMillis: number
 
