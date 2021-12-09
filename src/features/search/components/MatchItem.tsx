@@ -6,16 +6,6 @@ import Fuse from 'fuse.js'
 import { Space } from 'utils/string'
 import type { MatchedContent } from '../types/content'
 
-/** Remove estilização de elemento de anchor (`<a>`). */
-const anchorWithoutStyling = css`
-    color: inherit;
-    text-decoration: none;
-    & li {
-        color: revert;
-        text-decoration: revert;
-    }
-`
-
 interface MatchItemProps extends HTMLAttributes<HTMLLIElement> {
     option: MatchedContent
     inputValue: string
@@ -29,41 +19,44 @@ export default function MatchItem(props: MatchItemProps) {
     const { option, inputValue, selected, ...params } = props
 
     return (
-        <a
-            className={anchorWithoutStyling}
-            href={option.url}
-            key={option.identifier}
-            onClick={preventDefault}
-        >
-            <li {...params}>
-                <HighlightedText query={inputValue}>
-                    { option.description }
-                </HighlightedText>
-            </li>
-        </a>
+        <li {...params} key={option.identifier}>
+            <HighlightedText query={inputValue} href={option.url}>
+                { option.description }
+            </HighlightedText>
+        </li>
     )
 }
 
-/** Evita processamento padrão de um evento HTML. */
-function preventDefault(event: SyntheticEvent) {
-    event.preventDefault()
-}
+/** Remove estilização de elemento de anchor (`<a>`). */
+const anchorWithoutStyling = css`
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    width: 100%;
+    height: 100%;
+`
 
 interface HighlightedTextProps {
     /** Texto que da opção, que pode ser modificado. */
     children: string
     /** Texto na caixa de busca, usado para comparação. */
     query: string
+    /** URL da opção. */
+    href?: string
 }
 
 /** Marca parte do texto em bold dependendo do valor de `query`. */
 const HighlightedText = React.memo(
-    function HighlightedText({ children: fullText, query }: HighlightedTextProps) {
+    function HighlightedText({ children: fullText, query, href }: HighlightedTextProps) {
         const matches = autosuggestMatch(fullText, query)
         const parts = autosuggestParse(fullText, matches)
 
         return (
-            <>
+            <a
+                className={anchorWithoutStyling}
+                href={href}
+                onClick={preventDefault}
+            >
                 {parts.map(({ text, highlight }, index) => {
                     const formatted = Space.withNonBreaking(text)
 
@@ -73,12 +66,17 @@ const HighlightedText = React.memo(
                         return formatted
                     }
                 })}
-            </>
+            </a>
         )
     },
     // comparação simplificada, muda apenas quando algum dos textos mudar
     (prev, next) => prev.query === next.query && prev.children === next.children,
 )
+
+/** Evita processamento padrão de um evento HTML. */
+function preventDefault(event: SyntheticEvent) {
+    event.preventDefault()
+}
 
 /** Opções para a instância do {@link Fuse}. */
 const fuseOptions: Fuse.IFuseOptions<string> = {
