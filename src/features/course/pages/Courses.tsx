@@ -1,5 +1,5 @@
 import React from 'react'
-import { Outlet, Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
 import AppPage from 'components/AppPage'
 import { useFetch, FetchState, FetchContent } from 'hooks/useFetch'
@@ -8,6 +8,7 @@ import { SendError } from 'features/error-messages'
 
 import { COURSE_PAGE_PATH } from '../utils/params'
 import { Course } from '../types/course'
+import CourseCard from '../components/Card'
 
 export default PageComponent.from(
     function CoursePage({ code }) {
@@ -29,7 +30,7 @@ interface CourseContentProps {
 const CourseContent = React.memo(
     function CourseContent({ code, content }: CourseContentProps) {
         if (content.state !== FetchState.Error) {
-            return <>{content.data?.name}<Outlet /></>
+            return <CourseCard course={content.data} />
         } else if (content.is404) {
             return <Navigate to="/404" replace />
         } else {
