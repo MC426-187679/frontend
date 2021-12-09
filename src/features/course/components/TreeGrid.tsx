@@ -29,7 +29,7 @@ export default function TreeGrid({ tree }: TreeGridProps) {
 const skeletonProps = { component: Skeleton, width: '100%' } as const
 
 interface SemesterProps {
-    semester?: Tree.Semester
+    semester?: Tree.SemesterGroup
     maxCredits?: number
 }
 

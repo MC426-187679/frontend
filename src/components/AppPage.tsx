@@ -1,5 +1,5 @@
 import React, { type ReactNode, useEffect } from 'react'
-import { Container } from '@mui/material'
+import { Breakpoint, Container } from '@mui/material'
 import { css } from '@emotion/css'
 
 /** Classe CSS com margem superior. */
@@ -18,21 +18,21 @@ type TitleProps = {
 
 type AppPageProps = TitleProps & {
     children?: ReactNode
+    maxWidth?: Breakpoint | false
 }
 
 /** {@link AppPageProps} de forma opcional. */
 interface OptionalProps {
     title?: string
     notitle?: boolean
-    children?: ReactNode
 }
 
 /**
  *  Desenha uma página do App dentro de um {@link Container} que centraliza o
  * conteúdo horizontalmente e muda o título considerando as entradas.
  */
-export default function AppPage(props: AppPageProps) {
-    const { children, title, notitle } = props as OptionalProps
+export default function AppPage({ children, maxWidth, ...props }: AppPageProps) {
+    const { title, notitle } = props as OptionalProps
     // muda o título da página
     useEffect(() => {
         if (notitle || !title) {
@@ -48,7 +48,7 @@ export default function AppPage(props: AppPageProps) {
     }, [title, notitle])
 
     return (
-        <Container className={withMargin} maxWidth="lg" component="main">
+        <Container className={withMargin} maxWidth={maxWidth ?? 'lg'} component="main">
             { children }
         </Container>
     )

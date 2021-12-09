@@ -54,7 +54,7 @@ export namespace Course {
     }
 }
 
-export interface Tree extends ReadonlyArray<Tree.Semester> {
+export interface Tree extends ReadonlyArray<Tree.SemesterGroup> {
     readonly credits: {
         readonly max: number
         readonly total: number
@@ -69,23 +69,24 @@ export namespace Tree {
         readonly credits: number
     }
 
-    export interface Semester {
+    export interface SemesterGroup {
+        readonly name: string
         readonly disciplines: readonly DisciplinePreview[]
         readonly electives?: number | undefined
         readonly credits: {
             readonly required: number
             readonly total: number
+            readonly minimumPerSemester: number
         }
-        readonly name: string
-        readonly index: number | readonly number[]
+        readonly indexes: readonly number[]
     }
 
     export function parse(item: unknown): Tree {
-        const semesters = Parsing.semesters(item)
+        const semesters = Parsing.semesterGroups(item)
 
         const max = semesters.reduce(
-            (maximum, { credits: { total } }) => {
-                return (total > maximum) ? total : maximum
+            (maximum, { credits: { minimumPerSemester } }) => {
+                return (minimumPerSemester > maximum) ? minimumPerSemester : maximum
             },
             0,
         )

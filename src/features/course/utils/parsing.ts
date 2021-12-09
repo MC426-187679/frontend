@@ -44,8 +44,17 @@ namespace Parsing {
     }
 }
 
-namespace Parsing {
-    function discipline(item: unknown): Tree.DisciplinePreview {
+interface Semester {
+    disciplines: Tree.DisciplinePreview[]
+    electives?: number | undefined
+    credits: {
+        required: number
+        total: number
+    }
+}
+
+namespace Semester {
+    function parseDiscipline(item: unknown): Tree.DisciplinePreview {
         Parser.assertCanBeAcessed(item)
         const code = Discipline.Parsing.code(item.code)
         const credits = Parser.positiveInt(item.credits, { required: true })
@@ -53,11 +62,13 @@ namespace Parsing {
         return { code, credits }
     }
 
-    type UnnamedSemester = Omit<Tree.Semester, 'name' | 'index'>
-
-    function semester(item: unknown): UnnamedSemester {
+    function parseSemester(item: unknown): Semester {
         Parser.assertCanBeAcessed(item)
-        const disciplines = Parser.distincts(item.disciplines, discipline, (disc) => disc.code)
+        const disciplines = Parser.distincts(
+            item.disciplines,
+            parseDiscipline,
+            (disc) => disc.code,
+        )
         const electives = Parser.positiveInt(item.electives, { defaultsTo: undefined })
 
         const required = disciplines.reduce((sum, { credits }) => sum + credits, 0)
@@ -66,54 +77,58 @@ namespace Parsing {
         return { disciplines, electives, credits: { required, total } }
     }
 
-    type SemesterItem = {
+    export interface Group extends Semester {
         indexes: number[]
-        disciplines: UnnamedSemester
     }
 
-    function nameSemester({ indexes, disciplines }: SemesterItem): Tree.Semester {
-        const ordinals = indexes.map((index) => `${index + 1}°`)
-        const lastIndex = ordinals.pop() ?? ''
+    export function parseGroup(item: unknown): Group[] {
+        const semesters = Parser.array(item, parseSemester, { required: true })
 
-        const firstIndexes = ordinals.join(', ')
-        if (firstIndexes) {
-            return {
-                ...disciplines,
-                name: `${firstIndexes} e ${lastIndex} Semestres`,
-                index: indexes,
-            }
-        } else {
-            return {
-                ...disciplines,
-                name: `${lastIndex} Semestre`,
-                index: indexes.pop() ?? 0,
-            }
-        }
-    }
-
-    export function semesters(item: unknown): Tree.Semester[] {
-        const unnamed = Parser.array(item, semester, { required: true })
-        const allSemesters: Tree.Semester[] = []
-
-        let currentItem: undefined | SemesterItem
-        unnamed.forEach((disciplines, index) => {
-            if (disciplines.credits.total <= 0) {
-                currentItem?.indexes.push(index)
+        const groups: Group[] = []
+        semesters.forEach((semester, index) => {
+            if (semester.credits.total <= 0) {
+                groups[groups.length - 1]?.indexes.push(index)
             } else {
-                if (currentItem !== undefined) {
-                    allSemesters.push(nameSemester(currentItem))
-                }
-                currentItem = {
-                    indexes: [index],
-                    disciplines,
-                }
+                groups.push({ ...semester, indexes: [index] })
             }
         })
+        return groups
+    }
+}
 
-        if (currentItem !== undefined) {
-            allSemesters.push(nameSemester(currentItem))
+namespace Parsing {
+    function nameSemester(indexes: number[]) {
+        const ordinals = indexes.map((index) => `${index + 1}°`)
+
+        const lastIndex = ordinals.pop() ?? ''
+        const firstIndexes = ordinals.join(', ')
+        if (firstIndexes) {
+            return `${firstIndexes} e ${lastIndex} Semestres`
+        } else if (lastIndex) {
+            return `${lastIndex} Semestre`
+        } else {
+            return 'Semestre'
         }
-        return allSemesters
+    }
+
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    function findMinimumPerSemester(credits: number[], semesterCount: number) {
+        return credits.reduce((sum, value) => sum + value, 0)
+    }
+
+    function parseGroup(group: Semester.Group): Tree.SemesterGroup {
+        const name = nameSemester(group.indexes)
+        const minimumPerSemester = findMinimumPerSemester(
+            group.disciplines.map((discipline) => discipline.credits),
+            group.indexes.length,
+        )
+
+        const credits = { ...group.credits, minimumPerSemester }
+        return Object.assign(group, { name, credits })
+    }
+
+    export function semesterGroups(item: unknown): Tree.SemesterGroup[] {
+        return Semester.parseGroup(item).map(parseGroup)
     }
 }
 

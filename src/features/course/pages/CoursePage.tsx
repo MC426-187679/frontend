@@ -14,7 +14,7 @@ export default PageComponent.from(
     function CoursePage({ code }) {
         const content = useFetch(code, Course.fetch)
         return (
-            <AppPage title={content.data?.name ?? code}>
+            <AppPage title={content.data?.name ?? code} maxWidth="xl">
                 <CourseContent code={code} content={content} />
             </AppPage>
         )
