@@ -69,7 +69,7 @@ export namespace Tree {
         readonly electives?: number | undefined
     }
 
-    namespace Semester {
+    export namespace Semester {
         export function totalCredits({ disciplines, electives = 0 }: Semester) {
             const required = disciplines.reduce((sum, { credits }) => sum + credits, 0)
             return required + electives

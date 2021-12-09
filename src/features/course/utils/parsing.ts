@@ -48,7 +48,7 @@ namespace Parsing {
     function discipline(item: unknown): Tree.DisciplinePreview {
         Parser.assertCanBeAcessed(item)
         const code = Discipline.Parsing.code(item.code)
-        const credits = Parser.positiveInt(item.credits, { required: true, includeZero: true })
+        const credits = Parser.positiveInt(item.credits, { required: true })
 
         return { code, credits }
     }

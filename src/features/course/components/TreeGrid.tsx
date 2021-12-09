@@ -32,8 +32,9 @@ interface SemesterProps {
 
 function Semester({ semester, maxCredits }: SemesterProps) {
     const isLoading = !semester
+    const total = semester ? Tree.Semester.totalCredits(semester) : undefined
     return (
-        <Paper elevation={12} {...(isLoading ? skeletonProps : {})}>
+        <Paper elevation={12} {...(isLoading ? skeletonProps : {})} title={formatCredits(total)}>
             <Grid
                 container
                 direction="row"
@@ -82,9 +83,17 @@ function Discipline({ credits, ...props }: DisciplineProps) {
                 role="listitem"
                 special={props.elective || props.special}
                 code={text}
-                title={`${credits} Crédito${credits > 1 ? 's' : ''}`}
+                title={formatCredits(credits)}
                 fullWidth
             />
         </Grid>
     )
+}
+
+function formatCredits(credits?: number) {
+    if (typeof credits === 'number' && Number.isInteger(credits) && credits > 0) {
+        return `${credits} Crédito${credits > 1 ? 's' : ''}`
+    } else {
+        return undefined
+    }
 }
