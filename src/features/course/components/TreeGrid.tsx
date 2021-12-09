@@ -67,13 +67,13 @@ type DisciplineProps = {
 }
 
 const noPadding = css`
-    min-width: fit-content;
+    min-width: unset;
     padding-left: 0;
     padding-right: 0;
 `
 
 function Discipline({ credits, ...props }: DisciplineProps) {
-    const text = props.elective ? `${credits} créditos eletivos` : props.code
+    const text = props.elective ? 'Eletivo' : props.code
 
     return (
         <Grid item xs={credits}>
@@ -82,6 +82,7 @@ function Discipline({ credits, ...props }: DisciplineProps) {
                 role="listitem"
                 special={props.elective || props.special}
                 code={text}
+                title={`${credits} Crédito${credits > 1 ? 's' : ''}`}
                 fullWidth
             />
         </Grid>

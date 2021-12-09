@@ -4,7 +4,7 @@ import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@m
 import { css } from '@emotion/css'
 
 import type { Course } from '../types/course'
-import { COURSE_PAGE_PATH, variantUrl } from '../utils/params'
+import { variantUrl } from '../utils/params'
 
 const withMargin = css`
     margin-top: 1.5ex;
@@ -60,7 +60,7 @@ function useVariantIndex(code: string, index: number) {
     const url = variantUrl(code, index)
 
     const navigate = useNavigate()
-    const match = useMatch(`${COURSE_PAGE_PATH}/*`)
+    const match = useMatch(variantUrl(code, '*'))
 
     useEffect(() => {
         if (match && match.pathname !== url) {
