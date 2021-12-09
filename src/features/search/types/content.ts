@@ -1,4 +1,5 @@
-import { Match } from './match'
+import { Parser } from 'utils/parsing'
+import { Match, webSocketEndpoint } from './match'
 import { Matcher } from './matcher'
 
 /** Conteúdo adaptado de {@link Match}. */
@@ -36,19 +37,12 @@ export namespace Matches {
         return { query: '', results: [] }
     }
 
-    /**
-     * Faz busca pela API REST.
-     *
-     * @param text texto a ser buscado.
-     * @param init Opções de requisição do {@link fetch}.
-     * @return lista dos resultados para o texto, ordenados de maior para menor relevância.
-     *
-     * @throws Erros do {@link Match.fetch}.
-     */
-    export async function fetch(query: string, init?: RequestInit) {
-        const matches = await Match.fetch(query, Matcher.parse, init)
+    export function parse(query: string, result: string) {
+        const matches = Parser.array(JSON.parse(result), Matcher.parse, { required: false })
         const results = matches.map(MatchedContent.from)
 
         return { query, results } as Matches
     }
+
+    export const searchURL = `ws://${window.location.host}/${webSocketEndpoint}`
 }
