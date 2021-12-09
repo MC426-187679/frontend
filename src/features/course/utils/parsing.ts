@@ -27,16 +27,19 @@ namespace Parsing {
 namespace Parsing {
     const validCode = /^[A-Z][A-Z]$/
 
-    export function variant(item: unknown): Course.Variant {
-        const text = Parser.string(item, { required: true })
-        const [code, name] = text.split('-', 2).map((part) => {
-            return part.split(/\s+/).filter(Boolean).join(' ')
-        })
+    export function isVariantCode(item: unknown): item is Course.Variant.Code {
+        return typeof item === 'string'
+            && validCode.test(item)
+    }
 
-        if (validCode.test(code) && name) {
-            return { code, name } as Course.Variant
+    export function variant(item: unknown): Course.Variant {
+        Parser.assertCanBeAcessed(item)
+        const name = Parser.string(item.name, { required: true })
+
+        if (isVariantCode(item.code) && name) {
+            return { code: item.code, name }
         } else {
-            throw new Parser.Error(text, 'Course.variants')
+            throw new Parser.Error(item, 'Course.variants')
         }
     }
 }

@@ -3,8 +3,8 @@ import { useMatch, useNavigate } from 'react-router-dom'
 import { FormControl, InputLabel, MenuItem, Select, SelectChangeEvent } from '@mui/material'
 import { css } from '@emotion/css'
 
-import type { Course } from '../types/course'
-import { variantUrl } from '../utils/params'
+import { type Course, Tree } from '../types/course'
+import { Parsing } from '../utils/parsing'
 
 const withMargin = css`
     margin-top: 1.5ex;
@@ -12,27 +12,27 @@ const withMargin = css`
 
 export interface VariantSelectProps {
     options: readonly Course.Variant[]
-    code: string
+    code: Course.Code
 }
 
-export function VariantSelect({ options, code: courseCode }: VariantSelectProps) {
-    const [index, setIndex] = useState(0)
-    useVariantIndex(courseCode, index)
-
-    if (options.length <= 0) {
-        return null
-    }
+export function VariantSelect({ options, code: course }: VariantSelectProps) {
+    const [variant, setVariant] = useState(options[0]?.code ?? 'arvore')
+    useVariantRedirect(course, variant)
 
     const changeIndex = useCallback(
         function changeIndex(event: SelectChangeEvent<unknown>) {
             const { value } = event?.target ?? {}
 
-            if (typeof value === 'number' && Number.isInteger(value) && value >= 0) {
-                setIndex(value)
+            if (Parsing.isVariantCode(value)) {
+                setVariant(value)
             }
         },
-        [setIndex],
+        [setVariant],
     )
+
+    if (options.length <= 0) {
+        return null
+    }
 
     return (
         <FormControl fullWidth className={withMargin}>
@@ -40,13 +40,13 @@ export function VariantSelect({ options, code: courseCode }: VariantSelectProps)
             <Select
                 labelId="variant-selector-input"
                 id="variant-selector"
-                value={index}
+                value={variant}
                 label="Modalidade"
                 onChange={changeIndex}
             >
-                {options.map(({ code, name }, idx) => (
-                    <MenuItem value={idx} key={code}>
-                        <UnstyledAnchor href={variantUrl(courseCode, idx)}>
+                {options.map(({ code, name }) => (
+                    <MenuItem value={code} key={code}>
+                        <UnstyledAnchor href={Tree.pagePath(course, variant)}>
                             { code } - { name }
                         </UnstyledAnchor>
                     </MenuItem>
@@ -56,11 +56,11 @@ export function VariantSelect({ options, code: courseCode }: VariantSelectProps)
     )
 }
 
-function useVariantIndex(code: string, index: number) {
-    const url = variantUrl(code, index)
+function useVariantRedirect(course: Course.Code, variant: Tree.VariantCode) {
+    const url = Tree.pagePath(course, variant)
 
     const navigate = useNavigate()
-    const match = useMatch(variantUrl(code, '*'))
+    const match = useMatch(Tree.pagePath(course, '*'))
 
     useEffect(() => {
         if (match && match.pathname !== url) {

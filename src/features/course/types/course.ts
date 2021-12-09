@@ -23,8 +23,13 @@ export namespace Course {
     export type Code = `${LeadingDigit}` | `${LeadingDigit}${Digit}`
 
     export interface Variant {
-        readonly code: `${UppercaseAscii}${UppercaseAscii}`
+        readonly code: Variant.Code
         readonly name: string
+    }
+
+    export namespace Variant {
+        /* eslint-disable-next-line @typescript-eslint/no-shadow */
+        export type Code = `${UppercaseAscii}${UppercaseAscii}`
     }
 
     export function parse(item: unknown): Course {
@@ -52,7 +57,7 @@ export namespace Course {
 export interface Tree extends ReadonlyArray<Tree.Semester> { }
 
 export namespace Tree {
-    export type Index = Digit | string
+    export type VariantCode = Course.Variant.Code | 'arvore'
 
     export interface DisciplinePreview {
         readonly code: Discipline.Code
@@ -85,15 +90,15 @@ export namespace Tree {
         return Parser.array(item, Parsing.semester, { required: true })
     }
 
-    export function pagePath<C extends string, I extends Index>(code: C, variant: I) {
+    export function pagePath<C extends string, I extends string>(code: C, variant: I) {
         return variantUrl(code, variant)
     }
 
-    export function loadPath<C extends string, I extends Index>(code: C, variant: I) {
+    export function loadPath<C extends string, I extends string>(code: C, variant: I) {
         return `/api/curso/${code}/${variant}` as const
     }
 
-    export async function fetch([code, variant]: [string, Index], init?: RequestInit) {
+    export async function fetch([code, variant]: [string, string], init?: RequestInit) {
         return parse(await Fetch.json(loadPath(code, variant), init))
     }
 }
