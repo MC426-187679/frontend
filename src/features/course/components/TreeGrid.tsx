@@ -4,20 +4,23 @@ import { css } from '@emotion/css'
 
 import { DisciplineLink } from 'features/discipline'
 
-import { Tree } from '../types/course'
+import type { Tree } from '../types/course'
 
 interface TreeGridProps {
     tree?: Tree
 }
 
 export default function TreeGrid({ tree }: TreeGridProps) {
-    const max = tree ? Tree.maxCredits(tree) : undefined
     const semesters = tree ?? Array<undefined>(10).fill(undefined)
 
     return (
         <Stack direction="column" spacing={2}>
             {semesters.map((semester, idx) => (
-                <Semester key={idx.toString(16)} semester={semester} maxCredits={max} />
+                <Semester
+                    key={idx.toString(16)}
+                    semester={semester}
+                    maxCredits={tree?.credits.max}
+                />
             ))}
         </Stack>
     )
@@ -32,9 +35,9 @@ interface SemesterProps {
 
 function Semester({ semester, maxCredits }: SemesterProps) {
     const isLoading = !semester
-    const total = semester ? Tree.Semester.totalCredits(semester) : undefined
+    const title = semester && `${semester.name} - ${formatCredits(semester.credits.total)}`
     return (
-        <Paper elevation={12} {...(isLoading ? skeletonProps : {})} title={formatCredits(total)}>
+        <Paper elevation={12} {...(isLoading ? skeletonProps : {})} title={title}>
             <Grid
                 container
                 direction="row"

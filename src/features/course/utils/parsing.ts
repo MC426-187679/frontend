@@ -53,12 +53,67 @@ namespace Parsing {
         return { code, credits }
     }
 
-    export function semester(item: unknown): Tree.Semester {
+    type UnnamedSemester = Omit<Tree.Semester, 'name' | 'index'>
+
+    function semester(item: unknown): UnnamedSemester {
         Parser.assertCanBeAcessed(item)
         const disciplines = Parser.distincts(item.disciplines, discipline, (disc) => disc.code)
         const electives = Parser.positiveInt(item.electives, { defaultsTo: undefined })
 
-        return { disciplines, electives }
+        const required = disciplines.reduce((sum, { credits }) => sum + credits, 0)
+        const total = required + (electives ?? 0)
+
+        return { disciplines, electives, credits: { required, total } }
+    }
+
+    type SemesterItem = {
+        indexes: number[]
+        disciplines: UnnamedSemester
+    }
+
+    function nameSemester({ indexes, disciplines }: SemesterItem): Tree.Semester {
+        const ordinals = indexes.map((index) => `${index + 1}°`)
+        const lastIndex = ordinals.pop() ?? ''
+
+        const firstIndexes = ordinals.join(', ')
+        if (firstIndexes) {
+            return {
+                ...disciplines,
+                name: `${firstIndexes} e ${lastIndex} Semestres`,
+                index: indexes,
+            }
+        } else {
+            return {
+                ...disciplines,
+                name: `${lastIndex} Semestre`,
+                index: indexes.pop() ?? 0,
+            }
+        }
+    }
+
+    export function semesters(item: unknown): Tree.Semester[] {
+        const unnamed = Parser.array(item, semester, { required: true })
+        const allSemesters: Tree.Semester[] = []
+
+        let currentItem: undefined | SemesterItem
+        unnamed.forEach((disciplines, index) => {
+            if (disciplines.credits.total <= 0) {
+                currentItem?.indexes.push(index)
+            } else {
+                if (currentItem !== undefined) {
+                    allSemesters.push(nameSemester(currentItem))
+                }
+                currentItem = {
+                    indexes: [index],
+                    disciplines,
+                }
+            }
+        })
+
+        if (currentItem !== undefined) {
+            allSemesters.push(nameSemester(currentItem))
+        }
+        return allSemesters
     }
 }
 

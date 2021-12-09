@@ -54,7 +54,12 @@ export namespace Course {
     }
 }
 
-export interface Tree extends ReadonlyArray<Tree.Semester> { }
+export interface Tree extends ReadonlyArray<Tree.Semester> {
+    readonly credits: {
+        readonly max: number
+        readonly total: number
+    }
+}
 
 export namespace Tree {
     export type VariantCode = Course.Variant.Code | 'arvore'
@@ -67,27 +72,26 @@ export namespace Tree {
     export interface Semester {
         readonly disciplines: readonly DisciplinePreview[]
         readonly electives?: number | undefined
-    }
-
-    export namespace Semester {
-        export function totalCredits({ disciplines, electives = 0 }: Semester) {
-            const required = disciplines.reduce((sum, { credits }) => sum + credits, 0)
-            return required + electives
+        readonly credits: {
+            readonly required: number
+            readonly total: number
         }
-    }
-
-    export function maxCredits(tree: Tree) {
-        return tree.reduce(
-            (maximum, semester) => {
-                const credits = Semester.totalCredits(semester)
-                return (credits > maximum) ? credits : maximum
-            },
-            0,
-        )
+        readonly name: string
+        readonly index: number | readonly number[]
     }
 
     export function parse(item: unknown): Tree {
-        return Parser.array(item, Parsing.semester, { required: true })
+        const semesters = Parsing.semesters(item)
+
+        const max = semesters.reduce(
+            (maximum, { credits: { total } }) => {
+                return (total > maximum) ? total : maximum
+            },
+            0,
+        )
+        const total = semesters.reduce((sum, { credits }) => sum + credits.total, 0)
+
+        return Object.assign(semesters, { credits: { max, total } })
     }
 
     export function pagePath<C extends string, I extends string>(code: C, variant: I) {
