@@ -198,7 +198,7 @@ export class StreamBarrier {
     private readonly maxDistance: number
 
     /** Última string enviada. */
-     lastSent = ''
+    lastSent = ''
     /** Última recebida, possivelmente próxima a ser enviada. */
     private lastReceived = ''
     /** Quantidade de caracteres distintos entre {@link lastSent} e {@link lastReceived}. */
