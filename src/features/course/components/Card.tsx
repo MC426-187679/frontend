@@ -4,6 +4,7 @@ import { Card, CardContent, Skeleton, Typography } from '@mui/material'
 import { css } from '@emotion/css'
 
 import type { Course } from '../types/course'
+import { VariantSelect } from './VariantSelect'
 
 /** Classe CSS que limita o tamanho mínimo do componente. */
 const withMinWidth = css`
@@ -20,6 +21,10 @@ export default function CourseCard({ course }: CourseCardProps) {
             <CardContent component="article" aria-labelledby="course-header">
                 {/* Nome e código. */}
                 <CourseHeader id="course-header" name={course?.name} code={course?.code} />
+                {/* Seletor de modalidade. */}
+                {course
+                    ? <VariantSelect code={course.code} options={course.variants} />
+                    : <Skeleton />}
                 {/* Árvore. */}
                 <section aria-labelledby="suggestion">
                     <SectionHeader id="suggestion">
