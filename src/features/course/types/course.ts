@@ -1,6 +1,6 @@
 import { Fetch } from 'utils/fetching'
 import { Parser } from 'utils/parsing'
-import type { Digit, LeadingDigit } from 'types/basic'
+import type { Digit, LeadingDigit, UppercaseAscii } from 'types/basic'
 
 import { Matcher } from 'features/search'
 import type * as Discipline from 'features/discipline'
@@ -12,7 +12,7 @@ import CourseMatch from '../utils/match'
 export interface Course {
     readonly code: Course.Code
     readonly name: string
-    readonly variants: readonly string[]
+    readonly variants: readonly Course.Variant[]
 }
 
 export namespace Course {
@@ -22,11 +22,16 @@ export namespace Course {
     /** Código do curso: dois dígitos, sem zeros à esquerda. */
     export type Code = `${LeadingDigit}` | `${LeadingDigit}${Digit}`
 
+    export interface Variant {
+        readonly code: `${UppercaseAscii}${UppercaseAscii}`
+        readonly name: string
+    }
+
     export function parse(item: unknown): Course {
         Parser.assertCanBeAcessed(item)
         const code = Parsing.code(item.code)
         const name = Parser.string(item.name, { required: true })
-        const variants = Parser.array(item.variants, Parser.string)
+        const variants = Parser.array(item.variants, Parsing.variant, { required: true })
 
         return { code, name, variants }
     }
@@ -47,7 +52,7 @@ export namespace Course {
 export interface Tree extends ReadonlyArray<Tree.Semester> { }
 
 export namespace Tree {
-    export type Variant = Digit | string
+    export type Index = Digit | string
 
     export interface DisciplinePreview {
         readonly code: Discipline.Code
@@ -63,15 +68,15 @@ export namespace Tree {
         return Parser.array(item, Parsing.semester, { required: true })
     }
 
-    export function pagePath<C extends string, V extends Variant>(code: C, variant: V) {
+    export function pagePath<C extends string, I extends Index>(code: C, variant: I) {
         return variantUrl(code, variant)
     }
 
-    export function loadPath<C extends string, V extends Variant>(code: C, variant: V) {
+    export function loadPath<C extends string, I extends Index>(code: C, variant: I) {
         return `/api/curso/${code}/${variant}` as const
     }
 
-    export async function fetch([code, variant]: [string, Variant], init?: RequestInit) {
+    export async function fetch([code, variant]: [string, Index], init?: RequestInit) {
         return parse(await Fetch.json(loadPath(code, variant), init))
     }
 }

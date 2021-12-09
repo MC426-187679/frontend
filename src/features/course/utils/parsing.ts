@@ -25,6 +25,23 @@ namespace Parsing {
 }
 
 namespace Parsing {
+    const validCode = /^[A-Z][A-Z]$/
+
+    export function variant(item: unknown): Course.Variant {
+        const text = Parser.string(item, { required: true })
+        const [code, name] = text.split('-', 2).map((part) => {
+            return part.split(/\s+/).filter(Boolean).join(' ')
+        })
+
+        if (validCode.test(code) && name) {
+            return { code, name } as Course.Variant
+        } else {
+            throw new Parser.Error(text, 'Course.variants')
+        }
+    }
+}
+
+namespace Parsing {
     function discipline(item: unknown): Tree.DisciplinePreview {
         Parser.assertCanBeAcessed(item)
         const code = Discipline.Parsing.code(item.code)

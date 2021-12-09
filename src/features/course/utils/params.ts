@@ -1,5 +1,3 @@
-import { Digit } from 'types/basic'
-
 /** Diretório na URL da Página de Cursos. */
 const PAGE_DIR = 'curso'
 
@@ -8,7 +6,7 @@ export function courseUrl<Code extends string>(code: Code) {
     return `/${PAGE_DIR}/${code}` as const
 }
 
-export function variantUrl<Code extends string, Variant extends string | Digit>(
+export function variantUrl<Code extends string, Variant extends string | number>(
     code: Code,
     variant: Variant,
 ) {

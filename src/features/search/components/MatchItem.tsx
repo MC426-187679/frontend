@@ -7,7 +7,7 @@ import { Space } from 'utils/string'
 import type { MatchedContent } from '../types/content'
 
 /** Remove estilização de elemento de anchor (`<a>`). */
-const anchotWithoutStyling = css`
+const anchorWithoutStyling = css`
     color: inherit;
     text-decoration: none;
     & li {
@@ -30,7 +30,7 @@ export default function MatchItem(props: MatchItemProps) {
 
     return (
         <a
-            className={anchotWithoutStyling}
+            className={anchorWithoutStyling}
             href={option.url}
             key={option.identifier}
             onClick={preventDefault}

@@ -15,6 +15,9 @@ export type LowercaseAscii
     = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm'
     | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'
 
+/** Caracteres ascii maiúsculos. */
+export type UppercaseAscii = Uppercase<LowercaseAscii>
+
 /** Se `T` é um subtipo de `U`. */
 export type Extends<T, U, True = true, False = false>
     = T extends U ? True : False
