@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { distance as levenshtein } from 'fastest-levenshtein'
-import type { Fetch } from 'utils/fetching'
 
 /** Função que não faz nada, usada como padrão das callbacks. */
 export function doNothing() { }
@@ -9,8 +8,7 @@ export function doNothing() { }
  *  Limitador de requisições, que só faz uma requisição depois de
  * {@link ControlledInterval.waitMillis} milissegundos terem passados da última requisição,
  * ou se o texto da caixa de entrada mudou mais que {@link StreamBarrier.maxDistinctChars}
- * caracteres. Se existirem {@link RequestQueue.maxOpenRequests} requisições não concluídas,
- * espera uma delas terminar para fazer a próxima.
+ * caracteres. As requisições são feitas por um WebSocket.
  *
  * As entrada recebidas (em {@link next}) enquanto o sistema está em espera podem ser ignoradas.
  */
@@ -19,39 +17,49 @@ export class RequestThrottler<Content> {
     private readonly interval: ControlledInterval
     /** Barreira enquanto o intervalo não é concluído. */
     private readonly barrier: StreamBarrier
-    /** Fila para evitar muitas requisições em aberto. */
-    private readonly queue: RequestQueue<Content>
+    /** Socket para comunicação. */
+    private readonly socket: RequestQueue<Content>
+    /** Última query enviada pelo webSocket. */
+    private lastQuery: string = ''
+
+    /** Callback do estado de loading. */
+    setLoading: (isLoading: boolean) => void = doNothing
 
     /**
-     * @param fetch Função que faz a requisição do conteúdo.
+     * @param url URL do WebSocket.
+     * @param parser Parser da resposta do web socket.
      * @param maxDistinctChars Maior número de caracteres distintos na caixa busca que segue o
      *  tempo de espera entre requisições. Se o texto mudar mais caracteres do que isso, a
      *  requisição é iniciada imediatamente. (padrão: 5)
      * @param waitMillis Tempo de espera entre requisições normais em milissegundos. (padrão: 1000)
-     * @param maxOpenRequests Maior número de requisições não-resolvidas em um dado momento.
      *  (padrão: 5)
      */
     constructor(
-        fetch: Fetch<Content>,
-        maxDistinctChars = 5,
-        waitMillis = 1000,
-        maxOpenRequests = 5,
+        url: string,
+        parser: (query: string, response: string) => Content,
+        maxDistinctChars = 4,
+        waitMillis = 500,
     ) {
         this.interval = new ControlledInterval(waitMillis)
         this.barrier = new StreamBarrier(maxDistinctChars)
-        this.queue = new RequestQueue(maxOpenRequests, fetch)
+        this.socket = new RequestQueue(url, (message) => parser(this.lastQuery, message))
 
         // quando a barreira envia um valor
         this.barrier.onSend = (query) => {
             // inicia novo intervalo (tempo que a barreira deveria ficar fechada)
             this.interval.start()
-            // e passa o valor para a fila de requisições
-            this.queue.enqueue(query)
+            // e passa o valor pelo socket
+            this.socket.send(query)
+            this.lastQuery = query
         }
         // quando o intervalo concluir
         this.interval.onComplete = () => {
             // abre a barreira
             this.barrier.open()
+        }
+        /// para o loading quando não tiver requisições
+        this.socket.onEmpty = () => {
+            this.setLoading(false)
         }
         // inicia com a barreira aberta
         this.barrier.open()
@@ -62,117 +70,182 @@ export class RequestThrottler<Content> {
         this.barrier.next(query)
     }
 
-    /** Callback para fila de requisições cheia. */
-    set onFull(callback: () => void) {
-        this.queue.onFull = callback
+    close() {
+        this.setLoading = doNothing
+        this.barrier.close()
+        this.interval.close()
+        this.socket.close()
     }
 
     /** Callback para situações de erro. */
     set onError(callback: (error: any) => void) {
-        this.queue.onError = callback
-    }
-
-    /** Callback para atualização do estado de loading. */
-    set setLoading(sendStatus: (isLoading: boolean) => void) {
-        if (Object.is(sendStatus, doNothing)) {
-            this.queue.onRequestStart = doNothing
-            this.queue.onEmpty = doNothing
-        } else {
-            this.queue.onRequestStart = () => {
-                sendStatus(true)
-            }
-            this.queue.onEmpty = () => {
-                sendStatus(false)
-            }
-        }
+        this.socket.onError = callback
     }
 
     /** Callaback para quando o servidor responder alguma requisição. */
     set onOutput(sendValue: (content: Content) => void) {
-        this.queue.onOutput = sendValue
+        this.socket.onOutput = (content) => {
+            this.setLoading(false)
+            sendValue(content)
+        }
     }
 }
 
 /**
- *  Fila de requisições de busca na API. Enquanto o número de requisições não concluídas for menor
- * que {@link maxOpenRequests}, as requisições são feitas diretamente. Caso contrário, o último
- * pedido é armazenado em {@link waiting} até alguma requsição encerrar.
+ *  Fila de requisições de busca na API por WebSocket.
  */
 export class RequestQueue<T> {
-    /** Maior número de requisições não concluídas em um dado momento. */
-    private readonly maxOpenRequests: number
-    /** Número de requisições não concluídas. */
-    private openRequests = 0
-    /** Fila de tamanho um, para o último pedido não realizado. */
-    private waiting: string | undefined
-    /** Função que faz a requisição assíncrona. */
-    private readonly fetch: Fetch<T>
+    /** Parser dos JSON recebido. */
+    private readonly parse: (message: string) => T
+    /** WebSocket para a comunicação com timeout. */
+    private readonly socket: TimedWebSocket
 
     /** Callback para o resultado da requisição. */
     onOutput: (output: T) => void = doNothing
     /** Callback para erro na requisição. */
     onError: (error: any) => void = doNothing
-    /** Callback para quando a fila está cheia. */
-    onFull: () => void = doNothing
     /** Callback para quando a fila se torna vazia. */
     onEmpty: () => void = doNothing
-    /** Callback chamada antes da requisição de busca. */
-    onRequestStart: (input: string) => void = doNothing
 
-    /** @param maxOpenRequests Maior número de requisições ao mesmo tempo. */
-    constructor(maxOpenRequests: number, fetch: Fetch<T>) {
-        this.maxOpenRequests = maxOpenRequests
-        this.fetch = fetch
+    /** Abre socket em URL e parseia os resultados. */
+    constructor(url: string, parser: (message: string) => T) {
+        this.parse = parser
+        this.socket = new TimedWebSocket(url)
+
+        this.socket.onMessage = (message) => {
+            this.receive(message)
+        }
+        this.socket.onError = () => {
+            this.onError(null)
+            this.checkEmpty()
+        }
     }
 
-    /** Faz a requisição com a string de busca dada. */
-    private async makeRequest(input: string) {
-        // marca a requisição como aberta
-        this.openRequests += 1
+    private checkEmpty() {
+        if (!this.socket.hasOpenRequests) {
+            this.onEmpty()
+        }
+    }
+
+    private receive(data: unknown) {
         try {
-            this.onRequestStart(input)
-            const output = await this.fetch(input)
-            this.onOutput(output)
-        } catch (error) {
+            this.onOutput(this.parse(`${data}`))
+        } catch (error: any) {
             this.onError(error)
         } finally {
-            // e fecha após concluída
-            this.openRequests -= 1
-            if (this.openRequests <= 0) {
-                this.onEmpty()
+            this.checkEmpty()
+        }
+    }
+
+    send(query: string) {
+        this.socket.send(query)
+    }
+
+    close() {
+        this.onOutput = doNothing
+        this.onError = doNothing
+        this.onEmpty = doNothing
+        this.socket.close()
+    }
+}
+
+class TimedWebSocket {
+    private readonly url: string
+    private inner: QueueWebSocket | undefined
+    private interval: ControlledInterval
+
+    onMessage: (output: unknown) => void = doNothing
+    onError: () => void = doNothing
+
+    constructor(url: string, socketTimeout: number = 60) {
+        this.url = url
+        this.interval = new ControlledInterval(socketTimeout * 1000)
+
+        this.interval.onComplete = () => {
+            this.inner?.close()
+        }
+    }
+
+    private openSocket() {
+        this.inner = new QueueWebSocket(
+            this.url,
+            this.onMessage,
+            this.onError,
+            () => {
+                delete this.inner
+            },
+        )
+        return this.inner
+    }
+
+    private get socket() {
+        return this.inner ?? this.openSocket()
+    }
+
+    get hasOpenRequests() {
+        if (this.inner) {
+            return this.inner.openRequests <= 0
+        } else {
+            return false
+        }
+    }
+
+    send(query: string) {
+        this.socket.send(query)
+        this.interval.start()
+    }
+
+    close() {
+        this.onError = doNothing
+        this.onMessage = doNothing
+
+        this.inner?.close()
+        delete this.inner
+        this.interval.close()
+    }
+}
+
+class QueueWebSocket extends WebSocket {
+    private queue: string | undefined
+    private sent: number = 0
+    private received: number = 0
+
+    constructor(
+        url: string,
+        onMessage: (data: unknown) => void = doNothing,
+        onError: () => void = doNothing,
+        onClose: () => void = doNothing,
+    ) {
+        super(url)
+
+        this.onmessage = (event) => {
+            this.received += 1
+            onMessage(event.data)
+        }
+        this.onerror = () => {
+            this.received += 1
+            onError()
+        }
+        this.onopen = () => {
+            if (this.queue !== undefined) {
+                super.send(this.queue)
+                this.sent += 1
             }
         }
+        this.onclose = onClose
     }
 
-    /** Remove o elemento mais recente na lista de espera.  */
-    private pop() {
-        const query = this.waiting
-        this.waiting = undefined
-        return query
-    }
-
-    /** Faz requisição do próximo elemento na lista, se existir. */
-    private requestNext() {
-        const query = this.pop()
-
-        // resultados de string com pelo menos 2 caracteres
-        if (query && query.length > 2) {
-            // faz requisição e, quando concluída, faz a próxima na lista
-            this.makeRequest(query).finally(() => {
-                this.requestNext()
-            })
-        }
-    }
-
-    /** Coloca requisição na fila. */
-    enqueue(query: string) {
-        this.waiting = query
-
-        if (this.openRequests < this.maxOpenRequests) {
-            this.requestNext()
+    send(data: string) {
+        if (this.readyState === this.OPEN) {
+            super.send(data)
+            this.sent += 1
         } else {
-            this.onFull()
+            this.queue = data
         }
+    }
+
+    get openRequests() {
+        return this.sent - this.received
     }
 }
 
@@ -185,7 +258,7 @@ export class RequestQueue<T> {
  *  Além disso, se a stream de entrada (recebida por {@link next}) for atualizada antes da barreira
  * ser aberta, o valor antigo é esquecido.
  */
-export class StreamBarrier {
+class StreamBarrier {
     /** Maior valor de distância que a barreira interrompe a passagem. */
     private readonly maxDistance: number
 
@@ -238,6 +311,11 @@ export class StreamBarrier {
         this.isOpen = true
         this.send()
     }
+
+    close() {
+        this.onSend = doNothing
+        this.isOpen = false
+    }
 }
 
 /** ID da execução do {@link setTimeout}. */
@@ -247,7 +325,7 @@ type TimeoutID = ReturnType<typeof setTimeout>
  *  Classe com funcionamento parecido com o {@link setInterval}, mas com controle de conclusão
  * e inicalização assíncrona (o intervalo pode ser terminado antes do tempo esperado).
  */
-export class ControlledInterval {
+class ControlledInterval {
     /** Tempo de conclusão em mili segundos. */
     private readonly waitMillis: number
 
@@ -284,5 +362,10 @@ export class ControlledInterval {
     complete() {
         this.cancel()
         this.onComplete()
+    }
+
+    close() {
+        this.onComplete = doNothing
+        this.cancel()
     }
 }

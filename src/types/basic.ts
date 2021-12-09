@@ -2,7 +2,10 @@
 export type Falsy = false | null | undefined | '' | 0 | 0n
 
 /** Primeiro dígito de um número positivo. */
-export type Digit = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+export type LeadingDigit = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+
+/** Dígitos decimais. */
+export type Digit = 0 | LeadingDigit
 
 /** Tipos primitivos com transformação padrão para string. */
 export type Formattable = string | number | bigint | boolean | null | undefined
@@ -11,6 +14,9 @@ export type Formattable = string | number | bigint | boolean | null | undefined
 export type LowercaseAscii
     = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm'
     | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'
+
+/** Caracteres ascii maiúsculos. */
+export type UppercaseAscii = Uppercase<LowercaseAscii>
 
 /** Se `T` é um subtipo de `U`. */
 export type Extends<T, U, True = true, False = false>
