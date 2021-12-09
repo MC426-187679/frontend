@@ -90,4 +90,4 @@ test-development-mode:
     CI: "true"
     TEST_URL: http://server:8080
   script:
-    - npm run test -- --coverage --verbose --colors
+    - npm run test -- --coverage --verbose --colors --testPathIgnorePatterns
