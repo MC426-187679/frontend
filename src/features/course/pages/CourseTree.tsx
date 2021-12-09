@@ -7,13 +7,14 @@ import { SendError } from 'features/error-messages'
 
 import { COURSE_PAGE_PATH } from '../utils/params'
 import { Tree } from '../types/course'
+import TreeGrid from '../components/TreeGrid'
 
 export default PageComponent.from(
     function CourseTreePage({ code, variant }) {
         const content = useFetch([code, variant], Tree.fetch, undefined, [code, variant])
 
         if (content.state !== FetchState.Error) {
-            return <>Ok</>
+            return <TreeGrid tree={content.data} />
         } else if (content.is404) {
             return <Navigate to="/404" replace />
         } else {

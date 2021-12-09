@@ -29,6 +29,13 @@ export namespace Themes {
                     },
                 },
             },
+            MuiSkeleton: {
+                styleOverrides: {
+                    root: {
+                        transform: 'none',
+                    },
+                },
+            },
             MuiUseMediaQuery: {
                 defaultProps: {
                     noSsr: true,
